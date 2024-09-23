@@ -37,3 +37,7 @@ file = 'ps.toml'
 [mount]
 regexp = '^([/\w\.]+\/)?mount\b'
 file = 'mount.toml'
+
+[env]
+regexp = '^([/\w\.]+\/)?env\s'
+file = 'env.toml'

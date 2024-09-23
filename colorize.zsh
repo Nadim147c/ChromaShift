@@ -5,7 +5,7 @@ if ! tty -s || [ ! -n "$TERM" ] || [ "$TERM" = dumb ] || (( ! $+commands[coloriz
 fi
 
 cmds=(
-    ping stat traceroute df
+    ping stat traceroute df env
     cp mv rm ps lsblk mount
 )
 
