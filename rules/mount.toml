@@ -1,0 +1,13 @@
+"$schema" = "../rule.schema.json"
+
+[[rules]] # Main
+regexp = '^(.*) on (.*) type (.*) \((.*)\)'
+colors = 'green,yellow,blue,magenta'
+
+[[rules]] # Devices
+regexp = '^((\/[^\/ ]+)+)'
+colors = 'bggreen black'
+
+[[rules]] # Mount Path
+regexp = '(?:on ((\/[^\/ ]+)+))'
+colors = 'underline yellow'

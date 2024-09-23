@@ -33,3 +33,7 @@ file = 'traceroute.toml'
 [ps]
 regexp = '^([/\w\.]+\/)?ps\b'
 file = 'ps.toml'
+
+[mount]
+regexp = '^([/\w\.]+\/)?mount\b'
+file = 'mount.toml'
