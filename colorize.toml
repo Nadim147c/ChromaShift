@@ -39,9 +39,9 @@ regexp = '^([/\w\.]+\/)?mount\b'
 file = 'mount.toml'
 
 [env]
-regexp = '^([/\w\.]+\/)?env\s'
+regexp = '^([/\w\.]+\/)?env\b'
 file = 'env.toml'
 
 [lsmod]
-regexp = '^([/\w\.]+\/)?lsmod\s'
+regexp = '^([/\w\.]+\/)?lsmod\b'
 file = 'lsmod.toml'
