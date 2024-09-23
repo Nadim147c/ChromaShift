@@ -11,6 +11,8 @@ cmds=(
 
 for cmd in $cmds ; do
     if (( $+commands[$cmd] )) ; then
+        unalias $cmd 2>/dev/null
+        unfunction $cmd 2>/dev/null
         $cmd() {
             colorize -- ${commands[$0]} "$@"
         }

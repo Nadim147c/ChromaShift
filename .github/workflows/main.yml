@@ -62,13 +62,9 @@ jobs:
     if: ${{ needs.changelog.outputs.skipped == 'false' }}
     strategy:
       matrix:
-        include:
-          - { runner: ubuntu, os: linux, arch: amd64 }
-          - { runner: ubuntu, os: linux, arch: arm64 }
-          - { runner: macos, os: darwin, arch: amd64 }
-          - { runner: macos, os: darwin, arch: arm64 }
-    runs-on: ${{ matrix.runner }}-latest
+        os: [ubuntu-latest, macos-latest]
 
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Check out code
         uses: actions/checkout@main
@@ -84,14 +80,14 @@ jobs:
         run: |
           VERSION=$(echo "${{ needs.changelog.outputs.tag }}")
           GOOS=$(echo "${{ matrix.os }}")
-          GOARCH=$(echo "${{ matrix.arch }}")
 
-          GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X colorize/cmd.Version=$VERSION" -o ./bin/colorize-$GOOS-$GOARCH
+          GOOS=$GOOS GOARCH=amd64 go build -ldflags "-X colorize/cmd.Version=$VERSION" -o ./bin/colorize-$GOOS-amd64
+          GOOS=$GOOS GOARCH=arm64 go build -ldflags "-X colorize/cmd.Version=$VERSION" -o ./bin/colorize-$GOOS-arm64
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: colorize-${{ matrix.os }}-${{ matrix.arch }}
+          name: colorize-${{ matrix.os }}
           path: ./bin/colorize*
 
   release:
@@ -111,7 +107,7 @@ jobs:
       - name: Generate Completions
         run: |
           mkdir completions
-          cp ./bin/colorize-linux-amd64/colorize-linux-amd64 colorize
+          cp ./bin/colorize-linux/colorize-linux-amd64 colorize
           chmod +x ./colorize
           ./colorize completion zsh > completions/_colorize
           ./colorize completion bash > completions/colorize.bash
