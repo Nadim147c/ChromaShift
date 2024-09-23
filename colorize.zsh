@@ -6,7 +6,7 @@ fi
 
 cmds=(
     ping stat traceroute df env
-    cp mv rm ps lsblk mount
+    cp mv rm ps lsblk mount lsmod
 )
 
 for cmd in $cmds ; do
