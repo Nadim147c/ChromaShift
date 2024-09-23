@@ -38,7 +38,7 @@ func loadRules(ruleFile string) (CommandRules, error) {
 	rulesPaths := []string{
 		os.Getenv("COLORIZE_RULES"),
 		filepath.Join(homeDir, ".config/colorize/rules"),
-		"/etc/colorize.d/",
+		"/etc/colorize/rules",
 	}
 
 	for _, rulesDir := range rulesPaths {

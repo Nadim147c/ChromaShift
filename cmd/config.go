@@ -36,7 +36,7 @@ func loadConfig() (map[string]Config, error) {
 	configPaths := []string{
 		os.Getenv("COLORIZE_CONFIG"),
 		filepath.Join(homeDir, ".config/colorize/config.toml"),
-		"/etc/colorize.toml",
+		"/etc/colorize/config.toml",
 	}
 
 	for _, path := range configPaths {
