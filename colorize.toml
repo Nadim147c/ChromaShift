@@ -55,5 +55,9 @@ regexp = '^([/\w\.]+\/)?free\b'
 file = 'free.toml'
 
 [docker-version]
-regexp = '^([/\w\.]+\/)?(sudo\s)?docker\sversion\b'
+regexp = '^(sudo\s)?([/\w\.]+\/)?docker\sversion\b'
 file = 'docker-version.toml'
+
+[docker-ps]
+regexp = '^(sudo\s)?([/\w\.]+\/)?docker\sps\b'
+file = 'docker-ps.toml'

@@ -1,0 +1,58 @@
+"$schema" = "../rule.schema.json"
+
+[[rules]] # HEADERS
+regexp = '(?:\s|^)(CONTAINER ID|IMAGE|COMMAND|CREATED|STATUS|PORTS|NAMES)(?:\s|$)'
+colors = 'bold blue underline'
+
+[[rules]] # IMAGE NAME (as docker image)
+regexp = '\s{2,}(?:([a-z\-_0-9]+)\/)*([a-z\-_0-9]+)(:\S+)?\s{2,}\"'
+colors = 'yellow,cyan,yellow'
+
+[[rules]] # IMAGE NAME WITH REGISTER
+priority = 100
+regexp = '\s{2,}(?:((?:[a-z\-_0-9]+)\.(?:[a-z\-_0-9]+))/)?(?:([a-z\-_0-9]+)\/)*([a-z\-_0-9]+)(:\S+)?\s{2,}\"'
+colors = 'blue,green,cyan,yellow'
+
+[[rules]] # IMAGE
+regexp = '^(\w+)\s+([^\s]+)\s+(".*")\s+(.*(?:(?:Up|Exited|Created|Restarting)))'
+colors = 'black,default,black,cyan'
+
+[[rules]] # Statuses - Created
+regexp = '\sCreated\s'
+colors = 'blue'
+
+[[rules]] # Up
+regexp = '(?:\s{2}|^)(Up|Restarting)((?:\s[\w,\d]+)+)?'
+colors = 'bold green'
+
+[[rules]] # Health - healthy
+regexp = '\s\((healthy)\)'
+colors = 'bold green'
+
+[[rules]] # Health -  starting
+regexp = '\s\((health: starting)\)'
+colors = 'bold yellow'
+
+[[rules]] # Health - unhealthy
+regexp = '\s\((unhealthy)\)'
+colors = 'bold red'
+
+[[rules]] # Statuses - Exited
+regexp = '(Exited)\s.(\d+).+?(?:\s{2,})'
+colors = 'bold red,red'
+
+[[rules]] # Statuses - Restarting
+regexp = 'Restarting\s.(\d+).+?(?:\s{2,})'
+colors = 'bold blue'
+
+[[rules]] # Ip Addresses 
+regexp = '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\:)?'
+colors = 'blue'
+
+[[rules]] # Ports
+regexp = '(\d{1,5})?(-)?(\d{1,5})?(->)?(\d{1,5})(-)?(\d{1,5})?(\/)(tcp|udp)'
+colors = 'green,default,green,default,green,default,green,default,cyan'
+
+[[rules]] # NAMES
+regexp = '(?:([a-z\-_0-9]+)\/)*([a-z\-_0-9]+)$'
+colors = 'default,yellow,on_blue white'
