@@ -1,0 +1,49 @@
+"$schema" = "../rule.schema.json"
+
+[[rules]] # Heading
+regexp = '(\s*total\s+used\s+free\s+shared\s+buff/cache\s+available)'
+colors = "bold blue underline"
+
+[[rules]] # Memory
+regexp = '^(Mem):'
+colors = 'bold cyan'
+
+[[rules]] # Swap
+regexp = '^(Swap):'
+colors = 'bold magenta'
+
+[[rules]] # Size 'K'
+regexp = '\s(\d*[\.,]?\dKi?)'
+colors = 'green'
+
+[[rules]] # Size 'K'
+regexp = '\s(\b\d{1,3})\s'
+colors = 'green'
+
+[[rules]] # Size 'M'
+regexp = '\s(\d*[\.,]?\dMi?)'
+colors = 'yellow'
+
+[[rules]] # Size 'M'
+regexp = '\s(\b\d{4,6})\s'
+colors = 'yellow'
+
+[[rules]] # Size 'G'
+regexp = '\s(\d*[\.,]?\dGi?)'
+colors = 'red'
+
+[[rules]] # Size 'G'
+regexp = '\s(\b\d{7,9})\s'
+colors = 'red'
+
+[[rules]] # Size 'T'
+regexp = '\s(\d*[\.,]?\dTi?)'
+colors = 'red'
+
+[[rules]] # Size 'T'
+regexp = '\s(\b\d{10,12})\s'
+colors = 'red'
+
+[[rules]] # Zero
+regexp = '\s+(0\w?)\b'
+colors = 'green'

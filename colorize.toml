@@ -49,3 +49,7 @@ file = 'env.toml'
 [lsmod]
 regexp = '^([/\w\.]+\/)?lsmod\b'
 file = 'lsmod.toml'
+
+[free]
+regexp = '^([/\w\.]+\/)?free\b'
+file = 'free.toml'

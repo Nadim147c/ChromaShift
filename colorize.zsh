@@ -18,6 +18,7 @@ cmds=(
     lsblk
     mount
     lsmod
+    free
 )
 
 for cmd in $cmds ; do
