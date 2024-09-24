@@ -1,0 +1,17 @@
+"$schema" = ' "../rule.schema.json"'
+
+[[rules]] # Values
+regexp = '^\s([^:]+):(.+)$'
+colors = 'cyan,magenta'
+
+[[rules]] # Client
+regexp = '^(Client):$'
+colors = 'bold green'
+
+[[rules]] # Server
+regexp = '^(Server):$'
+colors = 'bold green'
+
+[[rules]] # Other headings
+regexp = '^\s([^:]+):$'
+colors = 'yellow'

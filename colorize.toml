@@ -53,3 +53,7 @@ file = 'lsmod.toml'
 [free]
 regexp = '^([/\w\.]+\/)?free\b'
 file = 'free.toml'
+
+[docker-version]
+regexp = '^([/\w\.]+\/)?(sudo\s)?docker\sversion\b'
+file = 'docker-version.toml'

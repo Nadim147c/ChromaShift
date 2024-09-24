@@ -19,6 +19,7 @@ cmds=(
     mount
     lsmod
     free
+    docker
 )
 
 for cmd in $cmds ; do
