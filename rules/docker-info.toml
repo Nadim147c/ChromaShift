@@ -1,0 +1,25 @@
+"$schema" = ' "../rule.schema.json"'
+
+[[rules]] # Main Nodes
+regexp = '^(\S[^:]+):$'
+colors = 'bold green'
+
+[[rules]] # Sub Nodes
+regexp = '^\s([^:]+):\s?(.*)$'
+colors = 'cyan,magenta'
+
+[[rules]] # Other headings
+regexp = '^\s([^:]+):$'
+colors = 'yellow'
+
+[[rules]] # Warning
+regexp = '(WARNING):\s(.+)$'
+colors = 'bold yellow, yellow'
+
+[[rules]] # devicemapper
+regexp = 'devicemapper$'
+colors = 'red'
+
+[[rules]] # loop-lvm
+regexp = ': (/var/lib/docker/devicemapper/devicemapper/(?:meta)?data)'
+colors = 'red'

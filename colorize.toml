@@ -61,3 +61,7 @@ file = 'docker-version.toml'
 [docker-ps]
 regexp = '^(sudo\s)?([/\w\.]+\/)?docker\sps\b'
 file = 'docker-ps.toml'
+
+[docker-info]
+regexp = '^(sudo\s)?([/\w\.]+\/)?docker\sinfo\b'
+file = 'docker-info.toml'
