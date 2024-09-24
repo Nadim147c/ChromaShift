@@ -1,0 +1,26 @@
+"$schema" = "../rule.schema.json"
+
+[[rules]] # HEADERS
+overwrite = true
+regexp = '(?:\s|^)(NETWORK ID|NAME|DRIVER|SCOPE)(?:\s|$)'
+colors = 'bold blue underline'
+
+[[rules]] # Line
+regexp = '^(\S+)\s+(\S+)'
+colors = 'gray,blue'
+
+[[rules]] # Driver BRIDGE
+regexp = '^\S+\s+\S+\s+(bridge)'
+colors = 'cyan'
+
+[[rules]] # Driver HOST
+regexp = '^\S+\s+\S+\s+(host)'
+colors = 'cyan'
+
+[[rules]] # Driver OVERLAY
+regexp = '^\S+\s+\S+\s+(overlay)'
+colors = 'magenta'
+
+[[rules]] # Driver NULL
+regexp = '^\S+\s+\S+\s+(null)'
+colors = 'bgred white'
