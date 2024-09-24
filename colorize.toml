@@ -22,6 +22,10 @@ file = 'rm.toml'
 regexp = '^([/\w\.]+\/)?df\b'
 file = 'df.toml'
 
+[du]
+regexp = '^([/\w\.]+\/)?du\b'
+file = 'du.toml'
+
 [lsblk]
 regexp = '^([/\w\.]+\/)?lsblk\b'
 file = 'lsblk.toml'

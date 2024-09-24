@@ -1,5 +1,5 @@
 # Colorize
 
-It currently supports 12 command. Detailed documentations coming soon.
+It currently supports 13 command. Detailed documentations coming soon.
 
 `colorize` is command that colorize your favorite commands. Most of it's feature have been shamelessly stolen from [garabik/grc](https://github.com/garabik/grc).
