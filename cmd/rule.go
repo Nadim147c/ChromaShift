@@ -59,7 +59,7 @@ func loadRules(ruleFile string) (CommandRules, error) {
 					if cmdRules.Rules[i].Overwrite != cmdRules.Rules[j].Overwrite {
 						return cmdRules.Rules[i].Overwrite
 					}
-					return cmdRules.Rules[i].Priority > cmdRules.Rules[j].Priority
+					return cmdRules.Rules[i].Priority < cmdRules.Rules[j].Priority
 				})
 
 				return cmdRules, nil
