@@ -7,8 +7,10 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"regexp"
 	"strings"
+	"syscall"
 	"unicode"
 
 	"github.com/efekarakus/termcolor"
@@ -49,6 +51,16 @@ var rootCmd = &cobra.Command{
 		cmdArgs := args[1:]
 
 		runCmd := exec.Command(cmdName, cmdArgs...)
+
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+		go func() {
+			sig := <-sigChan
+			if err := runCmd.Process.Signal(sig); err != nil {
+				fmt.Fprintln(os.Stderr, "Error sending signal to process:", err)
+			}
+		}()
 
 		switch color {
 		case "never":
