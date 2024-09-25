@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/efekarakus/termcolor"
 	"github.com/spf13/cobra"
@@ -175,12 +176,12 @@ var rootCmd = &cobra.Command{
 			}
 
 			if char == '\n' {
-				line := buffer.String()
+				line := strings.TrimRightFunc(buffer.String(), unicode.IsSpace)
 				coloredLine := colorizeLine(line, cmdRules.Rules)
 				if len(coloredLine) > 0 {
-					fmt.Print(coloredLine)
+					fmt.Println(coloredLine)
 				} else {
-					fmt.Print(line)
+					fmt.Println(line)
 				}
 				buffer.Reset()
 			}
