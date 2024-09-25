@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"regexp"
@@ -146,21 +148,47 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		scanner := bufio.NewScanner(stdout)
-		for scanner.Scan() {
-			srcLine := scanner.Text()
+		reader := bufio.NewReader(stdout)
+		var buffer bytes.Buffer
 
-			coloredLine := colorizeLine(srcLine, cmdRules.Rules)
-			if len(coloredLine) > 0 {
-				fmt.Println(coloredLine)
-			} else {
-				fmt.Println(srcLine)
+		for {
+			char, err := reader.ReadByte()
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				fmt.Fprintln(os.Stderr, "Error reading stdout:", err)
+				break
 			}
 
+			if char == '\r' {
+				line := buffer.String()
+				coloredLine := colorizeLine(line, cmdRules.Rules)
+				if len(coloredLine) > 0 {
+					fmt.Print("\r" + coloredLine)
+				} else {
+					fmt.Print("\r" + line)
+				}
+				buffer.Reset()
+			} else {
+				buffer.WriteByte(char)
+			}
+
+			if char == '\n' {
+				line := buffer.String()
+				coloredLine := colorizeLine(line, cmdRules.Rules)
+				if len(coloredLine) > 0 {
+					fmt.Print(coloredLine)
+				} else {
+					fmt.Print(line)
+				}
+				buffer.Reset()
+			}
 		}
 
-		if err := scanner.Err(); err != nil {
-			fmt.Printf("Error reading stdout: %s\n", err)
+		if err := runCmd.Wait(); err != nil {
+			fmt.Fprintln(os.Stderr, "Error waiting for command:", err)
+			os.Exit(1)
 		}
 	},
 }
