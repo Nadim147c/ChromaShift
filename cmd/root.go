@@ -166,9 +166,9 @@ var rootCmd = &cobra.Command{
 				line := buffer.String()
 				coloredLine := colorizeLine(line, cmdRules.Rules)
 				if len(coloredLine) > 0 {
-					fmt.Print("\r" + coloredLine)
+					fmt.Print(coloredLine + "\r")
 				} else {
-					fmt.Print("\r" + line)
+					fmt.Print(line + "\r")
 				}
 				buffer.Reset()
 			} else {
@@ -179,9 +179,9 @@ var rootCmd = &cobra.Command{
 				line := strings.TrimRightFunc(buffer.String(), unicode.IsSpace)
 				coloredLine := colorizeLine(line, cmdRules.Rules)
 				if len(coloredLine) > 0 {
-					fmt.Println(coloredLine)
+					fmt.Print(coloredLine + "\n")
 				} else {
-					fmt.Println(line)
+					fmt.Print(line + "\n")
 				}
 				buffer.Reset()
 			}
