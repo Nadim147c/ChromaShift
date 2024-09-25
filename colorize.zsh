@@ -20,6 +20,7 @@ cmds=(
     lsmod
     free
     docker
+    yt-dlp
 )
 
 for cmd in $cmds ; do
