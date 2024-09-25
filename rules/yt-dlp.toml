@@ -1,5 +1,8 @@
 "$schema" = "../rule.schema.json"
 
+[skip-color]
+argument = "^-$"
+
 [[rules]] # Url
 regexp = '(https?://(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?)'
 colors = 'bold blue'
