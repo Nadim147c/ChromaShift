@@ -52,6 +52,8 @@ var rootCmd = &cobra.Command{
 
 		runCmd := exec.Command(cmdName, cmdArgs...)
 
+		runCmd.Stdin = os.Stdin
+
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
