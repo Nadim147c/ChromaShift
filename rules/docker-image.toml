@@ -1,0 +1,73 @@
+"$schema" = "../rule.schema.json"
+
+[[rules]] # HEADERS
+overwrite = true
+regexp = '(?:\s|^)(REPOSITORY|TAG|IMAGE ID|CREATED|SIZE)(?:\s|$)'
+colors = 'bold blue underline'
+
+[[rules]] # TAG, IMAGE ID
+regexp = '^([a-z]+\/?[^\s]+)\s+([^\s]+)\s+(\w+)'
+colors = 'none,cyan,black'
+
+[[rules]] # latest
+regexp = '(?:\s)(latest)(?:\s+)'
+colors = 'bold green'
+
+[[rules]] # REPOSITORY (Image name)
+priority = 100
+regexp = '^(?:(\S+\.\S+)\/)(?:(\S+)\/)(\S+)\s'
+colors = 'blue,green,cyan'
+
+[[rules]] # REPOSITORY (Image name)
+priority = 80
+regexp = '^(?:(\S+)\/)*(\S+)\s'
+colors = 'green,cyan'
+
+[[rules]] # images without name
+regexp = '^(<none>).*$'
+colors = 'bold red'
+
+[[rules]] # images without tag
+priority = 50
+regexp = '\s+(<none>)\s+'
+colors = 'red'
+
+[[rules]] # Size 'K'
+regexp = '(?:\s)(\d+[.,]?\d*\s?(?:[Kk]B?|B))'
+colors = 'green'
+
+[[rules]] # Size 'M', 2 digits
+regexp = '(?:\s)(\d{1,2}[.,]?\d*\s?MB?)'
+colors = 'green'
+
+[[rules]] # Size 'M' 3+ digits
+regexp = '(?:\s)(\d{3,4}[.,]?\d*\s?MB?)'
+colors = 'yellow'
+
+[[rules]] # Size 'G'
+regexp = '(?:\s)(\d+[.,]?\d*\s?GB?)'
+colors = 'red'
+
+[[rules]] # CREATED seconds/minutes
+regexp = '[\da-f]{12}\s+((?:About a|\d+) (?:seconds?|minutes?) ago)'
+colors = 'bggreen bold white'
+
+[[rules]] # CREATED About a minute ago
+regexp = '\s+(About a minute ago)\s\w+'
+colors = 'bggreen bold black'
+
+[[rules]] # CREATED hours
+regexp = '\s+(\d+\shours\s\w+)'
+colors = 'bggreen bold black'
+
+[[rules]] # CREATED days
+regexp = '\s+(\d+\sdays\s\w+)'
+colors = 'green'
+
+[[rules]] # CREATED weeks
+regexp = '\s+(\d+\sweeks\s\w+)'
+colors = 'yellow'
+
+[[rules]] # CREATED months
+regexp = '\s+(\d+\smonths\s\w+)'
+colors = 'red'

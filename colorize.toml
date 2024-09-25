@@ -73,3 +73,7 @@ file = 'docker-info.toml'
 [docker-network]
 regexp = '^(sudo\s)?([/\w\.]+\/)?docker\snetwork\b'
 file = 'docker-network.toml'
+
+[docker-image]
+regexp = '^(sudo\s)?([/\w\.]+\/)?docker\simage\b'
+file = 'docker-image.toml'

@@ -1,4 +1,4 @@
-"$schema" = ' "../rule.schema.json"'
+"$schema" = "../rule.schema.json"
 
 [[rules]] # Main Nodes
 regexp = '^(\S[^:]+):$'
