@@ -3,7 +3,7 @@
   "type": "object",
   "properties": {
     "$schema": { "type": "string" },
-    "ignore": {
+    "skip-color": {
       "type": "object",
       "properties": {
         "argument": { "type": "string" },
