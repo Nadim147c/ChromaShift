@@ -13,7 +13,13 @@ import (
 
 type (
 	CommandRules struct {
-		Rules []Rule `toml:"rules"`
+		SkipColor SkipColor `toml:"skip-color"`
+		Rules     []Rule    `toml:"rules"`
+	}
+
+	SkipColor struct {
+		Argument  string `toml:"argument"`
+		Arguments string `toml:"arguments"`
 	}
 
 	Rule struct {
@@ -53,7 +59,7 @@ func loadRules(ruleFile string) (CommandRules, error) {
 				fmt.Println("Using rules file:", ruleFilePath)
 			}
 
-			_, err = toml.DecodeFile(ruleFilePath, &cmdRules)
+			_, err := toml.DecodeFile(ruleFilePath, &cmdRules)
 			if err == nil {
 				sort.Slice(cmdRules.Rules, func(i int, j int) bool {
 					if cmdRules.Rules[i].Overwrite != cmdRules.Rules[j].Overwrite {
@@ -61,6 +67,14 @@ func loadRules(ruleFile string) (CommandRules, error) {
 					}
 					return cmdRules.Rules[i].Priority < cmdRules.Rules[j].Priority
 				})
+
+				if verbose {
+					fmt.Printf("SkipColor: %+v\n", cmdRules.SkipColor)
+
+					for _, v := range cmdRules.Rules {
+						fmt.Printf("rule: %+v\n", v)
+					}
+				}
 
 				return cmdRules, nil
 			} else {

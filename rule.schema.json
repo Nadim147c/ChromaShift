@@ -3,6 +3,14 @@
   "type": "object",
   "properties": {
     "$schema": { "type": "string" },
+    "ignore": {
+      "type": "object",
+      "properties": {
+        "argument": { "type": "string" },
+        "arguments": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
     "rules": {
       "type": "array",
       "items": {
