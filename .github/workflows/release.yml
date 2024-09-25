@@ -1,0 +1,110 @@
+name: Release
+
+on:
+  push:
+    tags: "v*"
+
+jobs:
+  build:
+    name: Build the binaries for release
+    strategy:
+      matrix:
+        include:
+          - { runner: ubuntu, os: linux }
+          - { runner: macos, os: darwin }
+    runs-on: ${{ matrix.runner }}-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@main
+
+      - name: Get Version
+        id: version
+        run: |
+          tag=${GITHUB_REF/refs\/tags\//}
+          version=${tag#v}
+          major=${version%%.*}
+          echo "tag=${tag}" >> $GITHUB_OUTPUT
+          echo "version=${version}" >> $GITHUB_OUTPUT
+          echo "major=${major}" >> $GITHUB_OUTPUT
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: "**/*.sum"
+
+      - name: Build binary
+        shell: bash
+        run: |
+          VERSION=$(echo "${{ steps.version.outputs.tag }}")
+          GOOS=$(echo "${{ matrix.os }}")
+
+          GOOS=$GOOS GOARCH=amd64 go build -ldflags "-X colorize/cmd.Version=$VERSION" -o ./bin/colorize-$GOOS-amd64
+          GOOS=$GOOS GOARCH=arm64 go build -ldflags "-X colorize/cmd.Version=$VERSION" -o ./bin/colorize-$GOOS-arm64
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: colorize-${{ matrix.os }}
+          path: ./bin/colorize*
+
+  release:
+    name: Create the release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone the git repository
+        uses: actions/checkout@main
+
+      - name: version
+        id: version
+        run: |
+          tag=${GITHUB_REF/refs\/tags\//}
+          version=${tag#v}
+          major=${version%%.*}
+          echo "tag=${tag}" >> $GITHUB_OUTPUT
+          echo "version=${version}" >> $GITHUB_OUTPUT
+          echo "major=${major}" >> $GITHUB_OUTPUT
+
+      - uses: release-drafter/release-drafter@master
+        id: release-drafter
+        with:
+          version: ${{ steps.version.outputs.version }}
+          publish: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./bin/
+
+      - name: Generate Completions
+        run: |
+          mkdir completions
+          cp ./bin/colorize-linux/colorize-linux-amd64 colorize
+          chmod +x ./colorize
+          ./colorize completion zsh > completions/_colorize
+          ./colorize completion bash > completions/colorize.bash
+          ./colorize completion fish > completions/colorize.fish
+
+      - name: Archive Builds
+        shell: bash
+        run: |
+          mkdir archives
+          for BIN in ./bin/**/* ;do
+            mv -f "$BIN" bin/colorize
+            BIN_NAME=$(basename "$BIN")
+            tar -czvf archives/$BIN_NAME.tar.gz bin/colorize rules/* completions/* colorize.*
+          done
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          artifacts: "archives/*"
+          tag: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          body: ${{ steps.release-drafter.outputs.body }}
