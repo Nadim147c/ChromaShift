@@ -4,6 +4,10 @@ if ! tty -s || [ ! -n "$TERM" ] || [ "$TERM" = dumb ] || (( ! $+commands[coloriz
     return
 fi
 
+COLORIZE_EXECUTABLE=$(command -v colorize)
+
+alias csudo="sudo COLORIZE_CONFIG=\$COLORIZE_CONFIG COLORIZE_RULES=\$COLORIZE_RULES $COLORIZE_EXECUTABLE --"
+
 cmds=(
     ping
     stat

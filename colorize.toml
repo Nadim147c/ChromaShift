@@ -59,21 +59,21 @@ regexp = '^([/\w\.]+\/)?yt-dlp\b'
 file = 'yt-dlp.toml'
 
 [docker-version]
-regexp = '^(sudo\s)?([/\w\.]+\/)?docker\sversion\b'
+regexp = '^([/\w\.]+\/)?docker\sversion\b'
 file = 'docker-version.toml'
 
 [docker-ps]
-regexp = '^(sudo\s)?([/\w\.]+\/)?docker\sps\b'
+regexp = '^([/\w\.]+\/)?docker\sps\b'
 file = 'docker-ps.toml'
 
 [docker-info]
-regexp = '^(sudo\s)?([/\w\.]+\/)?docker\sinfo\b'
+regexp = '^([/\w\.]+\/)?docker\sinfo\b'
 file = 'docker-info.toml'
 
 [docker-network]
-regexp = '^(sudo\s)?([/\w\.]+\/)?docker\snetwork\b'
+regexp = '^([/\w\.]+\/)?docker\snetwork\b'
 file = 'docker-network.toml'
 
 [docker-image]
-regexp = '^(sudo\s)?([/\w\.]+\/)?docker\simage\b'
+regexp = '^([/\w\.]+\/)?docker\simage\b'
 file = 'docker-image.toml'
