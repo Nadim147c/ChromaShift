@@ -92,7 +92,7 @@ jobs:
           for BIN in ./bin/**/* ;do
             mv -f "$BIN" bin/colorize
             BIN_NAME=$(basename "$BIN")
-            tar -czvf archives/$BIN_NAME.tar.gz bin/colorize rules/* completions/* colorize.*
+            tar -czvf "archives/$BIN_NAME.tar.gz" bin/colorize rules/* completions/* colorize.toml scripts/*
           done
 
       - name: Create release
