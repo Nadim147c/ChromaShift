@@ -13,33 +13,49 @@ template: |
 
 categories:
   - title: "Breaking"
-    label: "type: breaking"
+    label: "breaking"
+
   - title: "Features"
-    label: "type: feature"
+    labels:
+      - "feature"
+      - "feat"
+
   - title: "Bug Fixes"
-    label: "type: bug"
+    labels:
+      - "bug"
+      - "fix"
+      - "bugfix"
+
   - title: "Maintenance"
-    label: "type: maintenance"
+    labels:
+      - "chore"
+      - "deps"
+      - "ci"
+      - "security"
+
   - title: "Documentation"
-    label: "type: docs"
+    label: "docs"
+
   - title: "Other changes"
-  - title: "Dependency Updates"
-    label: "type: dependencies"
 
 version-resolver:
   major:
     labels:
-      - "type: breaking"
+      - "breaking"
   minor:
     labels:
-      - "type: feature"
+      - "feature"
+      - "feat"
   patch:
     labels:
-      - "type: bug"
-      - "type: maintenance"
-      - "type: docs"
-      - "type: dependencies"
-      - "type: security"
+      - "fix"
+      - "bug"
+      - "bugfix"
+      - "chor"
+      - "docs"
+      - "deps"
+      - "security"
+      - "ci"
 
 exclude-labels:
   - "skip-changelog"
