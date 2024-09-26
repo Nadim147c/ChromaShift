@@ -26,6 +26,7 @@ cmds=(
     docker
     yt-dlp
     go
+    id
 )
 
 for cmd in $cmds ; do
