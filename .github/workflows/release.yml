@@ -67,9 +67,9 @@ jobs:
         id: changelog
         run: |
           git tag -d $(git tag | tail -1)
-          changelog=$(conventional-changelog -u -p conventionalcommits | tail +3)
+          changelog=$(conventional-changelog -u -p conventionalcommits)
           echo "${changelog}"
-          echo "::set-output name=changelog::${changelog}"
+          echo "changelog=${changelog}" >> $GITHUB_OUTPUT
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
