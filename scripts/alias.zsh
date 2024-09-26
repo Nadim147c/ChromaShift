@@ -25,6 +25,7 @@ cmds=(
     free
     docker
     yt-dlp
+    go
 )
 
 for cmd in $cmds ; do
