@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/BurntSushi/toml"
 )
 
 type Config struct {
@@ -13,24 +11,28 @@ type Config struct {
 	File   string `toml:"file"`
 }
 
-func loadConfig() (map[string]Config, error) {
+func LoadConfig(stat StatFunc, decodeFile DecodeFileFunc) (map[string]Config, error) {
 	var config map[string]Config
 
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		if verbose {
-			fmt.Println("Error getting home directory:", err)
+	if len(ConfigFile) > 0 {
+		if Verbose {
+			fmt.Println("Using config file:", ConfigFile)
 		}
-		homeDir = ""
-	}
-
-	if len(cfgFile) != 0 {
-		_, err = toml.DecodeFile(cfgFile, &config)
+		_, err := decodeFile(ConfigFile, &config)
 		if err != nil {
-			if verbose {
+			if Verbose {
 				fmt.Fprintf(os.Stderr, "Can't load config from path: %s", err)
 			}
 		}
+		return config, nil
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		if Verbose {
+			fmt.Println("Error getting home directory:", err)
+		}
+		homeDir = ""
 	}
 
 	configPaths := []string{
@@ -44,19 +46,19 @@ func loadConfig() (map[string]Config, error) {
 			continue
 		}
 
-		if _, err := os.Stat(path); err == nil {
-			cfgFile = path
+		if _, err := stat(path); err == nil {
+			ConfigFile = path
 
-			if verbose {
-				fmt.Println("Using config file:", cfgFile)
+			if Verbose {
+				fmt.Println("Using config file:", ConfigFile)
 			}
 
-			_, err = toml.DecodeFile(cfgFile, &config)
+			_, err = decodeFile(ConfigFile, &config)
 			if err == nil {
 				return config, nil
 			}
 
-			if verbose {
+			if Verbose {
 				fmt.Fprintf(os.Stderr, "Can't load config from path: %s", err)
 			}
 

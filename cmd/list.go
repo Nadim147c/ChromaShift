@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/BurntSushi/toml"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +16,7 @@ var listCommandsCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List available commands",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		config, err := loadConfig()
+		config, err := LoadConfig(os.Stat, toml.DecodeFile)
 		if err != nil {
 			return err
 		}

@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-
-	"github.com/BurntSushi/toml"
 )
 
 type (
@@ -30,12 +28,26 @@ type (
 	}
 )
 
-func loadRules(ruleFile string) (CommandRules, error) {
+func LoadRules(ruleFile string, stat StatFunc, decodeFile DecodeFileFunc) (CommandRules, error) {
 	var cmdRules CommandRules
+
+	if len(RulesDirectory) > 0 {
+		ruleFilePath := filepath.Join(RulesDirectory, ruleFile)
+		if Verbose {
+			fmt.Println("Using rules file:", ruleFilePath)
+		}
+		_, err := decodeFile(ruleFilePath, &cmdRules)
+		if err != nil {
+			if Verbose {
+				fmt.Fprintf(os.Stderr, "Can't load rules from path: %s", err)
+			}
+		}
+		return cmdRules, nil
+	}
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		if verbose {
+		if Verbose {
 			fmt.Println("Error getting home directory:", err)
 		}
 		homeDir = ""
@@ -54,12 +66,12 @@ func loadRules(ruleFile string) (CommandRules, error) {
 
 		ruleFilePath := path.Join(rulesDir, ruleFile)
 
-		if _, err := os.Stat(ruleFilePath); err == nil {
-			if verbose {
+		if _, err := stat(ruleFilePath); err == nil {
+			if Verbose {
 				fmt.Println("Using rules file:", ruleFilePath)
 			}
 
-			_, err := toml.DecodeFile(ruleFilePath, &cmdRules)
+			_, err := decodeFile(ruleFilePath, &cmdRules)
 			if err == nil {
 				sort.Slice(cmdRules.Rules, func(i int, j int) bool {
 					if cmdRules.Rules[i].Overwrite != cmdRules.Rules[j].Overwrite {
@@ -68,7 +80,7 @@ func loadRules(ruleFile string) (CommandRules, error) {
 					return cmdRules.Rules[i].Priority < cmdRules.Rules[j].Priority
 				})
 
-				if verbose {
+				if Verbose {
 					fmt.Printf("SkipColor: %+v\n", cmdRules.SkipColor)
 
 					for _, v := range cmdRules.Rules {

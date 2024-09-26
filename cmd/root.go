@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"unicode"
 
+	"github.com/BurntSushi/toml"
 	"github.com/efekarakus/termcolor"
 	"github.com/spf13/cobra"
 )
@@ -20,11 +21,11 @@ import (
 var Version = "dev"
 
 var (
-	color    string
-	cfgFile  string
-	rulesDir string
-	verbose  bool
-	useColor bool
+	Color          string
+	ConfigFile     string
+	RulesDirectory string
+	Verbose        bool
+	UseColor       bool
 )
 
 func startRunWithoutColor(runCmd *exec.Cmd) {
@@ -34,13 +35,18 @@ func startRunWithoutColor(runCmd *exec.Cmd) {
 	os.Exit(0)
 }
 
+type (
+	StatFunc       func(string) (os.FileInfo, error)
+	DecodeFileFunc func(string, interface{}) (toml.MetaData, error)
+)
+
 var rootCmd = &cobra.Command{
 	Use:     "colorize [OPTOINS] -- COMMAND [OPTIONS/ARGUMENTS]",
 	Version: Version,
 	Example: "colorize -- stat go.mod",
 	Short:   "A colorizer for your favorite commands",
 	Run: func(cmd *cobra.Command, args []string) {
-		useColor = true
+		UseColor = true
 
 		if len(args) < 1 {
 			cmd.Help()
@@ -64,22 +70,22 @@ var rootCmd = &cobra.Command{
 			}
 		}()
 
-		switch color {
+		switch Color {
 		case "never":
-			useColor = false
+			UseColor = false
 		case "always":
-			useColor = true
+			UseColor = true
 		default:
-			useColor = termcolor.SupportsBasic(os.Stdout)
+			UseColor = termcolor.SupportsBasic(os.Stdout)
 		}
 
-		if !useColor {
+		if !UseColor {
 			startRunWithoutColor(runCmd)
 		}
 
-		config, err := loadConfig()
+		config, err := LoadConfig(os.Stat, toml.DecodeFile)
 
-		if err != nil && verbose {
+		if err != nil && Verbose {
 			fmt.Fprintln(os.Stderr, "Failed to load config:", err)
 		}
 
@@ -98,19 +104,19 @@ var rootCmd = &cobra.Command{
 		}
 
 		if len(ruleFileName) <= 0 {
-			if verbose {
+			if Verbose {
 				fmt.Println("No config exists for current command")
 			}
 			startRunWithoutColor(runCmd)
 		}
 
-		cmdRules, err := loadRules(ruleFileName)
-		if verbose && err != nil {
+		cmdRules, err := LoadRules(ruleFileName, os.Stat, toml.DecodeFile)
+		if Verbose && err != nil {
 			fmt.Println("Failed to load rules for current command:", err)
 		}
 
 		if len(cmdRules.Rules) <= 0 {
-			if verbose {
+			if Verbose {
 				fmt.Println("No config exists for current command")
 			}
 			startRunWithoutColor(runCmd)
@@ -119,7 +125,7 @@ var rootCmd = &cobra.Command{
 		if len(cmdRules.SkipColor.Argument) > 0 {
 			re, err := regexp.Compile(cmdRules.SkipColor.Argument)
 			if err != nil {
-				if verbose {
+				if Verbose {
 					fmt.Println("failed to compile ignore argument", err)
 				}
 				startRunWithoutColor(runCmd)
@@ -135,7 +141,7 @@ var rootCmd = &cobra.Command{
 		if len(cmdRules.SkipColor.Arguments) > 0 {
 			re, err := regexp.Compile(cmdRules.SkipColor.Arguments)
 			if err != nil {
-				if verbose {
+				if Verbose {
 					fmt.Println("failed to compile ignore arguments", err)
 				}
 				startRunWithoutColor(runCmd)
@@ -147,7 +153,7 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		if verbose {
+		if Verbose {
 			fmt.Printf("%d rules found.\n", len(cmdRules.Rules))
 		}
 
@@ -178,7 +184,7 @@ var rootCmd = &cobra.Command{
 
 			if char == '\r' {
 				line := buffer.String()
-				coloredLine := colorizeLine(line, cmdRules.Rules)
+				coloredLine := ColorizeLine(line, cmdRules.Rules)
 				if len(coloredLine) > 0 {
 					fmt.Print(coloredLine + "\r")
 				} else {
@@ -191,7 +197,7 @@ var rootCmd = &cobra.Command{
 
 			if char == '\n' {
 				line := strings.TrimRightFunc(buffer.String(), unicode.IsSpace)
-				coloredLine := colorizeLine(line, cmdRules.Rules)
+				coloredLine := ColorizeLine(line, cmdRules.Rules)
 				if len(coloredLine) > 0 {
 					fmt.Print(coloredLine + "\n")
 				} else {
@@ -217,8 +223,8 @@ func Execute() {
 
 func init() {
 	rootCmd.SetErrPrefix("Colorize Error:")
-	rootCmd.Flags().StringVar(&cfgFile, "config", "", "specify path to the config file")
-	rootCmd.Flags().StringVar(&rulesDir, "rules-dir", "", "specify path to the rules directory")
-	rootCmd.Flags().StringVar(&color, "color", "auto", "whether use color or not (never, auto, always)")
-	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	rootCmd.Flags().StringVar(&ConfigFile, "config", "", "specify path to the config file")
+	rootCmd.Flags().StringVar(&RulesDirectory, "rules-dir", "", "specify path to the rules directory")
+	rootCmd.Flags().StringVar(&Color, "color", "auto", "whether use color or not (never, auto, always)")
+	rootCmd.Flags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 }

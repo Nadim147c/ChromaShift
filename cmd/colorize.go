@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func extentColorMapFromMatches(colorMap map[int]string, matches [][]int, colors []string) {
+func ExtentColorMapFromMatches(colorMap map[int]string, matches [][]int, colors []string) {
 	for _, match := range matches {
 		for i := range (len(match) - 2) / 2 {
 			start := match[i*2+2]
@@ -23,7 +23,7 @@ func extentColorMapFromMatches(colorMap map[int]string, matches [][]int, colors 
 	}
 }
 
-func colorizeLine(line string, rules []Rule) string {
+func ColorizeLine(line string, rules []Rule) string {
 	coloredLine := ""
 
 	colorMap := make(map[int]string)
@@ -39,14 +39,14 @@ func colorizeLine(line string, rules []Rule) string {
 		matches := re.FindAllStringSubmatchIndex(line, -1)
 
 		if rule.Overwrite && len(matches) > 0 {
-			if verbose {
+			if Verbose {
 				fmt.Println("Overwriting other rules for current line")
 			}
 			colorMap = make(map[int]string)
-			extentColorMapFromMatches(colorMap, matches, colors)
+			ExtentColorMapFromMatches(colorMap, matches, colors)
 			break
 		} else {
-			extentColorMapFromMatches(colorMap, matches, colors)
+			ExtentColorMapFromMatches(colorMap, matches, colors)
 		}
 
 	}
