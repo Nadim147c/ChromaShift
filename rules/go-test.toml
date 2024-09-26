@@ -1,0 +1,49 @@
+"$schema" = "../rule.schema.json"
+
+[[rules]] # go-test
+regexp = '=== (RUN) .*'
+colors = 'blue'
+
+[[rules]]
+regexp = '--- (PASS): .* (\(\d+\.\d+s\))'
+colors = 'green,yellow'
+
+[[rules]]
+regexp = '^(PASS)$'
+colors = 'bold black bggreen'
+
+[[rules]]
+regexp = '^(ok|FAIL)\s+.*'
+colors = 'magenta'
+
+[[rules]]
+regexp = '--- (FAIL): .* (\(\d+\.\d+s\))'
+colors = 'red,yellow'
+
+[[rules]]
+regexp = '^(FAIL)$'
+colors = 'bold white bgred'
+
+[[rules]]
+regexp = '[^\s]+\.go(:\d+)?'
+colors = 'cyan'
+
+[[rules]] # 10-29% coverage
+regexp = 'coverage: ([1-2]\d\.\d\%)'
+colors = 'red'
+
+[[rules]] # 30-49% coverage
+regexp = 'coverage: ([3-4]\d\.\d\%)'
+colors = 'yellow'
+
+[[rules]] # 50-79% coverage
+regexp = 'coverage: ([5-7]\d\.\d\%)'
+colors = 'cyan'
+
+[[rules]] # 88-99% coverage
+regexp = 'coverage: ([8-9]\d\.\d\%)'
+colors = 'green'
+
+[[rules]] # 88-99% coverage
+regexp = 'coverage: (100.0\%)'
+colors = 'bold green'

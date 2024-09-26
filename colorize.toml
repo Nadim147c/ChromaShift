@@ -77,3 +77,7 @@ file = 'docker-network.toml'
 [docker-image]
 regexp = '^([/\w\.]+\/)?docker\simage\b'
 file = 'docker-image.toml'
+
+[go-test]
+regexp = '^([/\w\.]+\/)?go\stest\b'
+file = 'go-test.toml'
