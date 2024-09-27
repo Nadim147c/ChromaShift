@@ -67,9 +67,7 @@ jobs:
         id: changelog
         run: |
           git tag -d $(git tag | tail -1)
-          changelog=$(conventional-changelog -u -p conventionalcommits)
-          echo "${changelog}"
-          echo "::set-output name=changelog::${changelog}"
+          conventional-changelog -u -p conventionalcommits | tail +3 > body.md
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -103,4 +101,4 @@ jobs:
           artifacts: "archives/*"
           tag: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
-          body: ${{ steps.changelog.outputs.changelog }}
+          bodyFile: "body.md"
