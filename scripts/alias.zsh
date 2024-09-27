@@ -27,6 +27,7 @@ cmds=(
     yt-dlp
     go
     id
+    strace
 )
 
 for cmd in $cmds ; do
