@@ -35,35 +35,9 @@ func startRunWithoutColor(runCmd *exec.Cmd) {
 	os.Exit(0)
 }
 
-func ReadIo(runCmd *exec.Cmd, cmdRules CommandRules, stderr bool) {
-	var ioPipe io.ReadCloser
-	var err error
+var out = os.Stdout
 
-	if !stderr {
-		runCmd.Stderr = os.Stderr
-		ioPipe, err = runCmd.StdoutPipe()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
-			os.Exit(1)
-		}
-		if err := runCmd.Start(); err != nil {
-			fmt.Fprintln(os.Stderr, "Error starting command:", err)
-			os.Exit(1)
-		}
-	} else {
-		runCmd.Stdout = os.Stdout
-		ioPipe, err = runCmd.StderrPipe()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
-			os.Exit(1)
-		}
-		if err := runCmd.Start(); err != nil {
-			fmt.Fprintln(os.Stderr, "Error starting command:", err)
-			os.Exit(1)
-		}
-
-	}
-
+func ReadIo(runCmd *exec.Cmd, cmdRules CommandRules, out io.Writer, ioPipe io.ReadCloser) {
 	reader := bufio.NewReader(ioPipe)
 	var buffer bytes.Buffer
 
@@ -81,9 +55,9 @@ func ReadIo(runCmd *exec.Cmd, cmdRules CommandRules, stderr bool) {
 			line := buffer.String()
 			coloredLine := ColorizeLine(line, cmdRules.Rules)
 			if len(coloredLine) > 0 {
-				fmt.Print(coloredLine + "\r")
+				fmt.Fprint(out, coloredLine+"\r")
 			} else {
-				fmt.Print(line + "\r")
+				fmt.Fprint(out, line+"\r")
 			}
 			buffer.Reset()
 		} else {
@@ -94,9 +68,9 @@ func ReadIo(runCmd *exec.Cmd, cmdRules CommandRules, stderr bool) {
 			line := strings.TrimRightFunc(buffer.String(), unicode.IsSpace)
 			coloredLine := ColorizeLine(line, cmdRules.Rules)
 			if len(coloredLine) > 0 {
-				fmt.Print(coloredLine + "\n")
+				fmt.Fprint(out, coloredLine+"\n")
 			} else {
-				fmt.Print(line + "\n")
+				fmt.Fprint(out, line+"\n")
 			}
 			buffer.Reset()
 		}
@@ -226,13 +200,44 @@ var rootCmd = &cobra.Command{
 		}
 
 		if !cmdRules.Stderr {
-			ReadIo(runCmd, cmdRules, false)
+			runCmd.Stderr = os.Stderr
+			ioPipe, err := runCmd.StdoutPipe()
+			if err != nil {
+				if Verbose {
+					fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
+				}
+				os.Exit(1)
+			}
+			if err := runCmd.Start(); err != nil {
+				if Verbose {
+					fmt.Fprintln(os.Stderr, "Error starting command:", err)
+				}
+				os.Exit(1)
+			}
+			ReadIo(runCmd, cmdRules, os.Stdout, ioPipe)
 		} else {
-			ReadIo(runCmd, cmdRules, true)
+			runCmd.Stdout = os.Stdout
+			ioPipe, err := runCmd.StderrPipe()
+			if err != nil {
+				if Verbose {
+					fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
+				}
+				os.Exit(1)
+			}
+			if err := runCmd.Start(); err != nil {
+				if Verbose {
+					fmt.Fprintln(os.Stderr, "Error starting command:", err)
+				}
+				os.Exit(1)
+			}
+
+			ReadIo(runCmd, cmdRules, os.Stderr, ioPipe)
 		}
 
 		if err := runCmd.Wait(); err != nil {
-			fmt.Fprintln(os.Stderr, "Error waiting for command:", err)
+			if Verbose {
+				fmt.Fprintln(os.Stderr, "Error waiting for command:", err)
+			}
 			os.Exit(1)
 		}
 	},
