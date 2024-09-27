@@ -57,6 +57,7 @@ func LoadRules(ruleFile string, stat StatFunc, decodeFile DecodeFileFunc) (Comma
 	rulesPaths := []string{
 		os.Getenv("COLORIZE_RULES"),
 		filepath.Join(homeDir, ".config/colorize/rules"),
+		"/usr/local/etc/colorize/rules",
 		"/etc/colorize/rules",
 	}
 

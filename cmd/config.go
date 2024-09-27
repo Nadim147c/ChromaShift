@@ -38,6 +38,7 @@ func LoadConfig(stat StatFunc, decodeFile DecodeFileFunc) (map[string]Config, er
 	configPaths := []string{
 		os.Getenv("COLORIZE_CONFIG"),
 		filepath.Join(homeDir, ".config/colorize/config.toml"),
+		"/usr/local/etc/colorize/config.toml",
 		"/etc/colorize/config.toml",
 	}
 
