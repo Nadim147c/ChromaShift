@@ -71,7 +71,7 @@ maybe_sudo() {
 
 maybe_sudo mkdir -p "$DEST_DIR/rules"
 
-maybe_sudo install -m 755 ./colorize "$BIN_DIR"
+maybe_sudo install -m 755 ./bin/* "$BIN_DIR"
 maybe_sudo install -m 644 "config.toml" "$DEST_DIR/config.toml"
 maybe_sudo install -m 644 "scripts/alias.zsh" "$DEST_DIR"
 maybe_sudo install -m 644 rules/* "$DEST_DIR/rules"
