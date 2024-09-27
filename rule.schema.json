@@ -3,6 +3,7 @@
   "type": "object",
   "properties": {
     "$schema": { "type": "string" },
+    "stderr": { "type": "boolean" },
     "skip-color": {
       "type": "object",
       "properties": {

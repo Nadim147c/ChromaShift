@@ -85,3 +85,7 @@ file = 'docker-image.toml'
 [go-test]
 regexp = '^([/\w\.]+\/)?go\stest\b'
 file = 'go-test.toml'
+
+[strace]
+regexp = '^([/\w\.]+\/)?strace\b'
+file = 'strace.toml'

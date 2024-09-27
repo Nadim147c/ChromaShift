@@ -3,7 +3,7 @@
 [[rules]] # FS
 overwrite = true
 regexp = '^(Filesystem.*)$'
-colors = 'bold blue'
+colors = 'bold blue underline'
 
 [[rules]] # Device
 regexp = '^((\/?[-\w\d.\s]+)+)\s'
@@ -48,4 +48,9 @@ colors = 'bold red'
 [[rules]] # Tmpfs_Lines
 overwrite = true
 regexp = '(^tmpfs.*)'
+colors = 'black'
+
+[[rules]] # overlay
+overwrite = true
+regexp = '(^overlay.*)'
 colors = 'black'
