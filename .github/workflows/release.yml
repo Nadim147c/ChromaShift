@@ -104,3 +104,4 @@ jobs:
           tag: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
           bodyFile: "body.md"
+          draft: true
