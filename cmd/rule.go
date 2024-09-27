@@ -13,6 +13,7 @@ type (
 	CommandRules struct {
 		SkipColor SkipColor `toml:"skip-color"`
 		Rules     []Rule    `toml:"rules"`
+		Stderr    bool      `toml:"stderr"`
 	}
 
 	SkipColor struct {
@@ -81,6 +82,7 @@ func LoadRules(ruleFile string, stat StatFunc, decodeFile DecodeFileFunc) (Comma
 				})
 
 				if Verbose {
+					fmt.Printf("stderr: %+v\n", cmdRules.Stderr)
 					fmt.Printf("SkipColor: %+v\n", cmdRules.SkipColor)
 
 					for _, v := range cmdRules.Rules {

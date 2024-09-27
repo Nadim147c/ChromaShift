@@ -35,6 +35,74 @@ func startRunWithoutColor(runCmd *exec.Cmd) {
 	os.Exit(0)
 }
 
+func ReadIo(runCmd *exec.Cmd, cmdRules CommandRules, stderr bool) {
+	var ioPipe io.ReadCloser
+	var err error
+
+	if !stderr {
+		runCmd.Stderr = os.Stderr
+		ioPipe, err = runCmd.StdoutPipe()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
+			os.Exit(1)
+		}
+		if err := runCmd.Start(); err != nil {
+			fmt.Fprintln(os.Stderr, "Error starting command:", err)
+			os.Exit(1)
+		}
+	} else {
+		runCmd.Stdout = os.Stdout
+		ioPipe, err = runCmd.StderrPipe()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
+			os.Exit(1)
+		}
+		if err := runCmd.Start(); err != nil {
+			fmt.Fprintln(os.Stderr, "Error starting command:", err)
+			os.Exit(1)
+		}
+
+	}
+
+	reader := bufio.NewReader(ioPipe)
+	var buffer bytes.Buffer
+
+	for {
+		char, err := reader.ReadByte()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			fmt.Fprintln(os.Stderr, "Error reading stdout:", err)
+			break
+		}
+
+		if char == '\r' {
+			line := buffer.String()
+			coloredLine := ColorizeLine(line, cmdRules.Rules)
+			if len(coloredLine) > 0 {
+				fmt.Print(coloredLine + "\r")
+			} else {
+				fmt.Print(line + "\r")
+			}
+			buffer.Reset()
+		} else {
+			buffer.WriteByte(char)
+		}
+
+		if char == '\n' {
+			line := strings.TrimRightFunc(buffer.String(), unicode.IsSpace)
+			coloredLine := ColorizeLine(line, cmdRules.Rules)
+			if len(coloredLine) > 0 {
+				fmt.Print(coloredLine + "\n")
+			} else {
+				fmt.Print(line + "\n")
+			}
+			buffer.Reset()
+		}
+	}
+}
+
 type (
 	StatFunc       func(string) (os.FileInfo, error)
 	DecodeFileFunc func(string, interface{}) (toml.MetaData, error)
@@ -76,7 +144,7 @@ var rootCmd = &cobra.Command{
 		case "always":
 			UseColor = true
 		default:
-			UseColor = termcolor.SupportsBasic(os.Stdout)
+			UseColor = termcolor.SupportsBasic(os.Stdout) || termcolor.SupportsBasic(os.Stderr)
 		}
 
 		if !UseColor {
@@ -157,54 +225,10 @@ var rootCmd = &cobra.Command{
 			fmt.Printf("%d rules found.\n", len(cmdRules.Rules))
 		}
 
-		runCmd.Stderr = os.Stderr
-
-		stdout, err := runCmd.StdoutPipe()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
-			os.Exit(1)
-		}
-		if err := runCmd.Start(); err != nil {
-			fmt.Fprintln(os.Stderr, "Error starting command:", err)
-			os.Exit(1)
-		}
-
-		reader := bufio.NewReader(stdout)
-		var buffer bytes.Buffer
-
-		for {
-			char, err := reader.ReadByte()
-			if err != nil {
-				if err == io.EOF {
-					break
-				}
-				fmt.Fprintln(os.Stderr, "Error reading stdout:", err)
-				break
-			}
-
-			if char == '\r' {
-				line := buffer.String()
-				coloredLine := ColorizeLine(line, cmdRules.Rules)
-				if len(coloredLine) > 0 {
-					fmt.Print(coloredLine + "\r")
-				} else {
-					fmt.Print(line + "\r")
-				}
-				buffer.Reset()
-			} else {
-				buffer.WriteByte(char)
-			}
-
-			if char == '\n' {
-				line := strings.TrimRightFunc(buffer.String(), unicode.IsSpace)
-				coloredLine := ColorizeLine(line, cmdRules.Rules)
-				if len(coloredLine) > 0 {
-					fmt.Print(coloredLine + "\n")
-				} else {
-					fmt.Print(line + "\n")
-				}
-				buffer.Reset()
-			}
+		if !cmdRules.Stderr {
+			ReadIo(runCmd, cmdRules, false)
+		} else {
+			ReadIo(runCmd, cmdRules, true)
 		}
 
 		if err := runCmd.Wait(); err != nil {
