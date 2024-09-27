@@ -67,7 +67,9 @@ jobs:
         id: changelog
         run: |
           git tag -d $(git tag | tail -1)
-          conventional-changelog -u -p conventionalcommits | tail +3 > body.md
+          changelog=$(conventional-changelog -u -p conventionalcommits)
+          echo "$changelog"
+          echo "$changelog" | tail +3 > body.md
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
