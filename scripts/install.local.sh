@@ -1,9 +1,21 @@
 #!/bin/sh
 
-DESTDIR="${PREFIX}/etc/colorize"
+PREFIX="${PREFIX:-/usr/local}"
+DEST_DIR="${PREFIX}/etc/colorize"
+BIN_DIR="${BIN_DIR:-$PREFIX/bin}"
 
-mkdir -p "$DESTDIR/rules"
+maybe_sudo() {
+    if [ -w "$PREFIX" ]; then
+        "$@"
+    else
+        printf '%s\n\n' "sudo is require to run: $*"
+        sudo "$@"
+    fi
+}
 
-install -m 644 rules/* "$DESTDIR/rules"
-install -m 644 "config.toml" "$DESTDIR/config.toml"
-install -m 644 "scripts/alias.zsh" "$DESTDIR"
+maybe_sudo mkdir -p "$DEST_DIR/rules"
+
+maybe_sudo install -m 755 ./colorize "$BIN_DIR"
+maybe_sudo install -m 644 "config.toml" "$DEST_DIR/config.toml"
+maybe_sudo install -m 644 "scripts/alias.zsh" "$DEST_DIR"
+maybe_sudo install -m 644 rules/* "$DEST_DIR/rules"
