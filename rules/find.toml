@@ -1,0 +1,6 @@
+"$schema" = "../rule.schema.json"
+
+[[rules]]
+regexp = '(.*)'
+colors = ''
+type = "path"
