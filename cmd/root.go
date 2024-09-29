@@ -200,6 +200,10 @@ var rootCmd = &cobra.Command{
 		}
 
 		if !cmdRules.Stderr {
+			if !termcolor.SupportsBasic(os.Stdout) {
+				startRunWithoutColor(runCmd)
+				os.Exit(0)
+			}
 			runCmd.Stderr = os.Stderr
 			ioPipe, err := runCmd.StdoutPipe()
 			if err != nil {
@@ -216,6 +220,10 @@ var rootCmd = &cobra.Command{
 			}
 			ReadIo(runCmd, cmdRules, os.Stdout, ioPipe)
 		} else {
+			if !termcolor.SupportsBasic(os.Stderr) {
+				startRunWithoutColor(runCmd)
+				os.Exit(0)
+			}
 			runCmd.Stdout = os.Stdout
 			ioPipe, err := runCmd.StderrPipe()
 			if err != nil {
