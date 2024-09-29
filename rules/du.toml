@@ -1,8 +1,9 @@
 "$schema" = "../rule.schema.json"
 
 [[rules]] # Path
-regexp = '\s+([\.\/]+[\w\s\-\_\.]+)(\/.*)?$'
+regexp = '\s+((?:[\.\/]+[\w\s\-\_\.]+)(?:\/.*)?)$'
 colors = 'bold blue,blue'
+type = 'path'
 
 [[rules]] # Size 'K'
 regexp = '^(\d{1,3})\s'
