@@ -28,6 +28,7 @@ cmds=(
     go
     id
     strace
+    find
 )
 
 for cmd in $cmds ; do
