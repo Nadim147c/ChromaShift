@@ -26,6 +26,7 @@ type (
 		Colors    string         `toml:"colors"`
 		Overwrite bool           `toml:"overwrite"`
 		Priority  int            `toml:"priority"`
+		Type      string         `toml:"type"`
 	}
 )
 

@@ -29,6 +29,11 @@
           "priority": {
             "type": "integer",
             "default": 0
+          },
+          "type": {
+            "type": "string",
+            "default": "",
+            "enum": ["path"]
           }
         },
         "required": ["regexp", "colors"],
