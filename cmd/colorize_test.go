@@ -17,12 +17,12 @@ func TestExtentColorMapFromMatches(t *testing.T) {
 		colors := []string{"red", "blue"}
 
 		expectedColorMap := map[int]string{
-			2: "red",
-			4: "reset",
-			5: "blue",
-			7: "reset",
-			8: "red",
-			9: "reset",
+			2: cmd.Ansi.Red,
+			4: cmd.Ansi.Reset,
+			5: cmd.Ansi.Blue,
+			7: cmd.Ansi.Reset,
+			8: cmd.Ansi.Red,
+			9: cmd.Ansi.Reset,
 		}
 
 		cmd.ExtentColorMapFromMatches(colorMap, matches, colors)
