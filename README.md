@@ -8,7 +8,7 @@ Colorize is a tool that enhances the output of your favorite commands by adding 
 To install Colorize, run the following script:
 
 ```sh
-curl -s https://raw.githubusercontent.com/Nadim147c/colorize/main/scripts/install.local.sh | sh
+curl -s https://raw.githubusercontent.com/Nadim147c/colorize/main/scripts/install.gh-release.sh | sh
 ```
 
 ## Usage
