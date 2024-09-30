@@ -1,6 +1,7 @@
 # Colorize
 
-Colorize is a tool that enhances the output of your favorite commands by adding color through ANSI sequences.
+A output colorizer for your favorite commands.
+
 ![](./assets/free.png)
 
 ## Installation
