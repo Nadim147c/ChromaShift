@@ -30,7 +30,7 @@ type (
 	}
 )
 
-func LoadRules(ruleFile string, stat StatFunc, decodeFile DecodeFileFunc) (CommandRules, error) {
+func LoadRules(ruleFile string) (CommandRules, error) {
 	var cmdRules CommandRules
 
 	if len(RulesDirectory) > 0 {
@@ -38,13 +38,8 @@ func LoadRules(ruleFile string, stat StatFunc, decodeFile DecodeFileFunc) (Comma
 		if Verbose {
 			fmt.Println("Using rules file:", ruleFilePath)
 		}
-		_, err := decodeFile(ruleFilePath, &cmdRules)
-		if err != nil {
-			if Verbose {
-				fmt.Fprintf(os.Stderr, "Can't load rules from path: %s", err)
-			}
-		}
-		return cmdRules, nil
+		_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
+		return cmdRules, err
 	}
 
 	homeDir, err := os.UserHomeDir()
@@ -69,12 +64,12 @@ func LoadRules(ruleFile string, stat StatFunc, decodeFile DecodeFileFunc) (Comma
 
 		ruleFilePath := path.Join(rulesDir, ruleFile)
 
-		if _, err := stat(ruleFilePath); err == nil {
+		if _, err := Stat(ruleFilePath); err == nil {
 			if Verbose {
 				fmt.Println("Using rules file:", ruleFilePath)
 			}
 
-			_, err := decodeFile(ruleFilePath, &cmdRules)
+			_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
 			if err == nil {
 				sort.Slice(cmdRules.Rules, func(i int, j int) bool {
 					if cmdRules.Rules[i].Overwrite != cmdRules.Rules[j].Overwrite {

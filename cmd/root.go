@@ -28,6 +28,11 @@ var (
 	UseColor       bool
 )
 
+var (
+	Stat           = os.Stat
+	DecodeTomlFile = toml.DecodeFile
+)
+
 func startRunWithoutColor(runCmd *exec.Cmd) {
 	runCmd.Stderr = os.Stderr
 	runCmd.Stdout = os.Stdout
@@ -152,7 +157,7 @@ var rootCmd = &cobra.Command{
 			startRunWithoutColor(runCmd)
 		}
 
-		cmdRules, err := LoadRules(ruleFileName, os.Stat, toml.DecodeFile)
+		cmdRules, err := LoadRules(ruleFileName)
 		if Verbose && err != nil {
 			fmt.Println("Failed to load rules for current command:", err)
 		}

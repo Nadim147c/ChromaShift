@@ -4,6 +4,7 @@ import (
 	"colorize/cmd"
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"testing"
@@ -41,17 +42,16 @@ func TestLoadRules(t *testing.T) {
 
 	t.Run("Rules file found and loaded from specified directory", func(t *testing.T) {
 		cmd.RulesDirectory = "/fake/rules/directory"
-		defer func() { cmd.RulesDirectory = "" }()
 		ruleFile := "test.rules"
 
-		mockStatForRulesWithSpecificDir := func(path string) (os.FileInfo, error) {
+		cmd.Stat = func(path string) (os.FileInfo, error) {
 			if path == "/fake/rules/directory/test.rules" {
 				return nil, nil
 			}
 			return nil, os.ErrNotExist
 		}
 
-		mockDecodeFileForRulesWithSpecificDir := func(file string, v interface{}) (toml.MetaData, error) {
+		cmd.DecodeTomlFile = func(file string, v interface{}) (toml.MetaData, error) {
 			if file == "/fake/rules/directory/test.rules" {
 				cmdRules := v.(*cmd.CommandRules)
 				cmdRules.SkipColor = cmd.SkipColor{
@@ -67,7 +67,13 @@ func TestLoadRules(t *testing.T) {
 			return toml.MetaData{}, fmt.Errorf("error decoding file")
 		}
 
-		result, err := cmd.LoadRules(ruleFile, mockStatForRulesWithSpecificDir, mockDecodeFileForRulesWithSpecificDir)
+		defer func() {
+			cmd.Stat = os.Stat
+			cmd.DecodeTomlFile = toml.DecodeFile
+			cmd.RulesDirectory = ""
+		}()
+
+		result, err := cmd.LoadRules(ruleFile)
 		if err != nil {
 			t.Fatalf("Expected no error, but got: %v", err)
 		}
@@ -92,7 +98,13 @@ func TestLoadRules(t *testing.T) {
 
 	t.Run("Rules file found and loaded", func(t *testing.T) {
 		ruleFile := "test.rules"
-		result, err := cmd.LoadRules(ruleFile, mockStatForRules, mockDecodeFileForRules)
+		cmd.Stat = mockStatForRules
+		cmd.DecodeTomlFile = mockDecodeFileForRules
+		defer func() {
+			cmd.Stat = os.Stat
+			cmd.DecodeTomlFile = toml.DecodeFile
+		}()
+		result, err := cmd.LoadRules(ruleFile)
 		if err != nil {
 			t.Fatalf("Expected no error, but got: %v", err)
 		}
@@ -117,9 +129,39 @@ func TestLoadRules(t *testing.T) {
 
 	t.Run("No rules file found", func(t *testing.T) {
 		ruleFile := "nonexistent.rules"
-		_, err := cmd.LoadRules(ruleFile, mockStatForRules, mockDecodeFileForRules)
+		_, err := cmd.LoadRules(ruleFile)
 		if err == nil || err.Error() != "No rules found." {
 			t.Fatalf("Expected 'No rules found.' error, but got: %v", err)
+		}
+	})
+
+	t.Run("Compile all rules", func(t *testing.T) {
+		rulesDir := "../rules"
+
+		files, err := os.ReadDir(rulesDir)
+		if err != nil {
+			t.Fatalf("Failed to read directory: %v", err)
+		}
+
+		for _, file := range files {
+			fileName := file.Name()
+
+			t.Run(fmt.Sprintf("Compiling rules of %s", fileName), func(t *testing.T) {
+				defaultRuleDir := cmd.RulesDirectory
+				defaultVerbose := cmd.Verbose
+				cmd.RulesDirectory = rulesDir
+				cmd.Verbose = false
+				defer func() {
+					cmd.RulesDirectory = defaultRuleDir
+					cmd.Verbose = defaultVerbose
+				}()
+
+				ruleFile := filepath.Base(fileName)
+				_, err := cmd.LoadRules(ruleFile)
+				if err != nil {
+					t.Fatalf("Expected no error, but got: %v", err)
+				}
+			})
 		}
 	})
 }
