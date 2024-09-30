@@ -26,6 +26,13 @@ func TestGetColor(t *testing.T) {
 		{"magenta", cmd.Ansi.Magenta},
 		{"cyan", cmd.Ansi.Cyan},
 		{"white", cmd.Ansi.White},
+		{"gray", cmd.Ansi.Gray},
+		{"bgblack", cmd.Ansi.BgBlack},
+		{"bgred", cmd.Ansi.BgRed},
+		{"bggreen", cmd.Ansi.BgGreen},
+		{"bgyellow", cmd.Ansi.BgYellow},
+		{"bgblue", cmd.Ansi.BgBlue},
+		{"bgmagenta", cmd.Ansi.BgMagenta},
 	}
 
 	t.Run("Valid colors", func(t *testing.T) {
