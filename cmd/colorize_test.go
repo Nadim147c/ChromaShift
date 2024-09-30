@@ -43,13 +43,16 @@ func TestExtentColorMapWithLsColors(t *testing.T) {
 		colorMap := make(map[int]string)
 
 		matches := [][]int{
-			{0, 54, 6, 22},
+			{0, 54, 6, 22, 29, 52},
 		}
 
 		expectedColorMap := map[int]string{
 			6:  cmd.Ansi.Blue,
 			15: cmd.Ansi.Cyan,
 			22: cmd.Ansi.Reset,
+			29: cmd.Ansi.Blue,
+			45: cmd.Ansi.Cyan,
+			52: cmd.Ansi.Reset,
 		}
 
 		cmd.ExtentColorMapWithLsColors(colorMap, matches, path)
