@@ -91,5 +91,5 @@ regexp = '^([/\w\.]+\/)?strace\b'
 file = 'strace.toml'
 
 [find]
-regexp = '^([/\w\.]+\/)?sfind\b'
+regexp = '^([/\w\.]+\/)?find\b'
 file = 'find.toml'
