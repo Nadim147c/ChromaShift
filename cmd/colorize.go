@@ -45,7 +45,7 @@ func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, curren
 
 			colorMap[start] = Ansi.Blue
 
-			cfgStyle := GetLsColor(currentLine[basePathIndex:])
+			cfgStyle := GetLsColor(currentLine[basePathIndex:end])
 			colorMap[basePathIndex] = cfgStyle
 
 			if len(colorMap[end]) > 0 {

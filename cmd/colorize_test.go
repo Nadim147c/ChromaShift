@@ -2,6 +2,7 @@ package cmd_test
 
 import (
 	"colorize/cmd"
+	"os"
 	"reflect"
 	"regexp"
 	"testing"
@@ -29,6 +30,33 @@ func TestExtentColorMapFromMatches(t *testing.T) {
 
 		if !reflect.DeepEqual(colorMap, expectedColorMap) {
 			t.Errorf("Expected color map %v, but got %v", expectedColorMap, colorMap)
+		}
+	})
+}
+
+func TestExtentColorMapWithLsColors(t *testing.T) {
+	envLsColors := os.Getenv("LS_COLORS")
+	os.Setenv("LS_COLORS", "")
+	defer func() { os.Setenv("LS_COLORS", envLsColors) }()
+	t.Run("Basic color map extension with matches using for path type", func(t *testing.T) {
+		path := "from '/path/to/main.go' to '/another/path/to/main.go'"
+
+		colorMap := make(map[int]string)
+
+		matches := [][]int{
+			{0, 54, 6, 22},
+		}
+
+		expectedColorMap := map[int]string{
+			6:  cmd.Ansi.Blue,
+			15: cmd.Ansi.Cyan,
+			22: cmd.Ansi.Reset,
+		}
+
+		cmd.ExtentColorMapWithLsColors(colorMap, matches, path)
+
+		if !reflect.DeepEqual(colorMap, expectedColorMap) {
+			t.Errorf("Expected color map %+v, but got %+v", expectedColorMap, colorMap)
 		}
 	})
 }
