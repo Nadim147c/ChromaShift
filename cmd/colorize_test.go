@@ -12,18 +12,17 @@ func TestExtentColorMapFromMatches(t *testing.T) {
 	t.Run("Basic color map extension with matches", func(t *testing.T) {
 		colorMap := make(map[int]string)
 		matches := [][]int{
-			{0, 1, 2, 4, 5, 7},
-			{1, 3, 8, 9},
+			{0, 1, 2, 4, 10, 13},
+			{1, 3, 7, 10},
 		}
 		colors := []string{"red", "blue"}
 
 		expectedColorMap := map[int]string{
-			2: cmd.Ansi.Red,
-			4: cmd.Ansi.Reset,
-			5: cmd.Ansi.Blue,
-			7: cmd.Ansi.Reset,
-			8: cmd.Ansi.Red,
-			9: cmd.Ansi.Reset,
+			2:  cmd.Ansi.Red,                   // 1st match 1st group
+			4:  cmd.Ansi.Reset,                 // end of 1st match 1st group
+			7:  cmd.Ansi.Red,                   // 2n match
+			10: cmd.Ansi.Reset + cmd.Ansi.Blue, // end of 2nd match and start of 1st match's 2 group
+			13: cmd.Ansi.Reset,
 		}
 
 		cmd.ExtentColorMapFromMatches(colorMap, matches, colors)
