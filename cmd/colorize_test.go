@@ -64,7 +64,9 @@ func TestExtentColorMapWithLsColors(t *testing.T) {
 }
 
 func TestColorizeLine(t *testing.T) {
-	// Subtest 1: Basic colorization
+	verbose := cmd.Verbose
+	cmd.Verbose = true
+	defer func() { cmd.Verbose = verbose }()
 	t.Run("Basic colorization with rules", func(t *testing.T) {
 		line := "hello world"
 		rules := []cmd.Rule{
@@ -87,7 +89,6 @@ func TestColorizeLine(t *testing.T) {
 		}
 	})
 
-	// Subtest 2: Overwrite rule
 	t.Run("Overwrite rule", func(t *testing.T) {
 		line := "hello world"
 		rules := []cmd.Rule{
@@ -103,6 +104,24 @@ func TestColorizeLine(t *testing.T) {
 		}
 
 		expectedOutput := "\033[31mhello\033[0m world\033[0m"
+
+		coloredLine := cmd.ColorizeLine(line, rules)
+
+		if coloredLine != expectedOutput {
+			t.Errorf("Expected %q, but got %q", expectedOutput, coloredLine)
+		}
+	})
+
+	t.Run("Path type", func(t *testing.T) {
+		line := "/path/to/main.go"
+		rules := []cmd.Rule{
+			{
+				Regexp: regexp.MustCompile("(.*)"),
+				Type:   "path",
+			},
+		}
+
+		expectedOutput := "\033[34m/path/to/\033[36mmain.go\033[0m"
 
 		coloredLine := cmd.ColorizeLine(line, rules)
 
