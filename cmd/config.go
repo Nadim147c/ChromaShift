@@ -11,20 +11,15 @@ type Config struct {
 	File   string `toml:"file"`
 }
 
-func LoadConfig(stat StatFunc, decodeFile DecodeFileFunc) (map[string]Config, error) {
+func LoadConfig() (map[string]Config, error) {
 	var config map[string]Config
 
 	if len(ConfigFile) > 0 {
 		if Verbose {
 			fmt.Println("Using config file:", ConfigFile)
 		}
-		_, err := decodeFile(ConfigFile, &config)
-		if err != nil {
-			if Verbose {
-				fmt.Fprintf(os.Stderr, "Can't load config from path: %s", err)
-			}
-		}
-		return config, nil
+		_, err := DecodeTomlFile(ConfigFile, &config)
+		return config, err
 	}
 
 	homeDir, err := os.UserHomeDir()
@@ -47,14 +42,14 @@ func LoadConfig(stat StatFunc, decodeFile DecodeFileFunc) (map[string]Config, er
 			continue
 		}
 
-		if _, err := stat(path); err == nil {
+		if _, err := Stat(path); err == nil {
 			ConfigFile = path
 
 			if Verbose {
 				fmt.Println("Using config file:", ConfigFile)
 			}
 
-			_, err = decodeFile(ConfigFile, &config)
+			_, err = DecodeTomlFile(ConfigFile, &config)
 			if err == nil {
 				return config, nil
 			}

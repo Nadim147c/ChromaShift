@@ -130,7 +130,7 @@ var rootCmd = &cobra.Command{
 			startRunWithoutColor(runCmd)
 		}
 
-		config, err := LoadConfig(os.Stat, toml.DecodeFile)
+		config, err := LoadConfig()
 
 		if err != nil && Verbose {
 			fmt.Fprintln(os.Stderr, "Failed to load config:", err)
