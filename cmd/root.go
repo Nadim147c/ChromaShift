@@ -204,28 +204,8 @@ var rootCmd = &cobra.Command{
 			fmt.Printf("%d rules found.\n", len(cmdRules.Rules))
 		}
 
-		if !cmdRules.Stderr {
-			if !termcolor.SupportsBasic(os.Stdout) {
-				startRunWithoutColor(runCmd)
-				os.Exit(0)
-			}
-			runCmd.Stderr = os.Stderr
-			ioPipe, err := runCmd.StdoutPipe()
-			if err != nil {
-				if Verbose {
-					fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
-				}
-				os.Exit(1)
-			}
-			if err := runCmd.Start(); err != nil {
-				if Verbose {
-					fmt.Fprintln(os.Stderr, "Error starting command:", err)
-				}
-				os.Exit(1)
-			}
-			ReadIo(runCmd, cmdRules, os.Stdout, ioPipe)
-		} else {
-			if !termcolor.SupportsBasic(os.Stderr) {
+		if cmdRules.Stderr {
+			if Color != "always" && !termcolor.SupportsBasic(os.Stderr) {
 				startRunWithoutColor(runCmd)
 				os.Exit(0)
 			}
@@ -245,6 +225,26 @@ var rootCmd = &cobra.Command{
 			}
 
 			ReadIo(runCmd, cmdRules, os.Stderr, ioPipe)
+		} else {
+			if Color != "always" && !termcolor.SupportsBasic(os.Stdout) {
+				startRunWithoutColor(runCmd)
+				os.Exit(0)
+			}
+			runCmd.Stderr = os.Stderr
+			ioPipe, err := runCmd.StdoutPipe()
+			if err != nil {
+				if Verbose {
+					fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
+				}
+				os.Exit(1)
+			}
+			if err := runCmd.Start(); err != nil {
+				if Verbose {
+					fmt.Fprintln(os.Stderr, "Error starting command:", err)
+				}
+				os.Exit(1)
+			}
+			ReadIo(runCmd, cmdRules, os.Stdout, ioPipe)
 		}
 
 		if err := runCmd.Wait(); err != nil {
