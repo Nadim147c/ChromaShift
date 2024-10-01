@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"syscall"
@@ -136,17 +137,20 @@ var rootCmd = &cobra.Command{
 			fmt.Fprintln(os.Stderr, "Failed to load config:", err)
 		}
 
-		var ruleFileName string
-		for name, values := range config {
-			if cmdName == name {
-				ruleFileName = values.File
-				break
-			}
+		cmdBaseName := filepath.Base(cmdName)
+		ruleFileName := config[cmdBaseName].File
+		if len(ruleFileName) <= 0 {
+			for name, values := range config {
+				if cmdName == name || cmdBaseName == name {
+					ruleFileName = values.File
+					break
+				}
 
-			commandStr := strings.Join(args, " ")
-			if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
-				ruleFileName = values.File
-				break
+				commandStr := strings.Join(args, " ")
+				if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
+					ruleFileName = values.File
+					break
+				}
 			}
 		}
 
