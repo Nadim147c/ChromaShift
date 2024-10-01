@@ -15,12 +15,13 @@
     "rules": {
       "type": "array",
       "items": {
+        "oneOf": [{ "required": ["colors"] }, { "required": ["type"] }],
         "properties": {
           "regexp": {
             "type": "string"
           },
           "colors": {
-            "type": "string"
+            "pattern": "^( ?((reset|bold|underline|blink|reverse|conceal)|((bg)?(black|red|green|yellow|blue|magenta|cyan|white|gray))) ?,?)+$"
           },
           "overwrite": {
             "type": "boolean",
@@ -36,7 +37,6 @@
             "enum": ["path"]
           }
         },
-        "required": ["regexp", "colors"],
         "additionalProperties": false
       }
     },

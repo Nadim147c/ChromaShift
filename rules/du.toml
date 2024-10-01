@@ -2,7 +2,6 @@
 
 [[rules]] # Path
 regexp = '\s+((?:[\.\/]+[\w\s\-\_\.]+)(?:\/.*)?)$'
-colors = 'bold blue,blue'
 type = 'path'
 
 [[rules]] # Size 'K'
