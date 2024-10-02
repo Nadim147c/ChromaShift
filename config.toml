@@ -93,3 +93,7 @@ file = 'strace.toml'
 [find]
 regexp = '^([/\w\.]+\/)?find\b'
 file = 'find.toml'
+
+[curl]
+regexp = '^([/\w\.]+\/)?curl\b'
+file = 'curl.toml'

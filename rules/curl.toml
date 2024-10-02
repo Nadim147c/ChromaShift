@@ -1,0 +1,96 @@
+"$schema" = "../rule.schema.json"
+
+stderr = true
+
+[[rules]] # Loading Heading top
+regexp = '^(\s*%\s*Total\s*%\s*Received\s*%\s*Xferd\s*Average\s*Speed\s*Time\s*Time\s*Time\s*Current)'
+colors = 'bold blue'
+
+[[rules]] # Loading Heading bottom
+regexp = '^(\s*Dload\s*Upload\s*Total\s*Spent\s*Left\s*Speed)'
+colors = 'bold blue underline'
+
+[[rules]] #    %        Total               %        Received               %       Xferd                       Average dl                      Speed ul                    time total              time spent              time left                   current speed
+regexp = '^\s*(\d+\s*\d*[,\.]?\d+[TGMkb]?)\s*(\d+\s*\d*[,\.]?\d+[TGMkb]?)\s*(\d+\s*\d*[,\.]?\d+[TGMkb]?)\s*(\d*[,\.]?\d+[TGMkb]?)\s*(\d*[,\.]?\d+[TGMkb]?)\s*([\d-]+:[\d-]+:[\d-]+)\s*([\d-]+:[\d-]+:[\d-]+)\s*([\d-]+:[\d-]+:[\d-]+)\s*(\d*[,\.]?\d+[TGMkb]?)'
+colors = 'cyan,green,magenta,yellow,blue,green,green,green,yellow'
+
+[[rules]]
+priority = 100
+regexp = '(--:--:--)'
+colors = 'gray'
+
+[[rules]] # IP
+regexp = '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+colors = 'bold magenta'
+
+[[rules]] # IPv6
+regexp = '((?:(?:[0-9a-fA-F]{1,4})?\:\:?[0-9a-fA-F]{1,4})+)'
+colors = 'bold magenta'
+
+[[rules]] # Outgoing Headers
+regexp = '^(>) ([\w\-]+): (.*)'
+colors = 'green,blue,cyan'
+
+[[rules]] # Incoming Headers
+regexp = '^(<) ([\w\-]+): (.*)'
+colors = 'yellow,blue,cyan'
+
+[[rules]] # Incoming 200
+regexp = '(HTTP/[\d\.]+) 2\d{2} [\w\s]+'
+colors = 'bold black bgblue,bold black bgblue'
+
+[[rules]] # Incoming 300
+regexp = '(HTTP/[\d\.]+) 3\d{2}[\w\s]*'
+colors = 'green bgblue,bold black bgblue'
+
+[[rules]] # Incoming 400
+regexp = '(HTTP/[\d\.]+) 4\d{2} [\w\s]+'
+colors = 'red bgblue,bold black bgblue'
+
+[[rules]] # Incoming 500
+regexp = '(HTTP/[\d\.]+) 5\d{2} [\w\s]+'
+colors = 'red bgblue,bold black bgblue'
+
+[[rules]] # Server certificate
+regexp = '\* (Server certificate):'
+colors = 'magenta'
+
+[[rules]] # Certificate Headers
+regexp = '\*  ([a-z][\w\s\d]+): (.*)'
+colors = 'blue,cyan'
+
+[[rules]] # SSL certificate problem
+regexp = 'SSL certificate problem:( .*)'
+colors = 'red'
+
+[[rules]] # SSL certificate verify result: self signed certificate (18), continuing anyway.
+regexp = 'SSL certificate verify result:(.*)'
+colors = 'yellow'
+
+[[rules]] # SSL certificate verify ok.
+regexp = 'SSL certificate verify (ok)'
+colors = 'green'
+
+[[rules]] # Verbose Logging
+regexp = '^([{}\*])\s'
+colors = 'magenta'
+
+[[rules]] # Outgoing
+regexp = '(^>\s)'
+colors = 'green'
+
+[[rules]] # Incoming
+regexp = '(^<\s)'
+colors = 'yellow'
+
+[[rules]] # SSL connection
+regexp = ' (SSL connection) using (.*) / (.*)'
+colors = 'magenta,magenta,magenta,magenta'
+
+[[rules]] # Connected to...
+regexp = '(Connected) to (.*) \(([\d\.]+)\) port (\d+)'
+colors = 'magenta,magenta,magenta,magenta,magenta'
+
+[[rules]] # Outgoing METHOD
+regexp = '(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH) (/.*) HTTP/[\d\.]+'
+colors = 'bold black bgblue,bold black bgblue,yellow bgblue'
