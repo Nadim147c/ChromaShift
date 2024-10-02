@@ -29,6 +29,7 @@ cmds=(
     id
     strace
     find
+    curl
 )
 
 for cmd in $cmds ; do
