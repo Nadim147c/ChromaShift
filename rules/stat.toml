@@ -1,12 +1,12 @@
 "$schema" = "../rule.schema.json"
 
 [[rules]] # Field
-regexp = '(\S+):\s'
-colors = 'cyan'
+regexp = '((?:IO )?\S+):\s'
+colors = 'bold cyan'
 
 [[rules]] # Filename
 regexp = 'File: ‘?(\S+)’?'
-colors = 'bold magenta'
+type = "path"
 
 [[rules]] # File-Type
 regexp = 'IO\s*Block:\s*\d+\s+(.*)$'
@@ -14,8 +14,8 @@ colors = 'bold green'
 
 [[rules]] # Permission-Numbers
 regexp = '\((\d)(\d)(\d)(\d)\/'
-colors = 'bold white,green,yellow,red'
+colors = 'blue,red,yellow,green'
 
 [[rules]] # owner-rwx
-regexp = '(?:[-bcCdDlMnpPs?]((-|r)(-|w)(-|[xsStT]))(-|r)(-|w)(-|[xsStT])(-|r)(-|w)(-|[xsStT]))'
-colors = 'bold green,bold red,bold yellow'
+regexp = '([-bcCdDlMnpPs?]((-|r))(-|w)(-|[xsStT]))(-|r)(-|w)(-|[xsStT])(-|r)(-|w)(-|[xsStT])'
+colors = 'blue,green,red,yellow,green,red,yellow,green,red,yellow,green'
