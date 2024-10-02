@@ -6,8 +6,8 @@ regexp = '^([A-Z\s%]*([A-Z]{3})[A-Z\s%]*)$'
 colors = 'bold blue underline'
 
 [[rules]] # fullpath
-regexp = '(\s|^)(/[-\w\d\.]+/[-\w\d./]+)'
-colors = 'none,bold green'
+regexp = '(?:\s|^)(/[-\w\d\.]+/[-\w\d./]+)'
+type = "path"
 
 [[rules]] # Capd_Line
 regexp = '^([A-Z][-a-z0-9]+(\s+|$)){3,}$'
