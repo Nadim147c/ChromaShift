@@ -1,10 +1,7 @@
 package cmd
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -12,7 +9,6 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
-	"unicode"
 
 	"github.com/BurntSushi/toml"
 	"github.com/efekarakus/termcolor"
@@ -27,6 +23,7 @@ var (
 	RulesDirectory string
 	Verbose        bool
 	UseColor       bool
+	CmdRules       CommandRules
 )
 
 var (
@@ -40,53 +37,6 @@ func startRunWithoutColor(runCmd *exec.Cmd) {
 	runCmd.Run()
 	os.Exit(0)
 }
-
-var out = os.Stdout
-
-func ReadIo(runCmd *exec.Cmd, cmdRules CommandRules, out io.Writer, ioPipe io.ReadCloser) {
-	reader := bufio.NewReader(ioPipe)
-	var buffer bytes.Buffer
-
-	for {
-		char, err := reader.ReadByte()
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			fmt.Fprintln(os.Stderr, "Error reading stdout:", err)
-			break
-		}
-
-		if char == '\r' {
-			line := buffer.String()
-			coloredLine := ColorizeLine(line, cmdRules.Rules)
-			if len(coloredLine) > 0 {
-				fmt.Fprint(out, coloredLine+"\r")
-			} else {
-				fmt.Fprint(out, line+"\r")
-			}
-			buffer.Reset()
-		} else {
-			buffer.WriteByte(char)
-		}
-
-		if char == '\n' {
-			line := strings.TrimRightFunc(buffer.String(), unicode.IsSpace)
-			coloredLine := ColorizeLine(line, cmdRules.Rules)
-			if len(coloredLine) > 0 {
-				fmt.Fprint(out, coloredLine+"\n")
-			} else {
-				fmt.Fprint(out, line+"\n")
-			}
-			buffer.Reset()
-		}
-	}
-}
-
-type (
-	StatFunc       func(string) (os.FileInfo, error)
-	DecodeFileFunc func(string, interface{}) (toml.MetaData, error)
-)
 
 var rootCmd = &cobra.Command{
 	Use:     "colorize [OPTOINS] -- COMMAND [OPTIONS/ARGUMENTS]",
@@ -161,20 +111,20 @@ var rootCmd = &cobra.Command{
 			startRunWithoutColor(runCmd)
 		}
 
-		cmdRules, err := LoadRules(ruleFileName)
+		CmdRules, err = LoadRules(ruleFileName)
 		if Verbose && err != nil {
 			fmt.Println("Failed to load rules for current command:", err)
 		}
 
-		if len(cmdRules.Rules) <= 0 {
+		if len(CmdRules.Rules) <= 0 {
 			if Verbose {
 				fmt.Println("No config exists for current command")
 			}
 			startRunWithoutColor(runCmd)
 		}
 
-		if len(cmdRules.SkipColor.Argument) > 0 {
-			re, err := regexp.Compile(cmdRules.SkipColor.Argument)
+		if len(CmdRules.SkipColor.Argument) > 0 {
+			re, err := regexp.Compile(CmdRules.SkipColor.Argument)
 			if err != nil {
 				if Verbose {
 					fmt.Println("failed to compile ignore argument", err)
@@ -189,8 +139,8 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		if len(cmdRules.SkipColor.Arguments) > 0 {
-			re, err := regexp.Compile(cmdRules.SkipColor.Arguments)
+		if len(CmdRules.SkipColor.Arguments) > 0 {
+			re, err := regexp.Compile(CmdRules.SkipColor.Arguments)
 			if err != nil {
 				if Verbose {
 					fmt.Println("failed to compile ignore arguments", err)
@@ -205,50 +155,13 @@ var rootCmd = &cobra.Command{
 		}
 
 		if Verbose {
-			fmt.Printf("%d rules found.\n", len(cmdRules.Rules))
+			fmt.Printf("%d rules found.\n", len(CmdRules.Rules))
 		}
 
-		if cmdRules.Stderr {
-			if Color != "always" && !termcolor.SupportsBasic(os.Stderr) {
-				startRunWithoutColor(runCmd)
-				os.Exit(0)
-			}
-			runCmd.Stdout = os.Stdout
-			ioPipe, err := runCmd.StderrPipe()
-			if err != nil {
-				if Verbose {
-					fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
-				}
-				os.Exit(1)
-			}
-			if err := runCmd.Start(); err != nil {
-				if Verbose {
-					fmt.Fprintln(os.Stderr, "Error starting command:", err)
-				}
-				os.Exit(1)
-			}
-
-			ReadIo(runCmd, cmdRules, os.Stderr, ioPipe)
+		if CmdRules.Stderr {
+			ReadIoOnStderr(runCmd)
 		} else {
-			if Color != "always" && !termcolor.SupportsBasic(os.Stdout) {
-				startRunWithoutColor(runCmd)
-				os.Exit(0)
-			}
-			runCmd.Stderr = os.Stderr
-			ioPipe, err := runCmd.StdoutPipe()
-			if err != nil {
-				if Verbose {
-					fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
-				}
-				os.Exit(1)
-			}
-			if err := runCmd.Start(); err != nil {
-				if Verbose {
-					fmt.Fprintln(os.Stderr, "Error starting command:", err)
-				}
-				os.Exit(1)
-			}
-			ReadIo(runCmd, cmdRules, os.Stdout, ioPipe)
+			ReadIoOnStdout(runCmd)
 		}
 
 		if err := runCmd.Wait(); err != nil {

@@ -46,8 +46,13 @@ func TestReadIo(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defautlCmdRules := cmd.CmdRules
+			defer func() { cmd.CmdRules = defautlCmdRules }()
+			cmd.CmdRules = tt.rules
+
 			var ioPipe io.ReadCloser
 			var runCmd *exec.Cmd
+
 			if tt.stderr {
 				runCmd = exec.Command("sh", "-c", "echo '"+tt.output+"' >&2")
 				ioPipe, _ = runCmd.StderrPipe()
@@ -59,7 +64,7 @@ func TestReadIo(t *testing.T) {
 
 			outputBuf := new(bytes.Buffer)
 
-			cmd.ReadIo(runCmd, tt.rules, outputBuf, ioPipe)
+			cmd.ReadIo(runCmd, outputBuf, ioPipe)
 
 			runCmd.Wait()
 
