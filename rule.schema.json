@@ -4,6 +4,7 @@
   "properties": {
     "$schema": { "type": "string" },
     "stderr": { "type": "boolean" },
+    "pty": { "type": "boolean" },
     "skip-color": {
       "type": "object",
       "properties": {

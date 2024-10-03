@@ -14,6 +14,7 @@ type (
 		SkipColor SkipColor `toml:"skip-color"`
 		Rules     []Rule    `toml:"rules"`
 		Stderr    bool      `toml:"stderr"`
+		PTY       bool      `toml:"pty"`
 	}
 
 	SkipColor struct {

@@ -56,18 +56,6 @@ var rootCmd = &cobra.Command{
 
 		runCmd := exec.Command(cmdName, cmdArgs...)
 
-		runCmd.Stdin = os.Stdin
-
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
-		go func() {
-			sig := <-sigChan
-			if err := runCmd.Process.Signal(sig); err != nil {
-				fmt.Fprintln(os.Stderr, "Error sending signal to process:", err)
-			}
-		}()
-
 		switch Color {
 		case "never":
 			UseColor = false
@@ -158,10 +146,35 @@ var rootCmd = &cobra.Command{
 			fmt.Printf("%d rules found.\n", len(CmdRules.Rules))
 		}
 
-		if CmdRules.Stderr {
-			ReadIoOnStderr(runCmd)
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+		go func() {
+			sig := <-sigChan
+			if err := runCmd.Process.Signal(sig); err != nil {
+				fmt.Fprintln(os.Stderr, "Error sending signal to process:", err)
+			}
+		}()
+
+		if CmdRules.PTY {
+			var out *os.File
+			if CmdRules.Stderr {
+				out = os.Stderr
+			} else {
+				out = os.Stdout
+			}
+			outputReader := Output{Command: runCmd, Out: out}
+			outputReader.StartWithPTY(CmdRules.Stderr)
 		} else {
-			ReadIoOnStdout(runCmd)
+			runCmd.Stdin = os.Stdin
+			var out *os.File
+			if CmdRules.Stderr {
+				out = os.Stderr
+			} else {
+				out = os.Stdout
+			}
+			outputReader := Output{Command: runCmd, Out: out}
+			outputReader.Start(CmdRules.Stderr)
 		}
 
 		if err := runCmd.Wait(); err != nil {

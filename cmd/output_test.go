@@ -64,7 +64,7 @@ func TestReadIo(t *testing.T) {
 
 			outputBuf := new(bytes.Buffer)
 
-			cmd.ReadIo(runCmd, outputBuf, ioPipe)
+			cmd.DefaultReadIo(runCmd, outputBuf, ioPipe)
 
 			runCmd.Wait()
 
