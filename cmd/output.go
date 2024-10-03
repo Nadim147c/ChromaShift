@@ -92,11 +92,15 @@ func (o *Output) Start(stderr bool) {
 	for {
 		char, _, err := reader.ReadRune()
 		if err != nil {
-			if Verbose {
-				fmt.Println("Err reading rune")
+			if err == io.EOF {
+				break
 			}
-			continue
+			if Verbose {
+				fmt.Fprintln(os.Stderr, "Error reading:", err)
+			}
+			break
 		}
+
 		o.Write(char)
 	}
 }
@@ -137,6 +141,12 @@ func (o *Output) StartWithPTY(stderr bool) {
 	for {
 		n, err := ptmx.Read(buf)
 		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			if Verbose {
+				fmt.Fprintln(os.Stderr, "Error reading:", err)
+			}
 			break
 		}
 
