@@ -97,3 +97,7 @@ file = 'find.toml'
 [curl]
 regexp = '^([/\w\.]+\/)?curl\b'
 file = 'curl.toml'
+
+[wget]
+regexp = '^([/\w\.]+\/)?wget\b'
+file = 'wget.toml'

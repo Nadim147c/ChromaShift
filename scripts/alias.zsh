@@ -30,6 +30,7 @@ cmds=(
     strace
     find
     curl
+    wget
 )
 
 for cmd in $cmds ; do

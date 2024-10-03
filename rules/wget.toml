@@ -1,0 +1,32 @@
+"$schema" = "../rule.schema.json"
+
+stderr = true
+pty = true
+
+[[rules]] # IP
+regexp = '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+colors = 'bold magenta'
+
+[[rules]] # IPv6
+regexp = '((?:(?:[0-9a-fA-F]{1,4})?\:\:?[0-9a-fA-F]{1,4})+)'
+colors = 'bold magenta'
+
+[[rules]]
+regexp = '^(.*)\s+(\d+%)\[(=*)(>)?\s*\]\s+(\d*[,\.]?\d+[TGMK]?)\s+((?:--\.-|\d*[,\.]?\d+)[TGMK]?B?/s)(?:\s+(?:in|eta)\s+(.*))?'
+colors = 'magenta,green,green,yellow,cyan,yellow,green'
+
+[[rules]] # domains
+regexp = '\((.+\..+)\)'
+colors = 'blue'
+
+[[rules]] # Length
+regexp = 'Length: (\d+) \((.*)\) \[(.*)\]'
+colors = 'yellow,yellow,cyan'
+
+[[rules]] # saving to
+regexp = 'Saving to: ‘(.*)’'
+type = "path"
+
+[[rules]] # saved 
+regexp = '‘(.*)’ saved \[\d+/\d+\]'
+type = "path"
