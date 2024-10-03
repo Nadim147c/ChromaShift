@@ -106,7 +106,7 @@ func (o *Output) Start(stderr bool) {
 }
 
 func (o *Output) StartWithPTY(stderr bool) {
-	if Color != "always" && !termcolor.SupportsBasic(os.Stderr) {
+	if Color != "always" && (!termcolor.SupportsBasic(os.Stderr) || !termcolor.SupportsBasic(os.Stdout)) {
 		startRunWithoutColor(o.Command)
 		os.Exit(0)
 	}
