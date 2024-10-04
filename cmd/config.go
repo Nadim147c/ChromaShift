@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 )
 
+var StaticConfig string
+
 type Config struct {
 	Regexp string `toml:"regexp"`
 	File   string `toml:"file"`
@@ -14,53 +16,77 @@ type Config struct {
 func LoadConfig() (map[string]Config, error) {
 	var config map[string]Config
 
+	if Verbose {
+		fmt.Println("Loading embeded config")
+	}
+	_, err := DecodeToml(StaticConfig, &config)
+	if err != nil {
+		if Verbose {
+			fmt.Println("Err loading embeded config", err)
+		}
+	}
+
 	if len(ConfigFile) > 0 {
 		if Verbose {
-			fmt.Println("Using config file:", ConfigFile)
+			fmt.Println("Loading config file:", ConfigFile)
 		}
 		_, err := DecodeTomlFile(ConfigFile, &config)
-		return config, err
+		if err == nil {
+			return config, err
+		} else {
+			if Verbose {
+				fmt.Println("Failed Loading config file:", err)
+			}
+		}
+	}
+
+	configPaths := []string{}
+	envConfigPath := os.Getenv("COLORIZE_CONFIG")
+	if len(envConfigPath) > 0 {
+		configPaths = append(configPaths, envConfigPath)
 	}
 
 	homeDir, err := os.UserHomeDir()
-	if err != nil {
+	if err == nil {
+		configPaths = append(configPaths, filepath.Join(homeDir, ".config/colorize/config.toml"))
+	} else {
 		if Verbose {
 			fmt.Println("Error getting home directory:", err)
 		}
-		homeDir = ""
 	}
 
-	configPaths := []string{
-		os.Getenv("COLORIZE_CONFIG"),
-		filepath.Join(homeDir, ".config/colorize/config.toml"),
-		"/usr/local/etc/colorize/config.toml",
-		"/etc/colorize/config.toml",
-	}
-
-	for _, path := range configPaths {
-		if path == "" {
+	for _, configPath := range configPaths {
+		if _, err := Stat(configPath); err != nil {
+			if Verbose {
+				fmt.Println("Failed to loading config file:", configPath)
+				fmt.Println(err)
+			}
 			continue
 		}
 
-		if _, err := Stat(path); err == nil {
-			ConfigFile = path
-
-			if Verbose {
-				fmt.Println("Using config file:", ConfigFile)
-			}
-
-			_, err = DecodeTomlFile(ConfigFile, &config)
-			if err == nil {
-				return config, nil
-			}
-
-			if Verbose {
-				fmt.Fprintf(os.Stderr, "Can't load config from path: %s", err)
-			}
-
-			break
+		if Verbose {
+			fmt.Println("Loading config file:", configPath)
 		}
+
+		var additionalConfig map[string]Config
+		_, err = DecodeTomlFile(configPath, &additionalConfig)
+		if err == nil {
+			for key, value := range additionalConfig {
+				config[key] = value
+			}
+			continue
+		} else {
+			if Verbose {
+				fmt.Println("Can't load config from path:", configPath)
+				fmt.Println(err)
+			}
+		}
+
 	}
 
-	return nil, fmt.Errorf("No config found.")
+	if len(config) > 0 {
+		return config, nil
+	} else {
+		return config, fmt.Errorf("no config found")
+	}
 }
