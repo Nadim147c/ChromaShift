@@ -66,7 +66,7 @@ jobs:
       - name: Generate changelog and set as output
         id: changelog
         run: |
-          git tag -d $(git tag | tail -1)
+          git tag -d $(git describe --tags --abbrev=0)
           changelog=$(conventional-changelog -u -p conventionalcommits)
           echo "$changelog"
           echo "$changelog" | tail +3 > body.md
