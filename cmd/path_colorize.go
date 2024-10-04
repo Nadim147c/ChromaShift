@@ -39,9 +39,7 @@ func GetLsColor(line string) string {
 
 			g, err := glob.Compile(pattern)
 			if err != nil {
-				if Verbose {
-					fmt.Fprintln(os.Stderr, "Failed compiling glob", pattern)
-				}
+				Debug("Failed compiling glob", pattern)
 				continue
 			}
 			lsColorsMap = append(lsColorsMap, LsColor{Glob: g, Code: colorCode})

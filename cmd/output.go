@@ -65,26 +65,20 @@ func (o *Output) Start(stderr bool) {
 		o.Command.Stderr = os.Stderr
 		ioPipe, err = o.Command.StdoutPipe()
 		if err != nil {
-			if Verbose {
-				fmt.Fprintln(os.Stderr, "Error creating stdout pipe:", err)
-			}
+			Debug("Error creating stdout pipe:", err)
 			os.Exit(1)
 		}
 	} else {
 		o.Command.Stderr = os.Stdout
 		ioPipe, err = o.Command.StderrPipe()
 		if err != nil {
-			if Verbose {
-				fmt.Fprintln(os.Stderr, "Error creating stderr pipe:", err)
-			}
+			Debug("Error creating stderr pipe:", err)
 			os.Exit(1)
 		}
 	}
 
 	if err := o.Command.Start(); err != nil {
-		if Verbose {
-			fmt.Fprintln(os.Stderr, "Error starting command:", err)
-		}
+		Debug("Error starting command:", err)
 		os.Exit(1)
 	}
 
@@ -95,9 +89,7 @@ func (o *Output) Start(stderr bool) {
 			if err == io.EOF {
 				break
 			}
-			if Verbose {
-				fmt.Fprintln(os.Stderr, "Error reading:", err)
-			}
+			Debug("Error reading:", err)
 			break
 		}
 
@@ -113,9 +105,7 @@ func (o *Output) StartWithPTY(stderr bool) {
 
 	ptmx, err := pty.Start(o.Command)
 	if err != nil {
-		if Verbose {
-			fmt.Println("err starting command", err)
-		}
+		Debug("err starting command", err)
 	} else {
 		defer ptmx.Close()
 	}
@@ -144,9 +134,7 @@ func (o *Output) StartWithPTY(stderr bool) {
 			if err == io.EOF {
 				break
 			}
-			if Verbose {
-				fmt.Fprintln(os.Stderr, "Error reading:", err)
-			}
+			Debug("Error reading:", err)
 			break
 		}
 

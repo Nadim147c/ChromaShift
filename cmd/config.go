@@ -16,27 +16,20 @@ type Config struct {
 func LoadConfig() (map[string]Config, error) {
 	var config map[string]Config
 
-	if Verbose {
-		fmt.Println("Loading embeded config")
-	}
+	Debug("Loading embeded config")
+
 	_, err := DecodeToml(StaticConfig, &config)
 	if err != nil {
-		if Verbose {
-			fmt.Println("Err loading embeded config", err)
-		}
+		Debug("Err loading embeded config", err)
 	}
 
 	if len(ConfigFile) > 0 {
-		if Verbose {
-			fmt.Println("Loading config file:", ConfigFile)
-		}
+		Debug("Loading config file:", ConfigFile)
 		_, err := DecodeTomlFile(ConfigFile, &config)
 		if err == nil {
 			return config, err
 		} else {
-			if Verbose {
-				fmt.Println("Failed Loading config file:", err)
-			}
+			Debug("Failed Loading config file:", err)
 		}
 	}
 
@@ -50,23 +43,17 @@ func LoadConfig() (map[string]Config, error) {
 	if err == nil {
 		configPaths = append(configPaths, filepath.Join(homeDir, ".config/colorize/config.toml"))
 	} else {
-		if Verbose {
-			fmt.Println("Error getting home directory:", err)
-		}
+		Debug("Error getting home directory:", err)
 	}
 
 	for _, configPath := range configPaths {
 		if _, err := Stat(configPath); err != nil {
-			if Verbose {
-				fmt.Println("Failed to loading config file:", configPath)
-				fmt.Println(err)
-			}
+			Debug("Failed to loading config file:", configPath)
+			Debug(err)
 			continue
 		}
 
-		if Verbose {
-			fmt.Println("Loading config file:", configPath)
-		}
+		Debug("Loading config file:", configPath)
 
 		var additionalConfig map[string]Config
 		_, err = DecodeTomlFile(configPath, &additionalConfig)
@@ -76,10 +63,8 @@ func LoadConfig() (map[string]Config, error) {
 			}
 			continue
 		} else {
-			if Verbose {
-				fmt.Println("Can't load config from path:", configPath)
-				fmt.Println(err)
-			}
+			Debug("Can't load config from path:", configPath)
+			Debug(err)
 		}
 
 	}

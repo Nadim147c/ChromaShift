@@ -30,6 +30,12 @@ var (
 	DecodeTomlFile = toml.DecodeFile
 )
 
+func Debug(a ...any) {
+	if Verbose {
+		fmt.Fprintln(os.Stderr, a...)
+	}
+}
+
 func startRunWithoutColor(runCmd *exec.Cmd) {
 	runCmd.Stderr = os.Stderr
 	runCmd.Stdout = os.Stdout
@@ -69,9 +75,8 @@ var rootCmd = &cobra.Command{
 		}
 
 		config, err := LoadConfig()
-
-		if err != nil && Verbose {
-			fmt.Fprintln(os.Stderr, "Failed to load config:", err)
+		if err != nil {
+			Debug("Failed to load config:", err)
 		}
 
 		cmdBaseName := filepath.Base(cmdName)
@@ -92,30 +97,24 @@ var rootCmd = &cobra.Command{
 		}
 
 		if len(ruleFileName) <= 0 {
-			if Verbose {
-				fmt.Println("No config exists for current command")
-			}
+			Debug("No config exists for current command")
 			startRunWithoutColor(runCmd)
 		}
 
 		CmdRules, err = LoadRules(ruleFileName)
-		if Verbose && err != nil {
-			fmt.Println("Failed to load rules for current command:", err)
+		if err != nil {
+			Debug("Failed to load rules for current command:", err)
 		}
 
 		if len(CmdRules.Rules) <= 0 {
-			if Verbose {
-				fmt.Println("No config exists for current command")
-			}
+			Debug("No config exists for current command")
 			startRunWithoutColor(runCmd)
 		}
 
 		if len(CmdRules.SkipColor.Argument) > 0 {
 			re, err := regexp.Compile(CmdRules.SkipColor.Argument)
 			if err != nil {
-				if Verbose {
-					fmt.Println("failed to compile ignore argument", err)
-				}
+				Debug("failed to compile ignore argument", err)
 				startRunWithoutColor(runCmd)
 			}
 			for _, arg := range cmdArgs {
@@ -129,9 +128,7 @@ var rootCmd = &cobra.Command{
 		if len(CmdRules.SkipColor.Arguments) > 0 {
 			re, err := regexp.Compile(CmdRules.SkipColor.Arguments)
 			if err != nil {
-				if Verbose {
-					fmt.Println("failed to compile ignore arguments", err)
-				}
+				Debug("failed to compile ignore arguments", err)
 				startRunWithoutColor(runCmd)
 			}
 
@@ -141,9 +138,7 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		if Verbose {
-			fmt.Printf("%d rules found.\n", len(CmdRules.Rules))
-		}
+		Debug("%d rules found.\n", len(CmdRules.Rules))
 
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -177,9 +172,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		if err := runCmd.Wait(); err != nil {
-			if Verbose {
-				fmt.Fprintln(os.Stderr, "Error waiting for command:", err)
-			}
+			Debug("Error waiting for command:", err)
 			os.Exit(1)
 		}
 	},
@@ -197,5 +190,5 @@ func init() {
 	rootCmd.Flags().StringVar(&ConfigFile, "config", "", "specify path to the config file")
 	rootCmd.Flags().StringVar(&RulesDirectory, "rules-dir", "", "specify path to the rules directory")
 	rootCmd.Flags().StringVar(&Color, "color", "auto", "whether use color or not (never, auto, always)")
-	rootCmd.Flags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+	rootCmd.Flags().BoolVarP(&Verbose, "debug", "d", false, "verbose output")
 }

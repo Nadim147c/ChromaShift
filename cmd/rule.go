@@ -48,15 +48,14 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 
 	if len(RulesDirectory) > 0 {
 		ruleFilePath := filepath.Join(RulesDirectory, ruleFile)
-		if Verbose {
-			fmt.Println("Loading rules file:", ruleFilePath)
-		}
+		Debug("Loading rules file:", ruleFilePath)
+
 		_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
 		if err == nil {
 			SortRules(&cmdRules)
 			return cmdRules, err
 		} else {
-			fmt.Println("Failed decoding toml file:", err)
+			Debug("Failed decoding toml file:", err)
 		}
 
 	}
@@ -72,43 +71,26 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 	if err == nil {
 		rulesPaths = append(rulesPaths, filepath.Join(homeDir, ".config/colorize/rules"))
 	} else {
-		if Verbose {
-			fmt.Println("Error getting home directory:", err)
-		}
+		Debug("Error getting home directory:", err)
 	}
 
 	for _, rulesDir := range rulesPaths {
 		ruleFilePath := path.Join(rulesDir, ruleFile)
 
 		if _, err := Stat(ruleFilePath); err != nil {
-			if Verbose {
-				fmt.Println("Failed to load rules file:", ruleFilePath)
-			}
+			Debug("Failed to load rules file:", ruleFilePath)
 			continue
 		}
 
-		if Verbose {
-			fmt.Println("Loading rules file:", ruleFilePath)
-		}
+		Debug("Loading rules file:", ruleFilePath)
 
 		_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
 		if err != nil {
-			if Verbose {
-				fmt.Println("Error decoding toml", err)
-			}
+			Debug("Error decoding toml", err)
 			continue
 		}
 
 		SortRules(&cmdRules)
-
-		if Verbose {
-			fmt.Printf("stderr: %+v\n", cmdRules.Stderr)
-			fmt.Printf("SkipColor: %+v\n", cmdRules.SkipColor)
-
-			for _, v := range cmdRules.Rules {
-				fmt.Printf("rule: %+v\n", v)
-			}
-		}
 
 		return cmdRules, nil
 
@@ -116,9 +98,7 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 
 	ruleFilePath := filepath.Join("rules", ruleFile)
 
-	if Verbose {
-		fmt.Println("Loading rules from embed rules:", ruleFilePath)
-	}
+	Debug("Loading rules from embed rules:", ruleFilePath)
 
 	fileContentBytes, err := StaticRulesDirectory.ReadFile(ruleFilePath)
 	if err == nil {

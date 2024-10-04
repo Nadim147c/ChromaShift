@@ -1,9 +1,6 @@
 package cmd
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 func ExtentColorMapFromMatches(colorMap map[int]string, matches [][]int, colors []string) {
 	for _, match := range matches {
@@ -77,18 +74,14 @@ func ColorizeLine(line string, rules []Rule) string {
 		}
 
 		if rule.Overwrite {
-			if Verbose {
-				fmt.Println("Overwriting other rules for current line")
-			}
+			Debug("Overwriting other rules for current line")
 			colorMap = make(map[int]string)
 			ExtentColorMapFromMatches(colorMap, matches, colors)
 			break
 		}
 
 		if rule.Type == "path" {
-			if Verbose {
-				fmt.Println("Use LS_COLORS parser")
-			}
+			Debug("Use LS_COLORS parser")
 			ExtentColorMapWithLsColors(colorMap, matches, line)
 			continue
 		}
