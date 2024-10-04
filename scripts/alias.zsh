@@ -6,7 +6,7 @@ fi
 
 COLORIZE_EXECUTABLE=$(command -v colorize)
 
-alias csudo="sudo COLORIZE_CONFIG=\$COLORIZE_CONFIG COLORIZE_RULES=\$COLORIZE_RULES $COLORIZE_EXECUTABLE --"
+alias csudo="sudo $COLORIZE_EXECUTABLE --"
 
 cmds=(
     ping
