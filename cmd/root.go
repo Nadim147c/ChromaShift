@@ -24,10 +24,9 @@ var (
 	Verbose        bool
 	UseColor       bool
 	CmdRules       CommandRules
-)
 
-var (
 	Stat           = os.Stat
+	DecodeToml     = toml.Decode
 	DecodeTomlFile = toml.DecodeFile
 )
 

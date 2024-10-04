@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"path"
@@ -8,6 +9,8 @@ import (
 	"regexp"
 	"sort"
 )
+
+var StaticRulesDirectory embed.FS
 
 type (
 	CommandRules struct {
@@ -31,69 +34,97 @@ type (
 	}
 )
 
+func SortRules(cmdRules *CommandRules) {
+	sort.Slice(cmdRules.Rules, func(i int, j int) bool {
+		if cmdRules.Rules[i].Overwrite != cmdRules.Rules[j].Overwrite {
+			return cmdRules.Rules[i].Overwrite
+		}
+		return cmdRules.Rules[i].Priority < cmdRules.Rules[j].Priority
+	})
+}
+
 func LoadRules(ruleFile string) (CommandRules, error) {
 	var cmdRules CommandRules
 
 	if len(RulesDirectory) > 0 {
 		ruleFilePath := filepath.Join(RulesDirectory, ruleFile)
 		if Verbose {
-			fmt.Println("Using rules file:", ruleFilePath)
+			fmt.Println("Loading rules file:", ruleFilePath)
 		}
 		_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
-		return cmdRules, err
+		if err == nil {
+			SortRules(&cmdRules)
+			return cmdRules, err
+		} else {
+			fmt.Println("Failed decoding toml file:", err)
+		}
+
+	}
+
+	rulesPaths := []string{}
+	envRulesDir := os.Getenv("COLORIZE_RULES")
+
+	if len(envRulesDir) > 0 {
+		rulesPaths = append(rulesPaths, envRulesDir)
 	}
 
 	homeDir, err := os.UserHomeDir()
-	if err != nil {
+	if err == nil {
+		rulesPaths = append(rulesPaths, filepath.Join(homeDir, ".config/colorize/rules"))
+	} else {
 		if Verbose {
 			fmt.Println("Error getting home directory:", err)
 		}
-		homeDir = ""
-	}
-
-	rulesPaths := []string{
-		os.Getenv("COLORIZE_RULES"),
-		filepath.Join(homeDir, ".config/colorize/rules"),
-		"/usr/local/etc/colorize/rules",
-		"/etc/colorize/rules",
 	}
 
 	for _, rulesDir := range rulesPaths {
-		if rulesDir == "" {
+		ruleFilePath := path.Join(rulesDir, ruleFile)
+
+		if _, err := Stat(ruleFilePath); err != nil {
+			if Verbose {
+				fmt.Println("Failed to load rules file:", ruleFilePath)
+			}
 			continue
 		}
 
-		ruleFilePath := path.Join(rulesDir, ruleFile)
-
-		if _, err := Stat(ruleFilePath); err == nil {
-			if Verbose {
-				fmt.Println("Using rules file:", ruleFilePath)
-			}
-
-			_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
-			if err == nil {
-				sort.Slice(cmdRules.Rules, func(i int, j int) bool {
-					if cmdRules.Rules[i].Overwrite != cmdRules.Rules[j].Overwrite {
-						return cmdRules.Rules[i].Overwrite
-					}
-					return cmdRules.Rules[i].Priority < cmdRules.Rules[j].Priority
-				})
-
-				if Verbose {
-					fmt.Printf("stderr: %+v\n", cmdRules.Stderr)
-					fmt.Printf("SkipColor: %+v\n", cmdRules.SkipColor)
-
-					for _, v := range cmdRules.Rules {
-						fmt.Printf("rule: %+v\n", v)
-					}
-				}
-
-				return cmdRules, nil
-			} else {
-				fmt.Fprintln(os.Stderr, "Can't load rules from path:", err)
-			}
-
+		if Verbose {
+			fmt.Println("Loading rules file:", ruleFilePath)
 		}
+
+		_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
+		if err != nil {
+			if Verbose {
+				fmt.Println("Error decoding toml", err)
+			}
+			continue
+		}
+
+		SortRules(&cmdRules)
+
+		if Verbose {
+			fmt.Printf("stderr: %+v\n", cmdRules.Stderr)
+			fmt.Printf("SkipColor: %+v\n", cmdRules.SkipColor)
+
+			for _, v := range cmdRules.Rules {
+				fmt.Printf("rule: %+v\n", v)
+			}
+		}
+
+		return cmdRules, nil
+
+	}
+
+	ruleFilePath := filepath.Join("rules", ruleFile)
+
+	if Verbose {
+		fmt.Println("Loading rules from embed rules:", ruleFilePath)
+	}
+
+	fileContentBytes, err := StaticRulesDirectory.ReadFile(ruleFilePath)
+	if err == nil {
+		_, err := DecodeToml(string(fileContentBytes), &cmdRules)
+		SortRules(&cmdRules)
+		return cmdRules, err
 	}
 
 	return cmdRules, fmt.Errorf("No rules found.")
