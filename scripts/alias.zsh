@@ -24,6 +24,7 @@ cmds=(
     lsmod
     free
     docker
+    docker-compose
     yt-dlp
     go
     id

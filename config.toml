@@ -64,12 +64,12 @@ file = 'yt-dlp.toml'
 
 [docker]
 regexp = '^([/\w\.]+\/)?docker\b'
+[docker.sub.ps]
+regexp = '^([/\w\.]+\/)?docker(\scompose.*)?\sps\b'
+file = 'docker-ps.toml'
 [docker.sub.version]
 regexp = '^([/\w\.]+\/)?docker\sversion\b'
 file = 'docker-version.toml'
-[docker.sub.ps]
-regexp = '^([/\w\.]+\/)?docker\sps\b'
-file = 'docker-ps.toml'
 [docker.sub.info]
 regexp = '^([/\w\.]+\/)?docker\sinfo\b'
 file = 'docker-info.toml'
@@ -79,6 +79,12 @@ file = 'docker-network.toml'
 [docker.sub.image]
 regexp = '^([/\w\.]+\/)?docker\simage\b'
 file = 'docker-image.toml'
+
+[docker-compose]
+regexp = '^([/\w\.]+\/)?docker-compose\b'
+[docker-compose.sub.ps]
+regexp = '^([/\w\.]+\/)?docker-compose\sps\b'
+file = 'docker-ps.toml'
 
 [go.sub.test]
 regexp = '^([/\w\.]+\/)?go\stest\b'
