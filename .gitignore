@@ -1,4 +1,7 @@
-colorize
 .mise.toml
 .env
+colorize
 cover.out
+archive
+bin
+completions
