@@ -5,17 +5,11 @@ on:
     tags: "v*"
 
 jobs:
-  build:
-    name: Build the binaries for release
-    strategy:
-      matrix:
-        include:
-          - { runner: ubuntu, os: linux }
-          - { runner: macos, os: darwin }
-    runs-on: ${{ matrix.runner }}-latest
-
+  release:
+    name: Create the release
+    runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: Clone the git repository
         uses: actions/checkout@main
 
       - name: Get Version
@@ -34,74 +28,16 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: "**/*.sum"
 
-      - name: Build binary
-        shell: bash
-        run: |
-          VERSION=$(echo "${{ steps.version.outputs.tag }}")
-          GOOS=$(echo "${{ matrix.os }}")
-
-          GOOS=$GOOS GOARCH=amd64 go build -ldflags "-X colorize/cmd.Version=$VERSION" -o ./bin/colorize-$GOOS-amd64
-          GOOS=$GOOS GOARCH=arm64 go build -ldflags "-X colorize/cmd.Version=$VERSION" -o ./bin/colorize-$GOOS-arm64
-
-      - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: colorize-${{ matrix.os }}
-          path: ./bin/colorize*
-
-  release:
-    name: Create the release
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone the git repository
-        uses: actions/checkout@main
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-
-      - name: Install conventional-changelog-cli
-        run: npm install -g conventional-changelog-cli
-
-      - name: Generate changelog and set as output
-        id: changelog
-        run: |
-          git tag -d $(git describe --tags --abbrev=0)
-          changelog=$(conventional-changelog -u -p conventionalcommits)
-          echo "$changelog"
-          echo "$changelog" | tail +3 > body.md
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: ./bin/
-
-      - name: Generate Completions
-        run: |
-          mkdir completions
-          cp ./bin/colorize-linux/colorize-linux-amd64 colorize
-          chmod +x ./colorize
-          ./colorize completion zsh > completions/_colorize
-          ./colorize completion bash > completions/colorize.bash
-          ./colorize completion fish > completions/colorize.fish
-
       - name: Archive Builds
-        shell: bash
         run: |
-          mkdir archives
-          for BIN in ./bin/**/* ;do
-            mv -f "$BIN" bin/colorize
-            BIN_NAME=$(basename "$BIN")
-            tar -czvf "archives/$BIN_NAME.tar.gz" bin/colorize completions/* scripts/*
-          done
+          make VERSION=${{ steps.version.outputs.tag }} archive
 
       - name: Create release
         uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          artifacts: "archives/*"
+          artifacts: "archive/*"
           tag: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
-          bodyFile: "body.md"
           draft: true

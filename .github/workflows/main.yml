@@ -23,14 +23,8 @@ jobs:
       - name: Go Tidy
         run: go mod tidy && git diff --exit-code
 
-      - name: Go Mod
-        run: go mod download
-
-      - name: Go Mod Verify
-        run: go mod verify
-
-      - name: Go Install
-        run: go get -v
+      - name: Install Depndencies
+        run: make deps
 
       - name: Go Build
         run: go build -v
