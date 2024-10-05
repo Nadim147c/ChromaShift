@@ -43,9 +43,8 @@ func startRunWithoutColor(runCmd *exec.Cmd) {
 }
 
 var rootCmd = &cobra.Command{
-	Use:     "colorize [OPTOINS] -- COMMAND [OPTIONS/ARGUMENTS]",
+	Use:     "colorize",
 	Version: Version,
-	Example: "colorize -- stat go.mod",
 	Short:   "A colorizer for your favorite commands",
 	Run: func(cmd *cobra.Command, args []string) {
 		UseColor = true
@@ -164,6 +163,52 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	cobra.AddTemplateFunc("Heading", func(s interface{}) string {
+		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
+			return Ansi.Yellow + Ansi.Bold + fmt.Sprint(s) + Ansi.Reset
+		} else {
+			return fmt.Sprint(s)
+		}
+	})
+	cobra.AddTemplateFunc("CommandName", func(s interface{}) string {
+		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
+			return Ansi.Green + fmt.Sprint(s) + Ansi.Reset
+		} else {
+			return fmt.Sprint(s)
+		}
+	})
+	cobra.AddTemplateFunc("Option", func(s interface{}) string {
+		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
+			return Ansi.Red + fmt.Sprint(s) + Ansi.Reset
+		} else {
+			return fmt.Sprint(s)
+		}
+	})
+
+	rootCmd.SetHelpTemplate("{{ Heading .Short }}\n\n{{.UsageString}}")
+
+	usage := `{{ Heading "Usage" }}:
+  {{ CommandName "colorize" }} [{{ Option "COLORIZE_OPTIONS" }}] {{ Option "--" }} <{{ CommandName "COMMAND" }}> [{{ Option "OPTIONS" }}]
+
+{{ Heading "Examples" }}:
+  {{ CommandName "colorize" }} {{ Option "--" }} {{ CommandName "stat" }} {{ Option "go.mod" }}{{if .HasAvailableSubCommands}}{{$cmds := .Commands}}{{if eq (len .Groups) 0}}
+
+{{ Heading "Available Commands" }}:{{range $cmds}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{ CommandName (rpad .Name .NamePadding) }} {{.Short}}{{end}}{{end}}{{else}}{{range $group := .Groups}}
+
+{{.Title}}{{range $cmds}}{{if (and (eq .GroupID $group.ID) (or .IsAvailableCommand (eq .Name "help")))}}
+  {{ CommandName (rpad .Name .NamePadding) }} {{.Short}}{{end}}{{end}}{{end}}{{if not .AllChildCommandsHaveGroup}}
+
+{{ Heading "Additional Commands" }}:{{range $cmds}}{{if (and (eq .GroupID "") (or .IsAvailableCommand (eq .Name "help")))}}
+  {{ CommandName (rpad .Name .NamePadding) }} {{.Short}}{{end}}{{end}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+
+{{ Heading "Flags"}}:
+{{ Option (.LocalFlags.FlagUsages | trimTrailingWhitespaces) }}{{end}}{{if .HasAvailableSubCommands}}
+
+{{ Heading "Use" }}: "{{ CommandName .CommandPath }} <{{ CommandName "COMMAND" }}> {{ Option "--help" }}" for more information about a command.{{end}}
+`
+	rootCmd.SetUsageTemplate(usage)
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
