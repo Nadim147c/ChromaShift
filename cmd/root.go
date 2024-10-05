@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"path/filepath"
 	"regexp"
 	"strings"
 	"syscall"
@@ -79,26 +78,12 @@ var rootCmd = &cobra.Command{
 			Debug("Failed to load config:", err)
 		}
 
-		cmdBaseName := filepath.Base(cmdName)
-		ruleFileName := config[cmdBaseName].File
-		if len(ruleFileName) <= 0 {
-			for name, values := range config {
-				if cmdName == name || cmdBaseName == name {
-					ruleFileName = values.File
-					break
-				}
-
-				commandStr := strings.Join(args, " ")
-				if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
-					ruleFileName = values.File
-					break
-				}
-			}
-		}
-
-		if len(ruleFileName) <= 0 {
+		ruleFileName, err := GetRuleFileName(config, args)
+		if err != nil {
 			Debug("No config exists for current command")
 			startRunWithoutColor(runCmd)
+		} else {
+			Debug("Rules file name", ruleFileName)
 		}
 
 		CmdRules, err = LoadRules(ruleFileName)

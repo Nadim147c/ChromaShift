@@ -4,13 +4,88 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 var StaticConfig string
 
-type Config struct {
-	Regexp string `toml:"regexp"`
-	File   string `toml:"file"`
+type (
+	Config struct {
+		Regexp string         `toml:"regexp"`
+		File   string         `toml:"file"`
+		Sub    map[string]Sub `toml:"sub"`
+	}
+
+	Sub struct {
+		Regexp string `toml:"regexp"`
+		File   string `toml:"file"`
+	}
+)
+
+func GetRuleFileNameForSubcommand(subCommands map[string]Sub, args []string) (string, error) {
+	subCommandName := args[1]
+	if len(subCommands[subCommandName].File) > 0 {
+		return subCommands[subCommandName].File, nil
+	}
+	for _, values := range subCommands {
+		commandStr := strings.Join(args, " ")
+		if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
+			return values.File, nil
+		}
+	}
+	return "", fmt.Errorf("No matching subcommand")
+}
+
+func GetRuleFileName(config map[string]Config, args []string) (string, error) {
+	cmdName := args[0]
+	cmdBaseName := filepath.Base(cmdName)
+	commandConfig := config[cmdBaseName]
+	if len(commandConfig.Sub) > 0 {
+		Debug("Loading sub commands for", cmdBaseName)
+		ruleFileName, err := GetRuleFileNameForSubcommand(commandConfig.Sub, args)
+		if err == nil {
+			return ruleFileName, nil
+		} else {
+			Debug(err)
+		}
+
+	}
+
+	for name, values := range config {
+		if cmdName == name || cmdBaseName == name {
+			if len(commandConfig.Sub) > 0 {
+				Debug("Loading sub commands for", name)
+				ruleFileName, err := GetRuleFileNameForSubcommand(commandConfig.Sub, args)
+				if err == nil {
+					return ruleFileName, nil
+				} else {
+					Debug(err)
+				}
+
+			} else {
+				return values.File, nil
+			}
+		}
+
+		Debug("Regex", values.Regexp)
+		commandStr := strings.Join(args, " ")
+		if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
+			if len(commandConfig.Sub) > 0 {
+				Debug("Loading sub commands for", name)
+				ruleFileName, err := GetRuleFileNameForSubcommand(commandConfig.Sub, args)
+				if err == nil {
+					return ruleFileName, nil
+				} else {
+					Debug(err)
+				}
+
+			} else {
+				return values.File, nil
+			}
+		}
+	}
+	return "", fmt.Errorf("No matching command")
 }
 
 func LoadConfig() (map[string]Config, error) {

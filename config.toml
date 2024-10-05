@@ -62,27 +62,25 @@ file = 'free.toml'
 regexp = '^([/\w\.]+\/)?yt-dlp\b'
 file = 'yt-dlp.toml'
 
-[docker-version]
+[docker]
+regexp = '^([/\w\.]+\/)?docker\b'
+[docker.sub.version]
 regexp = '^([/\w\.]+\/)?docker\sversion\b'
 file = 'docker-version.toml'
-
-[docker-ps]
+[docker.sub.ps]
 regexp = '^([/\w\.]+\/)?docker\sps\b'
 file = 'docker-ps.toml'
-
-[docker-info]
+[docker.sub.info]
 regexp = '^([/\w\.]+\/)?docker\sinfo\b'
 file = 'docker-info.toml'
-
-[docker-network]
+[docker.sub.network]
 regexp = '^([/\w\.]+\/)?docker\snetwork\b'
 file = 'docker-network.toml'
-
-[docker-image]
+[docker.sub.image]
 regexp = '^([/\w\.]+\/)?docker\simage\b'
 file = 'docker-image.toml'
 
-[go-test]
+[go.sub.test]
 regexp = '^([/\w\.]+\/)?go\stest\b'
 file = 'go-test.toml'
 
