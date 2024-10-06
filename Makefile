@@ -17,6 +17,21 @@ deps:
 run:
 	go run main.go
 
+APP_BIN ?= $(shell which $(APP_NAME))
+APP_BIN ?= $(shell which $(BIN_DIR)/$(APP_NAME))
+
+ifdef APP_BIN
+	TEST_BIN = $(APP_BIN) --color=always -- go test
+else
+	TEST_BIN = go test
+endif
+
+test:
+	$(TEST_BIN) ./cmd/ -vet=off -failfast -v -parallel 4
+
+test-all:
+	go test ./cmd/ -ver=off -v -parallel 4
+
 build: deps
 	$(BUILD) -o $(BIN_DIR)/$(APP_NAME)
 

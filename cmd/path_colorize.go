@@ -11,23 +11,23 @@ import (
 )
 
 //go:embed LS_COLORS.txt
-var defaultLsColors string
+var DefaultLsColors string
 
 type LsColor struct {
 	Glob glob.Glob
 	Code string
 }
 
-var lsColorsMap []LsColor
+var LsColorsMap []LsColor
 
 func GetLsColor(line string) string {
 	lsColors := os.Getenv("LS_COLORS")
 
 	if len(lsColors) <= 0 {
-		lsColors = defaultLsColors
+		lsColors = DefaultLsColors
 	}
 
-	if len(lsColorsMap) == 0 {
+	if len(LsColorsMap) == 0 {
 		entries := strings.Split(lsColors, ":")
 		for _, entry := range entries {
 			parts := strings.Split(entry, "=")
@@ -42,15 +42,16 @@ func GetLsColor(line string) string {
 				Debug("Failed compiling glob", pattern)
 				continue
 			}
-			lsColorsMap = append(lsColorsMap, LsColor{Glob: g, Code: colorCode})
+			LsColorsMap = append(LsColorsMap, LsColor{Glob: g, Code: colorCode})
 		}
 	}
 
-	for _, lsColor := range lsColorsMap {
+	for _, lsColor := range LsColorsMap {
 		fileName := filepath.Base(line)
 		if lsColor.Glob.Match(fileName) {
 			return fmt.Sprintf("\033[%sm", lsColor.Code)
 		}
 	}
+
 	return Ansi.Blue
 }
