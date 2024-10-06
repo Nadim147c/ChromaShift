@@ -30,6 +30,9 @@ func GetRuleFileNameForSubcommand(subCommands map[string]Sub, args []string) (st
 	}
 	for _, values := range subCommands {
 		commandStr := strings.Join(args, " ")
+		if len(values.Regexp) == 0 {
+			continue
+		}
 		if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
 			return values.File, nil
 		}
@@ -70,6 +73,9 @@ func GetRuleFileName(config map[string]Config, args []string) (string, error) {
 
 		Debug("Regex", values.Regexp)
 		commandStr := strings.Join(args, " ")
+		if len(values.Regexp) == 0 {
+			continue
+		}
 		if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
 			if len(commandConfig.Sub) > 0 {
 				Debug("Loading sub commands for", name)
