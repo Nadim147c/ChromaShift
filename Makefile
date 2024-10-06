@@ -4,6 +4,7 @@ VERSION ?= $(shell git describe --tags --abbrev=0)
 BIN_DIR = ./bin
 SRC_DIR = ./cmd
 ARCHIVE_DIR = ./archive
+SCRIPTS_DIR = ./scripts
 COMPLETIONS_DIR = ./completions
 
 BUILD = go build -ldflags "-X colorize/cmd.Version=$(VERSION)"
@@ -43,7 +44,7 @@ completion: build
 	$(BIN_DIR)/$(APP_NAME) completion fish > $(COMPLETIONS_DIR)/colorize.fish
 
 clean:
-	rm -rf $(BIN_DIR) $(APP_NAME) $(ARCHIVE_DIR) $(COMPLETIONS_DIR)
+	rm -vrf $(BIN_DIR) $(APP_NAME) $(ARCHIVE_DIR) $(COMPLETIONS_DIR)
 
 compile:
 	mkdir -p $(BIN_DIR)
@@ -63,11 +64,6 @@ compile:
 	GOOS=openbsd GOARCH=arm $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-openbsd-arm 
 	GOOS=openbsd GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-openbsd-arm64 
 	
-	# NetBSD
-	GOOS=netbsd GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-netbsd-amd64 
-	GOOS=netbsd GOARCH=arm $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-netbsd-arm 
-	GOOS=netbsd GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-netbsd-arm64 
-	
 	# Darwin (macOS)
 	GOOS=darwin GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-darwin-amd64 
 	GOOS=darwin GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-darwin-arm64 
@@ -77,8 +73,8 @@ archive: completion compile
 	
 	find $(BIN_DIR) -iname "$(APP_NAME)-*-*" | while read binary; do \
 		basename=$$(basename $$binary); \
+		printf "\n\n%s\n\n" "Archiving : $$basename"; \
 		cp -vf $$binary $(BIN_DIR)/$(APP_NAME); \
-		tar -czvf $(ARCHIVE_DIR)/$${basename}-$(VERSION).tar.gz bin/colorize scripts/* completions/* ; \
+		tar -czvf "$(ARCHIVE_DIR)/$${basename}-$(VERSION).tar.gz" $(BIN_DIR)/$(APP_NAME) $(SCRIPTS_DIR)/* $(COMPLETIONS_DIR)/* ; \
 		echo "Created archive: $(ARCHIVE_DIR)/$${basename}-$(VERSION).tar.gz"; \
 	done
-
