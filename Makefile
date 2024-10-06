@@ -2,12 +2,13 @@ APP_NAME = colorize
 VERSION ?= $(shell git describe --tags --abbrev=0)
 
 BIN_DIR = ./bin
+SRC_DIR = ./cmd
 ARCHIVE_DIR = ./archive
 COMPLETIONS_DIR = ./completions
 
 BUILD = go build -ldflags "-X colorize/cmd.Version=$(VERSION)"
 
-all: run
+all: build
 
 deps:
 	go mod download
@@ -27,10 +28,10 @@ else
 endif
 
 test:
-	$(TEST_BIN) ./cmd/ -vet=off -failfast -v -parallel 4
+	$(TEST_BIN) $(SRC_DIR) -vet=off -failfast -v -parallel 4
 
 test-all:
-	go test ./cmd/ -ver=off -v -parallel 4
+	go test $(SRC_DIR) -vet=off -v -parallel 4
 
 build: deps
 	$(BUILD) -o $(BIN_DIR)/$(APP_NAME)

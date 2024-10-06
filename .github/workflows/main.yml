@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Lint and Build
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: Clone the git repository
@@ -20,11 +20,14 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: "**/*.sum"
 
-      - name: Go Tidy
+      - name: Check Go Tidy
         run: go mod tidy && git diff --exit-code
 
       - name: Install Depndencies
         run: make deps
 
       - name: Go Build
-        run: go build -v
+        run: make build
+
+      - name: Run Test
+        run: make test-all
