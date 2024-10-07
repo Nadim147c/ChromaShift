@@ -122,7 +122,7 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		Debug("%d rules found.\n", len(CmdRules.Rules))
+		Debug("rules found:", len(CmdRules.Rules))
 
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
