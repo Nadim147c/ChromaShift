@@ -30,7 +30,7 @@ func GetRuleFileNameForSubcommand(subCommands map[string]Sub, args []string) (st
 	}
 	for _, values := range subCommands {
 		commandStr := strings.Join(args, " ")
-		if len(values.Regexp) == 0 {
+		if values.Regexp == "" {
 			continue
 		}
 		if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
@@ -43,8 +43,11 @@ func GetRuleFileNameForSubcommand(subCommands map[string]Sub, args []string) (st
 func GetRuleFileName(config map[string]Config, args []string) (string, error) {
 	cmdName := args[0]
 	cmdBaseName := filepath.Base(cmdName)
-	commandConfig := config[cmdBaseName]
-	if len(commandConfig.Sub) > 0 {
+	if commandConfig, found := config[cmdBaseName]; found {
+		if len(commandConfig.Sub) == 0 {
+			return commandConfig.File, nil
+		}
+
 		Debug("Loading sub commands for", cmdBaseName)
 		ruleFileName, err := GetRuleFileNameForSubcommand(commandConfig.Sub, args)
 		if err == nil {
@@ -52,45 +55,45 @@ func GetRuleFileName(config map[string]Config, args []string) (string, error) {
 		} else {
 			Debug(err)
 		}
-
 	}
 
 	for name, values := range config {
 		if cmdName == name || cmdBaseName == name {
-			if len(commandConfig.Sub) > 0 {
-				Debug("Loading sub commands for", name)
-				ruleFileName, err := GetRuleFileNameForSubcommand(commandConfig.Sub, args)
-				if err == nil {
-					return ruleFileName, nil
-				} else {
-					Debug(err)
-				}
-
-			} else {
+			if len(values.Sub) == 0 {
 				return values.File, nil
+			}
+
+			Debug("Loading sub commands for", name)
+			ruleFileName, err := GetRuleFileNameForSubcommand(values.Sub, args)
+			if err == nil {
+				return ruleFileName, nil
+			} else {
+				Debug(err)
 			}
 		}
 
 		Debug("Regex", values.Regexp)
-		commandStr := strings.Join(args, " ")
-		if len(values.Regexp) == 0 {
+
+		if values.Regexp == "" {
 			continue
 		}
-		if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
-			if len(commandConfig.Sub) > 0 {
-				Debug("Loading sub commands for", name)
-				ruleFileName, err := GetRuleFileNameForSubcommand(commandConfig.Sub, args)
-				if err == nil {
-					return ruleFileName, nil
-				} else {
-					Debug(err)
-				}
 
-			} else {
+		commandStr := strings.Join(args, " ")
+		if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
+			if len(values.Sub) == 0 {
 				return values.File, nil
+			}
+
+			Debug("Loading sub commands for", name)
+			ruleFileName, err := GetRuleFileNameForSubcommand(values.Sub, args)
+			if err == nil {
+				return ruleFileName, nil
+			} else {
+				Debug(err)
 			}
 		}
 	}
+
 	return "", fmt.Errorf("No matching command")
 }
 
