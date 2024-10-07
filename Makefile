@@ -7,48 +7,62 @@ ARCHIVE_DIR = ./archive
 SCRIPTS_DIR = ./scripts
 COMPLETIONS_DIR = ./completions
 
-BUILD = go build -ldflags "-X colorize/cmd.Version=$(VERSION)"
+BUILD_FLAGS = -X colorize/cmd.Version=$(VERSION)
 
-all: build
+BUILD = go build -ldflags "$(BUILD_FLAGS)"
 
-deps:
+all: rebuild
+
+dependencies: .dependencies-stamp
+
+.dependencies-stamp:
+	@echo "Installing dependencies..."
 	go mod download
 	go mod verify
 	go get -v
 
+	@touch .dependencies-stamp
+
+build: .build-stamp
+.build-stamp: .dependencies-stamp
+	@echo "Building $(APP_NAME)..."
+	$(BUILD) -o $(APP_NAME)
+
+	@touch .build-stamp
+
+install:
+	go install -ldflags "$(BUILD_FLAGS)"
+
+rebuild:
+	@echo "Rebuilding $(APP_NAME)..."
+	$(BUILD) -o $(APP_NAME)
+
 run:
-	go run main.go
+	go run main.go -- $(CMD)
 
-APP_BIN ?= $(shell which $(APP_NAME))
-APP_BIN ?= $(shell which $(BIN_DIR)/$(APP_NAME))
-
-ifdef APP_BIN
-	TEST_BIN = $(APP_BIN) --color=always -- go test
-else
-	TEST_BIN = go test
-endif
-
-test:
-	$(TEST_BIN) $(SRC_DIR) -vet=off -failfast -v -parallel 4
+test: .build-stamp
+	./$(APP_NAME) --color=always -- go test $(SRC_DIR) -failfast -v -parallel 4
 
 test-all:
-	go test $(SRC_DIR) -vet=off -v -parallel 4
+	go test $(SRC_DIR) -v -parallel 4
 
-build: deps
-	$(BUILD) -o $(BIN_DIR)/$(APP_NAME)
+completion: .completion-stamp
 
-completion: build
-	mkdir -p $(COMPLETIONS_DIR)
-	$(BIN_DIR)/$(APP_NAME) completion zsh > $(COMPLETIONS_DIR)/_colorize
-	$(BIN_DIR)/$(APP_NAME) completion bash > $(COMPLETIONS_DIR)/colorize.bash
-	$(BIN_DIR)/$(APP_NAME) completion fish > $(COMPLETIONS_DIR)/colorize.fish
+.completion-stamp: 
+	mkdir -pv $(COMPLETIONS_DIR)
+	./$(APP_NAME) completion zsh > $(COMPLETIONS_DIR)/_colorize
+	./$(APP_NAME) completion bash > $(COMPLETIONS_DIR)/colorize.bash
+	./$(APP_NAME) completion fish > $(COMPLETIONS_DIR)/colorize.fish
+
+	@touch .completion-stamp
 
 clean:
-	rm -vrf $(BIN_DIR) $(APP_NAME) $(ARCHIVE_DIR) $(COMPLETIONS_DIR)
+	rm -vrf $(BIN_DIR) $(APP_NAME) $(ARCHIVE_DIR) $(COMPLETIONS_DIR) .*-stamp
 
 compile:
-	mkdir -p $(BIN_DIR)
-	echo "Compiling for Unix-like OS and Platforms"
+	mkdir -vp $(BIN_DIR)
+
+	@echo "Compiling for Unix-like OS and Platforms"
 	# Linux
 	GOOS=linux GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-linux-amd64 
 	GOOS=linux GOARCH=arm $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-linux-arm 
@@ -68,7 +82,7 @@ compile:
 	GOOS=darwin GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-darwin-amd64 
 	GOOS=darwin GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-darwin-arm64 
 
-archive: completion compile
+archive: .completion-stamp compile
 	mkdir -p $(ARCHIVE_DIR)
 	
 	find $(BIN_DIR) -iname "$(APP_NAME)-*-*" | while read binary; do \

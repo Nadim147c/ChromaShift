@@ -24,7 +24,7 @@ jobs:
         run: go mod tidy && git diff --exit-code
 
       - name: Install Depndencies
-        run: make deps
+        run: make dependencies
 
       - name: Go Build
         run: make build

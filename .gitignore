@@ -1,7 +1,9 @@
 .mise.toml
 .env
+
 colorize
-cover.out
-archive
 bin
+archive
 completions
+
+.*-stamp
