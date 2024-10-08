@@ -1,7 +1,7 @@
 package main
 
 import (
-	"colorize/cmd"
+	"cshift/cmd"
 	"embed"
 )
 

@@ -1,4 +1,4 @@
-module colorize
+module cshift
 
 go 1.23.1
 

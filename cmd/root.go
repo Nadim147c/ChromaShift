@@ -43,9 +43,9 @@ func startRunWithoutColor(runCmd *exec.Cmd) {
 }
 
 var rootCmd = &cobra.Command{
-	Use:     "colorize",
+	Use:     "cshift",
 	Version: Version,
-	Short:   "A colorizer for your favorite commands",
+	Short:   "A output colorizer for your favorite commands",
 	Run: func(cmd *cobra.Command, args []string) {
 		UseColor = true
 
@@ -188,10 +188,10 @@ func Execute() {
 	rootCmd.SetHelpTemplate("{{ Heading .Short }}\n\n{{.UsageString}}")
 
 	usage := `{{ Heading "Usage" }}:
-  {{ CommandName "colorize" }} [{{ Option "COLORIZE_OPTIONS" }}] {{ Option "--" }} <{{ CommandName "COMMAND" }}> [{{ Option "OPTIONS" }}]
+  {{ CommandName "cshift" }} [{{ Option "CHROMASHIFT_OPTIONS" }}] {{ Option "--" }} <{{ CommandName "COMMAND" }}> [{{ Option "OPTIONS" }}]
 
 {{ Heading "Examples" }}:
-  {{ CommandName "colorize" }} {{ Option "--" }} {{ CommandName "stat" }} {{ Option "go.mod" }}{{if .HasAvailableSubCommands}}{{$cmds := .Commands}}{{if eq (len .Groups) 0}}
+  {{ CommandName "cshift" }} {{ Option "--" }} {{ CommandName "stat" }} {{ Option "go.mod" }}{{if .HasAvailableSubCommands}}{{$cmds := .Commands}}{{if eq (len .Groups) 0}}
 
 {{ Heading "Available Commands" }}:{{range $cmds}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
   {{ CommandName (rpad .Name .NamePadding) }} {{.Short}}{{end}}{{end}}{{else}}{{range $group := .Groups}}
@@ -216,7 +216,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.SetErrPrefix("Colorize Error:")
+	rootCmd.SetErrPrefix("ChromaShift Error:")
 	rootCmd.Flags().StringVar(&ConfigFile, "config", "", "specify path to the config file")
 	rootCmd.Flags().StringVar(&RulesDirectory, "rules-dir", "", "specify path to the rules directory")
 	rootCmd.Flags().StringVar(&Color, "color", "auto", "whether use color or not (never, auto, always)")

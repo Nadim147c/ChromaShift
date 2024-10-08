@@ -118,14 +118,14 @@ func LoadConfig() (map[string]Config, error) {
 	}
 
 	configPaths := []string{}
-	envConfigPath := os.Getenv("COLORIZE_CONFIG")
+	envConfigPath := os.Getenv("CHROMASHIFT_CONFIG")
 	if len(envConfigPath) > 0 {
 		configPaths = append(configPaths, envConfigPath)
 	}
 
 	homeDir, err := os.UserHomeDir()
 	if err == nil {
-		configPaths = append(configPaths, filepath.Join(homeDir, ".config/colorize/config.toml"))
+		configPaths = append(configPaths, filepath.Join(homeDir, ".config/chromashift/config.toml"))
 	} else {
 		Debug("Error getting home directory:", err)
 	}

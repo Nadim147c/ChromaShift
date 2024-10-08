@@ -1,4 +1,6 @@
-APP_NAME = colorize
+APP_NAME = chromashift
+BIN_NAME = cshift
+
 VERSION ?= $(shell git describe --tags --abbrev=0)
 
 BIN_DIR = ./bin
@@ -7,7 +9,7 @@ ARCHIVE_DIR = ./archive
 SCRIPTS_DIR = ./scripts
 COMPLETIONS_DIR = ./completions
 
-BUILD_FLAGS = -X colorize/cmd.Version=$(VERSION)
+BUILD_FLAGS = -X $(BIN_NAME)/cmd.Version=$(VERSION)
 
 BUILD = go build -ldflags "$(BUILD_FLAGS)"
 
@@ -25,8 +27,8 @@ dependencies: .dependencies-stamp
 
 build: .build-stamp
 .build-stamp: .dependencies-stamp
-	@echo "Building $(APP_NAME)..."
-	$(BUILD) -o $(APP_NAME)
+	@echo "Building $(BIN_NAME)..."
+	$(BUILD) -o $(BIN_NAME)
 
 	@touch .build-stamp
 
@@ -34,30 +36,30 @@ install:
 	go install -ldflags "$(BUILD_FLAGS)"
 
 rebuild:
-	@echo "Rebuilding $(APP_NAME)..."
-	$(BUILD) -o $(APP_NAME)
+	@echo "Rebuilding $(BIN_NAME)..."
+	$(BUILD) -o $(BIN_NAME)
 
 run:
 	go run main.go -- $(CMD)
 
 test: .build-stamp
-	./$(APP_NAME) --color=always -- go test $(SRC_DIR) -failfast -v -parallel 4
+	./$(BIN_NAME) --color=always -- go test $(SRC_DIR) -failfast -v -parallel 4
 
 test-all:
 	go test $(SRC_DIR) -v -parallel 4
 
 completion: .completion-stamp
 
-.completion-stamp: 
+.completion-stamp: .build-stamp
 	mkdir -pv $(COMPLETIONS_DIR)
-	./$(APP_NAME) completion zsh > $(COMPLETIONS_DIR)/_colorize
-	./$(APP_NAME) completion bash > $(COMPLETIONS_DIR)/colorize.bash
-	./$(APP_NAME) completion fish > $(COMPLETIONS_DIR)/colorize.fish
+	./$(BIN_NAME) completion zsh > $(COMPLETIONS_DIR)/_$(BIN_NAME)
+	./$(BIN_NAME) completion bash > $(COMPLETIONS_DIR)/$(BIN_NAME).bash
+	./$(BIN_NAME) completion fish > $(COMPLETIONS_DIR)/$(BIN_NAME).fish
 
 	@touch .completion-stamp
 
 clean:
-	rm -vrf $(BIN_DIR) $(APP_NAME) $(ARCHIVE_DIR) $(COMPLETIONS_DIR) .*-stamp
+	rm -vrf $(BIN_DIR) $(BIN_NAME) $(ARCHIVE_DIR) $(COMPLETIONS_DIR) .*-stamp
 
 compile:
 	mkdir -vp $(BIN_DIR)
@@ -88,7 +90,7 @@ archive: .completion-stamp compile
 	find $(BIN_DIR) -iname "$(APP_NAME)-*-*" | while read binary; do \
 		basename=$$(basename $$binary); \
 		printf "\n\n%s\n\n" "Archiving : $$basename"; \
-		cp -vf $$binary $(BIN_DIR)/$(APP_NAME); \
-		tar -czvf "$(ARCHIVE_DIR)/$${basename}-$(VERSION).tar.gz" $(BIN_DIR)/$(APP_NAME) $(SCRIPTS_DIR)/* $(COMPLETIONS_DIR)/* ; \
+		cp -vf $$binary $(BIN_DIR)/$(BIN_NAME); \
+		tar -czvf "$(ARCHIVE_DIR)/$${basename}-$(VERSION).tar.gz" $(BIN_DIR)/$(BIN_NAME) $(SCRIPTS_DIR)/* $(COMPLETIONS_DIR)/* ; \
 		echo "Created archive: $(ARCHIVE_DIR)/$${basename}-$(VERSION).tar.gz"; \
 	done

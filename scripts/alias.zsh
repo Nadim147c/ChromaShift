@@ -1,12 +1,12 @@
 #!/usr/bin/env zsh
 
-if ! tty -s || [ ! -n "$TERM" ] || [ "$TERM" = dumb ] || (( ! $+commands[colorize] )); then
+if ! tty -s || [ ! -n "$TERM" ] || [ "$TERM" = dumb ] || (( ! $+commands[cshift] )); then
     return
 fi
 
-COLORIZE_EXECUTABLE=$(command -v colorize)
+CSHIFT_EXECUTABLE=$(command -v cshift)
 
-alias csudo="sudo $COLORIZE_EXECUTABLE --"
+alias csudo="sudo $CSHIFT_EXECUTABLE --"
 
 cmds=(
     ping
@@ -37,7 +37,7 @@ cmds=(
 for cmd in $cmds ; do
     if (( $+commands[$cmd] )) ; then
         $cmd() {
-            colorize -- ${commands[$0]} "$@"
+            cshift -- ${commands[$0]} "$@"
         }
     fi
 done

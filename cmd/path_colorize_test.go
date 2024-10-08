@@ -1,7 +1,7 @@
 package cmd_test
 
 import (
-	"colorize/cmd"
+	"cshift/cmd"
 	"os"
 	"strings"
 	"testing"

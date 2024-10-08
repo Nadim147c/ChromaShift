@@ -61,7 +61,7 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 	}
 
 	rulesPaths := []string{}
-	envRulesDir := os.Getenv("COLORIZE_RULES")
+	envRulesDir := os.Getenv("CHROMASHIFT_RULES")
 
 	if len(envRulesDir) > 0 {
 		rulesPaths = append(rulesPaths, envRulesDir)
@@ -69,7 +69,7 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 
 	homeDir, err := os.UserHomeDir()
 	if err == nil {
-		rulesPaths = append(rulesPaths, filepath.Join(homeDir, ".config/colorize/rules"))
+		rulesPaths = append(rulesPaths, filepath.Join(homeDir, ".config/chromashift/rules"))
 	} else {
 		Debug("Error getting home directory:", err)
 	}
