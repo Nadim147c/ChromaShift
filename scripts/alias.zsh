@@ -33,6 +33,7 @@ cmds=(
     curl
     wget
     stow
+    netstat
 )
 
 for cmd in $cmds ; do

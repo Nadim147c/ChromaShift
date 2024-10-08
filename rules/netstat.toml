@@ -1,0 +1,78 @@
+"$schema" = "../rule.schema.json"
+
+[[rules]] # ip number
+regexp = '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+colors = 'magenta'
+
+[[rules]] # hostname:service
+regexp = '([\w\.\-]+):([\w\-]+)\b'
+colors = 'bold green,bold yellow'
+
+[[rules]] # hostname:port
+regexp = '([\w\.\-]+):(\d+)\b'
+colors = 'bold green,bold red'
+
+[[rules]] # *:service
+regexp = '(\*):([\w\-]+)\b'
+colors = 'blue,bold yellow'
+
+[[rules]] # ipx hostname
+regexp = '^IPX.*[\dABCDEF]+:[\dABCDEF]+'
+colors = 'green'
+
+[[rules]] # protocols
+regexp = '(^tcp6?|^udp6?|^unix|^IPX|STREAM|DGRAM)'
+colors = 'bold blue'
+
+[[rules]] # status
+regexp = '(FIN_WAIT.*)'
+colors = 'red'
+
+[[rules]] # status
+regexp = '(SYN.*?)'
+colors = 'bold red'
+
+[[rules]] # status
+regexp = '(LISTEN(?:ING)?)'
+colors = 'bold blue'
+
+[[rules]] # status
+regexp = '(TIME_WAIT)'
+colors = 'bold red'
+
+[[rules]] # status
+overwrite = true
+regexp = '(CLOS(?:E(?:_WAIT)?|ING))'
+colors = 'red'
+
+[[rules]] # status
+regexp = '(?:LAST_ACK)'
+colors = 'red'
+
+[[rules]] # status
+regexp = '(ESTAB.*?\b|CONNECTED)'
+colors = 'bold yellow'
+
+[[rules]] # status
+regexp = '(FREE)'
+colors = 'bold green'
+
+[[rules]] # status
+regexp = '(DISCONNECTING)'
+colors = 'red'
+
+[[rules]] # status
+regexp = '(CONNECTING)'
+colors = 'green'
+
+[[rules]] # status
+regexp = '(UNKNOWN)'
+colors = 'blink bold red'
+
+[[rules]] # status
+regexp = '(\[.*\])'
+colors = 'green'
+
+[[rules]] # path
+regexp = '((?:\@)[\dabcdef]+)'
+colors = 'green, bold green'

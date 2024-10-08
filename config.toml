@@ -109,3 +109,7 @@ file = 'wget.toml'
 [stow]
 regexp = '^([/\w\.]+\/)?stow\b'
 file = 'stow.toml'
+
+[netstat]
+regexp = '^([/\w\.]+\/)?netstat\b'
+file = 'netstat.toml'
