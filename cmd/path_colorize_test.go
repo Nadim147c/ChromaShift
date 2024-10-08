@@ -25,9 +25,9 @@ func TestGetLsColor(t *testing.T) {
 		os.Setenv("LS_COLORS", "")
 		cmd.LsColorsMap = make([]cmd.LsColor, 0)
 
-		lsColor := cmd.GetLsColor("main.go")
+		lsColor, err := cmd.GetLsColor("main.go")
 
-		if lsColor != "\033[36m" {
+		if err != nil || (lsColor != "\033[36m") {
 			t.Fatalf("expected %s, but got %s", printAnsi("\033[36m"), printAnsi(lsColor))
 		}
 	})
@@ -36,9 +36,9 @@ func TestGetLsColor(t *testing.T) {
 		os.Setenv("LS_COLORS", "*.go=31")
 		cmd.LsColorsMap = make([]cmd.LsColor, 0)
 
-		lsColor := cmd.GetLsColor("main.go")
+		lsColor, err := cmd.GetLsColor("main.go")
 
-		if lsColor != "\033[31m" {
+		if err != nil || lsColor != "\033[31m" {
 			t.Fatalf("expected %s, but got %s", printAnsi("\033[31m"), printAnsi(lsColor))
 		}
 	})
@@ -52,9 +52,9 @@ func TestGetLsColor(t *testing.T) {
 			Code: "32",
 		}}
 
-		lsColor := cmd.GetLsColor("main.go")
+		lsColor, err := cmd.GetLsColor("main.go")
 
-		if lsColor != "\033[32m" {
+		if err != nil || lsColor != "\033[32m" {
 			t.Fatalf("expected %s, but got %s", printAnsi("\033[32m"), printAnsi(lsColor))
 		}
 	})
