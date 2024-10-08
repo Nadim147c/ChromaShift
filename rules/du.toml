@@ -1,7 +1,7 @@
 "$schema" = "../rule.schema.json"
 
 [[rules]] # Path
-regexp = '\s+((?:[\.\/]+[\w\s\-\_\.]+)(?:\/.*)?)$'
+regexp = '^\S+\s+((?:(?:[\.\/]+)?[\w\s\-\_\.]+)(?:\/.*)?)$'
 type = 'path'
 
 [[rules]] # Size 'K'
