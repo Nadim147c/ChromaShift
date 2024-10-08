@@ -130,7 +130,7 @@ var rootCmd = &cobra.Command{
 		go func() {
 			sig := <-sigChan
 			if err := runCmd.Process.Signal(sig); err != nil {
-				fmt.Fprintln(os.Stderr, "Error sending signal to process:", err)
+				Debug("Error sending signal to process:", err)
 			}
 		}()
 

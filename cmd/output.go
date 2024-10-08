@@ -69,7 +69,7 @@ func (o *Output) Start(stderr bool) {
 			os.Exit(1)
 		}
 	} else {
-		o.Command.Stderr = os.Stdout
+		o.Command.Stdout = os.Stdout
 		ioPipe, err = o.Command.StderrPipe()
 		if err != nil {
 			Debug("Error creating stderr pipe:", err)
