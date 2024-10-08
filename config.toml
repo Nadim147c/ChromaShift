@@ -105,3 +105,7 @@ file = 'curl.toml'
 [wget]
 regexp = '^([/\w\.]+\/)?wget\b'
 file = 'wget.toml'
+
+[stow]
+regexp = '^([/\w\.]+\/)?stow\b'
+file = 'stow.toml'

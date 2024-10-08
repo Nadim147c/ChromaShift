@@ -1,0 +1,63 @@
+"$schema" = "../rule.schema.json"
+
+stderr = true
+
+[[rules]] #
+regexp = 'stow dir is (.*)'
+type = 'path'
+
+[[rules]]
+regexp = 'stow dir path relative to target (.*) is (.*)'
+type = 'path'
+
+[[rules]] # cwd no/restored to
+regexp = 'cwd (?:now|restored to) (.*)'
+type = "path"
+
+[[rules]]
+regexp = 'Planning stow of: (.*) ...'
+colors = 'bold green'
+
+[[rules]]
+regexp = 'Planning stow of package ....'
+colors = 'bold green'
+
+[[rules]]
+regexp = 'level of (.*) is \d+'
+type = "path"
+
+[[rules]]
+regexp = 'level of .* is (\d+)'
+colors = 'red'
+
+[[rules]]
+regexp = '(---) (Skipping) .* as it already points to .*'
+colors = 'red,bold yellow'
+
+[[rules]]
+regexp = '--- Skipping (.*) as it already points to .*'
+type = "path"
+
+[[rules]]
+regexp = '--- Skipping .* as it already points to (.*)'
+type = "path"
+
+[[rules]]
+regexp = '^(Stowing (?:entry|contents of)) .* / (.*) / .*$'
+colors = 'cyan,bold green,green'
+
+[[rules]]
+regexp = '^Stowing (?:entry|contents of) (.*) / .* / ([^\(]+)(?:\s\(|$)'
+type = 'path'
+
+[[rules]]
+regexp = '^\s*(\|)'
+colors = 'bold green'
+
+[[rules]]
+regexp = '^\s*(yes) -'
+colors = 'bold green'
+
+[[rules]]
+regexp = '^\s*(is_a_link)\((.*)\):(.*)'
+colors = 'bold cyan,red,green'

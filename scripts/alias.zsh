@@ -32,6 +32,7 @@ cmds=(
     find
     curl
     wget
+    stow
 )
 
 for cmd in $cmds ; do
