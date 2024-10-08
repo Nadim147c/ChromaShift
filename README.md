@@ -83,5 +83,5 @@ By following these steps, you can easily create new colorization rules for any c
 
 ## LICENSE & CREDIT
 
-colorize is licensed under the [GNU-GPL-3](./LICENSE).
+ChromaShift is licensed under the [GNU-GPL-3](./LICENSE).
 Most of its features have been shamelessly stolen from [garabik/grc](https://github.com/garabik/grc).
