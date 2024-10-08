@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	"github.com/gobwas/glob"
 )
@@ -20,7 +21,7 @@ type LsColor struct {
 
 var LsColorsMap []LsColor
 
-func GetLsColor(line string) string {
+func GetLsColor(line string) (string, error) {
 	lsColors := os.Getenv("LS_COLORS")
 
 	if len(lsColors) <= 0 {
@@ -49,9 +50,36 @@ func GetLsColor(line string) string {
 	for _, lsColor := range LsColorsMap {
 		fileName := filepath.Base(line)
 		if lsColor.Glob.Match(fileName) {
-			return fmt.Sprintf("\033[%sm", lsColor.Code)
+			return fmt.Sprintf("\033[%sm", lsColor.Code), nil
 		}
 	}
 
-	return Ansi.Blue
+	return "", fmt.Errorf("File color doesn't exists")
+}
+
+func GetColorForMode(path string) (string, error) {
+	info, err := os.Lstat(path)
+	if err != nil {
+		return "", err
+	}
+
+	stat := info.Sys().(*syscall.Stat_t)
+	perms := stat.Mode & 0777
+
+	mode := info.Mode()
+
+	switch {
+	case mode&os.ModeSymlink != 0:
+		return Ansi.Cyan, nil // Symlink
+	case perms == 0777:
+		return Ansi.Bold + Ansi.Green, nil
+	case mode.IsDir():
+		return Ansi.Blue, nil // Directory
+	case mode&0111 != 0:
+		return Ansi.Green, nil // Other executable files
+	case mode.IsRegular():
+		return Ansi.White, nil // Regular file
+	default:
+		return "", fmt.Errorf("Failed to find color from mode")
+	}
 }

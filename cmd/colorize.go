@@ -25,12 +25,28 @@ func ExtentColorMapFromMatches(colorMap map[int]string, matches [][]int, colors 
 	}
 }
 
+func addResetToColorMap(colorMap map[int]string, index int) {
+	if _, found := colorMap[index]; found {
+		colorMap[index] = Ansi.Reset + colorMap[index]
+	} else {
+		colorMap[index] = Ansi.Reset
+	}
+}
+
 func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, currentLine string) {
 	for _, match := range matches {
-		for i := range (len(match) - 2) / 2 {
-			start := match[i*2+2]
-			end := match[i*2+3]
+		groups := match[2:]
+		for i := range len(groups) / 2 {
+			start := groups[i*2]
+			end := groups[i*2+1]
+
+			if start == -1 || end == -1 {
+				continue
+			}
+
 			path := currentLine[start:end]
+
+			Debug("Path:", path)
 
 			basePathIndex := start
 			for i := len(path) - 1; i >= 0; i-- {
@@ -42,14 +58,25 @@ func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, curren
 
 			colorMap[start] = Ansi.Blue
 
-			cfgStyle := GetLsColor(currentLine[basePathIndex:end])
-			colorMap[basePathIndex] = cfgStyle
-
-			if len(colorMap[end]) > 0 {
-				colorMap[end] = Ansi.Reset + colorMap[end]
+			if cfgStyle, err := GetLsColor(currentLine[basePathIndex:end]); err == nil {
+				colorMap[basePathIndex] = Ansi.Reset + cfgStyle
+				addResetToColorMap(colorMap, end)
+				return
 			} else {
-				colorMap[end] = Ansi.Reset
+				Debug(err)
 			}
+
+			if cfgStyle, err := GetColorForMode(path); err == nil {
+				colorMap[basePathIndex] = Ansi.Reset + cfgStyle
+				addResetToColorMap(colorMap, end)
+				return
+			} else {
+				Debug(err)
+			}
+
+			colorMap[basePathIndex] = Ansi.Reset + Ansi.Bold + Ansi.Gray
+			addResetToColorMap(colorMap, end)
+
 		}
 	}
 }
