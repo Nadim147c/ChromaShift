@@ -9,7 +9,6 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/BurntSushi/toml"
 	"github.com/efekarakus/termcolor"
 	"github.com/spf13/cobra"
 )
@@ -23,10 +22,6 @@ var (
 	Verbose        bool
 	UseColor       bool
 	CmdRules       CommandRules
-
-	Stat           = os.Stat
-	DecodeToml     = toml.Decode
-	DecodeTomlFile = toml.DecodeFile
 )
 
 func Debug(a ...any) {

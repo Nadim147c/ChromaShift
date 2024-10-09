@@ -3,11 +3,14 @@ package cmd
 import (
 	"embed"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
+
+	"github.com/BurntSushi/toml"
 )
 
 var StaticRulesDirectory embed.FS
@@ -50,7 +53,7 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 		ruleFilePath := filepath.Join(RulesDirectory, ruleFile)
 		Debug("Loading rules file:", ruleFilePath)
 
-		_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
+		_, err := toml.DecodeFile(ruleFilePath, &cmdRules)
 		if err == nil {
 			SortRules(&cmdRules)
 			return cmdRules, err
@@ -76,15 +79,22 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 
 	for _, rulesDir := range rulesPaths {
 		ruleFilePath := path.Join(rulesDir, ruleFile)
-
-		if _, err := Stat(ruleFilePath); err != nil {
+		file, err := os.Open(ruleFilePath)
+		if err != nil {
 			Debug("Failed to load rules file:", ruleFilePath)
 			continue
 		}
+		defer file.Close()
 
 		Debug("Loading rules file:", ruleFilePath)
 
-		_, err := DecodeTomlFile(ruleFilePath, &cmdRules)
+		content, err := io.ReadAll(file)
+		if err != nil {
+			Debug(err)
+			continue
+
+		}
+		_, err = toml.Decode(string(content), &cmdRules)
 		if err != nil {
 			Debug("Error decoding toml", err)
 			continue
@@ -102,7 +112,7 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 
 	fileContentBytes, err := StaticRulesDirectory.ReadFile(ruleFilePath)
 	if err == nil {
-		_, err := DecodeToml(string(fileContentBytes), &cmdRules)
+		_, err := toml.Decode(string(fileContentBytes), &cmdRules)
 		SortRules(&cmdRules)
 		return cmdRules, err
 	}

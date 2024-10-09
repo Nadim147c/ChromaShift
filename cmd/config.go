@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/BurntSushi/toml"
 )
 
 var StaticConfig string
@@ -103,14 +105,14 @@ func LoadConfig() (map[string]Config, error) {
 
 	Debug("Loading embeded config")
 
-	_, err := DecodeToml(StaticConfig, &config)
+	_, err := toml.Decode(StaticConfig, &config)
 	if err != nil {
 		Debug("Err loading embeded config", err)
 	}
 
 	if len(ConfigFile) > 0 {
 		Debug("Loading config file:", ConfigFile)
-		_, err := DecodeTomlFile(ConfigFile, &config)
+		_, err := toml.DecodeFile(ConfigFile, &config)
 		if err == nil {
 			return config, err
 		} else {
@@ -149,7 +151,7 @@ func LoadConfig() (map[string]Config, error) {
 		}
 
 		var additionalConfig map[string]Config
-		_, err = DecodeToml(string(content), &additionalConfig)
+		_, err = toml.Decode(string(content), &additionalConfig)
 		if err == nil {
 			for key, value := range additionalConfig {
 				config[key] = value
