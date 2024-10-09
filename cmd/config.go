@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -131,21 +132,28 @@ func LoadConfig() (map[string]Config, error) {
 	}
 
 	for _, configPath := range configPaths {
-		if _, err := Stat(configPath); err != nil {
+		file, err := os.Open(configPath)
+		if err != nil {
 			Debug("Failed to loading config file:", configPath)
 			Debug(err)
 			continue
 		}
+		defer file.Close()
 
 		Debug("Loading config file:", configPath)
 
+		content, err := io.ReadAll(file)
+		if err != nil {
+			Debug(err)
+			continue
+		}
+
 		var additionalConfig map[string]Config
-		_, err = DecodeTomlFile(configPath, &additionalConfig)
+		_, err = DecodeToml(string(content), &additionalConfig)
 		if err == nil {
 			for key, value := range additionalConfig {
 				config[key] = value
 			}
-			continue
 		} else {
 			Debug("Can't load config from path:", configPath)
 			Debug(err)
