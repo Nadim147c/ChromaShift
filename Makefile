@@ -70,16 +70,6 @@ compile:
 	GOOS=linux GOARCH=arm $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-linux-arm 
 	GOOS=linux GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-linux-arm64 
 	
-	# FreeBSD
-	GOOS=freebsd GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-freebsd-amd64 
-	GOOS=freebsd GOARCH=arm $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-freebsd-arm 
-	GOOS=freebsd GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-freebsd-arm64 
-	
-	# OpenBSD
-	GOOS=openbsd GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-openbsd-amd64 
-	GOOS=openbsd GOARCH=arm $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-openbsd-arm 
-	GOOS=openbsd GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-openbsd-arm64 
-	
 	# Darwin (macOS)
 	GOOS=darwin GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-darwin-amd64 
 	GOOS=darwin GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-darwin-arm64 
