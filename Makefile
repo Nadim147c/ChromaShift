@@ -1,7 +1,7 @@
 APP_NAME = chromashift
 BIN_NAME = cshift
 
-VERSION ?= $(shell git describe --tags --abbrev=0)
+VERSION ?= $(shell git describe --tags)
 
 BIN_DIR = ./bin
 SRC_DIR = ./cmd
