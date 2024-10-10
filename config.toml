@@ -117,3 +117,7 @@ file = 'netstat.toml'
 [gcc]
 regexp = '^([/\w\.]+\/)?(g?cc|[gc]\+\+)\s'
 file = 'gcc.toml'
+
+[dig]
+regexp = '^([/\w\.]+\/)?dig\b'
+file = 'dig.toml'

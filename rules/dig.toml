@@ -1,0 +1,26 @@
+"$schema" = '../rule.schema.json'
+
+[[rules]] # domain
+priority = 100
+regexp = '((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})'
+colors = 'bold blue'
+
+[[rules]] # ip4 address
+regexp = '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+colors = 'magenta'
+
+[[rules]] # ipv6
+regexp = '((?:(?:[09a-fA-F]{1,4})?\:\:?[0-9a-fA-F]{1,4})+)'
+colors = 'magenta'
+
+[[rules]] # line
+regexp = '^(\S+).*?(\d+)\s+(\w+)\s+(\w+)\b'
+colors = 'blue,red,yellow,cyan'
+
+[[rules]] # comments
+regexp = '^(;;[\s\w]+)'
+colors = 'yellow'
+
+[[rules]] # Title
+regexp = '(; <<>> DiG.* <<>> (\S+))'
+colors = 'bold magenta'
