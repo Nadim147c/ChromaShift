@@ -1,0 +1,45 @@
+"$schema" = "../rule.schema.json"
+
+stderr = true
+
+[[rules]]
+priority = 100
+regexp = '^([A-Z_]+)\=(.*)$'
+colors = 'bold yellow,bold green'
+
+[[rules]] # blocks
+regexp = '(^[^:\s]*?:\d+):'
+colors = 'bold magenta'
+
+[[rules]] # configured with
+regexp = '(^Configured with):'
+colors = 'bold green'
+
+[[rules]]
+regexp = '(^[^:\s]*?):'
+colors = 'bold green'
+
+[[rules]] #
+regexp = '`([A-Za-z0-9_\(\):&*]+(?: const)?)`'
+colors = 'magenta'
+
+[[rules]] # compilation method modifiers
+regexp = '\s\-(O\d?|f\S+|pthread|g\S*|c|W\S,\S+)\b'
+colors = 'yellow'
+
+[[rules]] # big options
+regexp = '\s(-?(?:-[\w\d]+)+)(?:([\=\s])([^\-]\S+))?\b'
+colors = 'cyan,gray,yellow'
+
+# warning and error won't work, unless you redirect also
+[[rules]] # warning
+regexp = '\b([Ww]arning)(:|\b)'
+colors = 'bold black bgyellow'
+
+[[rules]] # error
+regexp = '\b([Ee]rror)(:|\b)'
+colors = 'bold black bgred'
+
+[[rules]] #note
+regexp = '\b(note):'
+colors = 'bold black bgcyan'

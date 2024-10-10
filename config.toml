@@ -113,3 +113,7 @@ file = 'stow.toml'
 [netstat]
 regexp = '^([/\w\.]+\/)?netstat\b'
 file = 'netstat.toml'
+
+[gcc]
+regexp = '^([/\w\.]+\/)?(g?cc|[gc]\+\+)\s'
+file = 'gcc.toml'
