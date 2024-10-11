@@ -13,7 +13,7 @@ BUILD_FLAGS = -X $(BIN_NAME)/cmd.Version=$(VERSION)
 
 BUILD = go build -ldflags "$(BUILD_FLAGS)"
 
-all: rebuild
+all: build
 
 dependencies: .dependencies-stamp
 
@@ -25,7 +25,12 @@ dependencies: .dependencies-stamp
 
 	@touch .dependencies-stamp
 
-build: .build-stamp
+build:
+	@echo "Building $(BIN_NAME)..."
+	$(BUILD) -o $(BIN_NAME)
+
+	@touch .build-stamp
+
 .build-stamp: .dependencies-stamp
 	@echo "Building $(BIN_NAME)..."
 	$(BUILD) -o $(BIN_NAME)
@@ -34,10 +39,6 @@ build: .build-stamp
 
 install:
 	go install -ldflags "$(BUILD_FLAGS)"
-
-rebuild:
-	@echo "Rebuilding $(BIN_NAME)..."
-	$(BUILD) -o $(BIN_NAME)
 
 run:
 	go run main.go -- $(CMD)
