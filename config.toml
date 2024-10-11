@@ -125,3 +125,7 @@ file = 'dig.toml'
 [lscpu]
 regexp = '^([/\w\.]+\/)?lscpu\b'
 file = 'lscpu.toml'
+
+[last]
+regexp = '^([/\w\.]+\/)?last\b'
+file = 'last.toml'
