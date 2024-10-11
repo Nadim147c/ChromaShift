@@ -69,7 +69,7 @@ maybe_sudo() {
     fi
 }
 
-maybe_sudo mkdir -p "$DEST_DIR/rules"
+maybe_sudo mkdir -p "$DEST_DIR" "$BIN_DIR"
 
 maybe_sudo install -m 755 ./bin/* "$BIN_DIR"
-maybe_sudo install -m 644 "scripts/alias.zsh" "$DEST_DIR"
+maybe_sudo install -m 644 scripts/alias.* "$DEST_DIR"
