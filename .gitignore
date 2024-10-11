@@ -6,5 +6,7 @@ bin
 archive
 completions
 
+scripts/alias.*
+
 .*-stamp
 cshift

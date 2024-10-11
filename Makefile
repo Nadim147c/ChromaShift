@@ -49,6 +49,15 @@ test: .build-stamp
 test-all:
 	go test $(SRC_DIR) -v -parallel 4
 
+alias: .alias-stamp
+
+.alias-stamp: .build-stamp
+	mkdir -pv $(COMPLETIONS_DIR)
+	./$(BIN_NAME) alias zsh > $(SCRIPTS_DIR)/alias.zsh
+	./$(BIN_NAME) alias bash > $(SCRIPTS_DIR)/alias.bash
+
+	@touch .alias-stamp
+
 completion: .completion-stamp
 
 .completion-stamp: .build-stamp
@@ -75,7 +84,7 @@ compile:
 	GOOS=darwin GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-darwin-amd64 
 	GOOS=darwin GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-darwin-arm64 
 
-archive: .completion-stamp compile
+archive: .alias-stamp .completion-stamp compile
 	mkdir -p $(ARCHIVE_DIR)
 	
 	find $(BIN_DIR) -iname "$(APP_NAME)-*-*" | while read binary; do \
