@@ -1,0 +1,15 @@
+"$schema" = "../rule.schema.json"
+
+pty = true
+
+[[rules]]
+regexp = '(.+)'
+colors = 'yellow'
+
+[[rules]]
+regexp = '^(\S[^:]+):(.+)?'
+colors = "green,yellow"
+
+[[rules]]
+regexp = '^\s+(\S[^:]+):(.+)?'
+colors = "cyan,yellow"
