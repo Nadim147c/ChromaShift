@@ -25,7 +25,7 @@ dependencies: .dependencies-stamp
 
 	@touch .dependencies-stamp
 
-build:
+build: .dependencies-stamp
 	@echo "Building $(BIN_NAME)..."
 	$(BUILD) -o $(BIN_NAME)
 
