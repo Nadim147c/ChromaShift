@@ -129,3 +129,7 @@ file = 'lscpu.toml'
 [last]
 regexp = '^([/\w\.]+\/)?last\b'
 file = 'last.toml'
+
+[vmstat]
+regexp = '^([/\w\.]+\/)?vmstat\b'
+file = 'vmstat.toml'
