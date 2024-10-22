@@ -128,7 +128,7 @@ func LoadConfig() (map[string]Config, error) {
 
 	homeDir, err := os.UserHomeDir()
 	if err == nil {
-		configPaths = append(configPaths, filepath.Join(homeDir, ".config/chromashift/config.toml"))
+		configPaths = append(configPaths, filepath.Join(homeDir, ".config/ChromaShift/config.toml"))
 	} else {
 		Debug("Error getting home directory:", err)
 	}
