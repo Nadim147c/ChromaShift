@@ -1,7 +1,7 @@
 #!/bin/sh
 
 PREFIX="${PREFIX:-/usr/local}"
-DEST_DIR="${PREFIX}/etc/chromashift"
+DEST_DIR="${PREFIX}/etc/ChromaShift"
 BIN_DIR="${BIN_DIR:-$PREFIX/bin}"
 
 maybe_sudo() {

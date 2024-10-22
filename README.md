@@ -9,7 +9,7 @@ A output colorizer for your favorite commands.
 To install ChromaShift, run the following script:
 
 ```sh
-curl -s https://raw.githubusercontent.com/Nadim147c/chromashift/main/scripts/install.gh-release.sh | sh
+curl -s https://raw.githubusercontent.com/Nadim147c/ChromaShift/main/scripts/install.gh-release.sh | sh
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ List of available command can be found in [config.toml](./config.toml) file.
 
 ## Contribution
 
-If your favorite command is not supported yet, feel free to create an [issue](https://github.com/Nadim147c/chromashift/issues).
+If your favorite command is not supported yet, feel free to create an [issue](https://github.com/Nadim147c/ChromaShift/issues).
 If you want to contribute your rules for any specific command. Then here's how:
 
 ### Contribution Guide: Creating Custom Rules
@@ -39,7 +39,7 @@ To create your own colorization rules, you’ll need a basic understanding of re
    file = 'du.toml'
    ```
 
-   Here's how it works: `chromashift` first checks if the command name matches `du` exactly, then loads the corresponding `du.toml` file to apply the colorization rules. If it doesn’t find a direct match, it uses the specified `regexp` to check the command. This means running `cshift -- /usr/bin/du` will also work as expected.
+   Here's how it works: `ChromaShift` first checks if the command name matches `du` exactly, then loads the corresponding `du.toml` file to apply the colorization rules. If it doesn’t find a direct match, it uses the specified `regexp` to check the command. This means running `cshift -- /usr/bin/du` will also work as expected.
 
 2. Next, create a TOML file in the [rules](./rules/) directory. The file name should match what you specified in [config.toml](./config.toml), in this case, `du.toml`.
 

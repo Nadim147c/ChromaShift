@@ -72,7 +72,7 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 
 	homeDir, err := os.UserHomeDir()
 	if err == nil {
-		rulesPaths = append(rulesPaths, filepath.Join(homeDir, ".config/chromashift/rules"))
+		rulesPaths = append(rulesPaths, filepath.Join(homeDir, ".config/ChromaShift/rules"))
 	} else {
 		Debug("Error getting home directory:", err)
 	}

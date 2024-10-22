@@ -1,4 +1,4 @@
-APP_NAME = chromashift
+APP_NAME = ChromaShift
 BIN_NAME = cshift
 
 VERSION ?= $(shell git describe --tags)

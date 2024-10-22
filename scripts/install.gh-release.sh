@@ -35,7 +35,7 @@ else
     exit 1
 fi
 
-REPO="Nadim147c/chromashift"
+REPO="Nadim147c/ChromaShift"
 
 RELEASE_URL="https://api.github.com/repos/$REPO/releases/latest"
 
@@ -57,7 +57,7 @@ echo "Extracting download archive..."
 tar -xvf "$DOWNLOAD_PATH"
 
 PREFIX="${PREFIX:-/usr/local}"
-DEST_DIR="${PREFIX}/etc/chromashift"
+DEST_DIR="${PREFIX}/etc/ChromaShift"
 BIN_DIR="${BIN_DIR:-$PREFIX/bin}"
 
 maybe_sudo() {
