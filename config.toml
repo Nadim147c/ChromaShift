@@ -133,3 +133,7 @@ file = 'last.toml'
 [vmstat]
 regexp = '^([/\w\.]+\/)?vmstat\b'
 file = 'vmstat.toml'
+
+[findpkg]
+regexp = '^([/\w\.]+\/)?findpkg\b'
+file = 'findpkg.toml'
