@@ -17,15 +17,9 @@ var StaticRulesDirectory embed.FS
 
 type (
 	CommandRules struct {
-		SkipColor *SkipColor `toml:"skip-color"`
-		Rules     *[]Rule    `toml:"rules"`
-		Stderr    bool       `toml:"stderr"`
-		PTY       bool       `toml:"pty"`
-	}
-
-	SkipColor struct {
-		Argument  string `toml:"argument"`
-		Arguments string `toml:"arguments"`
+		Rules  *[]Rule `toml:"rules"`
+		Stderr bool    `toml:"stderr"`
+		PTY    bool    `toml:"pty"`
 	}
 
 	Rule struct {

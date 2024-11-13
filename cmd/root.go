@@ -5,8 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"regexp"
-	"strings"
 	"syscall"
 
 	"github.com/efekarakus/termcolor"
@@ -88,35 +86,6 @@ var rootCmd = &cobra.Command{
 		if cmdRules.Rules == nil {
 			Debug("No config exists for current command")
 			startRunWithoutColor(runCmd)
-		}
-
-		if cmdRules.SkipColor != nil {
-			if len(cmdRules.SkipColor.Argument) > 0 {
-				re, err := regexp.Compile(cmdRules.SkipColor.Argument)
-				if err != nil {
-					Debug("failed to compile ignore argument", err)
-					startRunWithoutColor(runCmd)
-				}
-				for _, arg := range cmdArgs {
-					if re.Match([]byte(arg)) {
-						startRunWithoutColor(runCmd)
-						os.Exit(0)
-					}
-				}
-			}
-
-			if len(cmdRules.SkipColor.Arguments) > 0 {
-				re, err := regexp.Compile(cmdRules.SkipColor.Arguments)
-				if err != nil {
-					Debug("failed to compile ignore arguments", err)
-					startRunWithoutColor(runCmd)
-				}
-
-				if re.Match([]byte(strings.Join(cmdArgs, " "))) {
-					startRunWithoutColor(runCmd)
-					os.Exit(0)
-				}
-			}
 		}
 
 		Debug("rules found:", len(*cmdRules.Rules))
