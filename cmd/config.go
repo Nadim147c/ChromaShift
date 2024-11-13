@@ -14,24 +14,30 @@ import (
 var StaticConfig string
 
 type (
+	ConfigMap map[string]Config
+
 	Config struct {
 		Regexp string         `toml:"regexp"`
 		File   string         `toml:"file"`
-		Sub    map[string]Sub `toml:"sub"`
+		Sub    *SubCommandMap `toml:"sub"`
 	}
 
-	Sub struct {
+	SubCommandMap map[string]SubCommand
+
+	SubCommand struct {
 		Regexp string `toml:"regexp"`
 		File   string `toml:"file"`
 	}
 )
 
-func GetRuleFileNameForSubcommand(subCommands map[string]Sub, args []string) (string, error) {
+func GetRuleFileNameForSubcommand(subCommands *SubCommandMap, args []string) (string, error) {
 	subCommandName := args[1]
-	if len(subCommands[subCommandName].File) > 0 {
-		return subCommands[subCommandName].File, nil
+
+	if (*subCommands)[subCommandName].File != "" {
+		return (*subCommands)[subCommandName].File, nil
 	}
-	for _, values := range subCommands {
+
+	for _, values := range *subCommands {
 		commandStr := strings.Join(args, " ")
 		if values.Regexp == "" {
 			continue
@@ -43,11 +49,11 @@ func GetRuleFileNameForSubcommand(subCommands map[string]Sub, args []string) (st
 	return "", fmt.Errorf("No matching subcommand")
 }
 
-func GetRuleFileName(config map[string]Config, args []string) (string, error) {
+func GetRuleFileName(config *ConfigMap, args []string) (string, error) {
 	cmdName := args[0]
 	cmdBaseName := filepath.Base(cmdName)
-	if commandConfig, found := config[cmdBaseName]; found {
-		if len(commandConfig.Sub) == 0 {
+	if commandConfig, found := (*config)[cmdBaseName]; found {
+		if commandConfig.Sub == nil {
 			return commandConfig.File, nil
 		}
 
@@ -60,9 +66,9 @@ func GetRuleFileName(config map[string]Config, args []string) (string, error) {
 		}
 	}
 
-	for name, values := range config {
+	for name, values := range *config {
 		if cmdName == name || cmdBaseName == name {
-			if len(values.Sub) == 0 {
+			if values.Sub == nil {
 				return values.File, nil
 			}
 
@@ -83,7 +89,7 @@ func GetRuleFileName(config map[string]Config, args []string) (string, error) {
 
 		commandStr := strings.Join(args, " ")
 		if matched, _ := regexp.Match(values.Regexp, []byte(commandStr)); matched {
-			if len(values.Sub) == 0 {
+			if values.Sub == nil {
 				return values.File, nil
 			}
 
@@ -100,8 +106,8 @@ func GetRuleFileName(config map[string]Config, args []string) (string, error) {
 	return "", fmt.Errorf("No matching command")
 }
 
-func LoadConfig() (map[string]Config, error) {
-	var config map[string]Config
+func LoadConfig() (*ConfigMap, error) {
+	var config ConfigMap
 
 	Debug("Loading embeded config")
 
@@ -114,7 +120,7 @@ func LoadConfig() (map[string]Config, error) {
 		Debug("Loading config file:", ConfigFile)
 		_, err := toml.DecodeFile(ConfigFile, &config)
 		if err == nil {
-			return config, err
+			return nil, err
 		} else {
 			Debug("Failed Loading config file:", err)
 		}
@@ -150,7 +156,7 @@ func LoadConfig() (map[string]Config, error) {
 			continue
 		}
 
-		var additionalConfig map[string]Config
+		var additionalConfig ConfigMap
 		_, err = toml.Decode(string(content), &additionalConfig)
 		if err == nil {
 			for key, value := range additionalConfig {
@@ -164,8 +170,8 @@ func LoadConfig() (map[string]Config, error) {
 	}
 
 	if len(config) > 0 {
-		return config, nil
+		return &config, nil
 	} else {
-		return config, fmt.Errorf("no config found")
+		return nil, fmt.Errorf("no config found")
 	}
 }

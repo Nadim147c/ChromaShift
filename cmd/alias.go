@@ -40,7 +40,7 @@ fi
 `
 
 		fmt.Println(script)
-		for cmd := range config {
+		for cmd := range *config {
 			fmt.Printf(zshFunction, cmd, cmd, cmd)
 		}
 
@@ -71,7 +71,7 @@ fi
 
 `
 		fmt.Println(script)
-		for cmd := range config {
+		for cmd := range *config {
 			fmt.Printf(bashFunction, cmd, cmd, cmd)
 		}
 
