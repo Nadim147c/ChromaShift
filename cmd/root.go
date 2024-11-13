@@ -21,7 +21,6 @@ var (
 	RulesDirectory string
 	Verbose        bool
 	UseColor       bool
-	CmdRules       CommandRules
 )
 
 func Debug(a ...any) {
@@ -80,44 +79,47 @@ var rootCmd = &cobra.Command{
 			Debug("Rules file name", ruleFileName)
 		}
 
-		CmdRules, err = LoadRules(ruleFileName)
+		cmdRules, err := LoadRules(ruleFileName)
 		if err != nil {
 			Debug("Failed to load rules for current command:", err)
+			startRunWithoutColor(runCmd)
 		}
 
-		if len(CmdRules.Rules) <= 0 {
+		if cmdRules.Rules == nil {
 			Debug("No config exists for current command")
 			startRunWithoutColor(runCmd)
 		}
 
-		if len(CmdRules.SkipColor.Argument) > 0 {
-			re, err := regexp.Compile(CmdRules.SkipColor.Argument)
-			if err != nil {
-				Debug("failed to compile ignore argument", err)
-				startRunWithoutColor(runCmd)
+		if cmdRules.SkipColor != nil {
+			if len(cmdRules.SkipColor.Argument) > 0 {
+				re, err := regexp.Compile(cmdRules.SkipColor.Argument)
+				if err != nil {
+					Debug("failed to compile ignore argument", err)
+					startRunWithoutColor(runCmd)
+				}
+				for _, arg := range cmdArgs {
+					if re.Match([]byte(arg)) {
+						startRunWithoutColor(runCmd)
+						os.Exit(0)
+					}
+				}
 			}
-			for _, arg := range cmdArgs {
-				if re.Match([]byte(arg)) {
+
+			if len(cmdRules.SkipColor.Arguments) > 0 {
+				re, err := regexp.Compile(cmdRules.SkipColor.Arguments)
+				if err != nil {
+					Debug("failed to compile ignore arguments", err)
+					startRunWithoutColor(runCmd)
+				}
+
+				if re.Match([]byte(strings.Join(cmdArgs, " "))) {
 					startRunWithoutColor(runCmd)
 					os.Exit(0)
 				}
 			}
 		}
 
-		if len(CmdRules.SkipColor.Arguments) > 0 {
-			re, err := regexp.Compile(CmdRules.SkipColor.Arguments)
-			if err != nil {
-				Debug("failed to compile ignore arguments", err)
-				startRunWithoutColor(runCmd)
-			}
-
-			if re.Match([]byte(strings.Join(cmdArgs, " "))) {
-				startRunWithoutColor(runCmd)
-				os.Exit(0)
-			}
-		}
-
-		Debug("rules found:", len(CmdRules.Rules))
+		Debug("rules found:", len(*cmdRules.Rules))
 
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -129,25 +131,13 @@ var rootCmd = &cobra.Command{
 			}
 		}()
 
-		if CmdRules.PTY {
-			var out *os.File
-			if CmdRules.Stderr {
-				out = os.Stderr
-			} else {
-				out = os.Stdout
-			}
-			outputReader := Output{Command: runCmd, Out: out}
-			outputReader.StartWithPTY(CmdRules.Stderr)
+		if cmdRules.PTY {
+			outputReader := NewOutput(runCmd, cmdRules.Rules, cmdRules.Stderr)
+			outputReader.StartWithPTY(cmdRules.Stderr)
 		} else {
 			runCmd.Stdin = os.Stdin
-			var out *os.File
-			if CmdRules.Stderr {
-				out = os.Stderr
-			} else {
-				out = os.Stdout
-			}
-			outputReader := Output{Command: runCmd, Out: out}
-			outputReader.Start(CmdRules.Stderr)
+			outputReader := NewOutput(runCmd, cmdRules.Rules, cmdRules.Stderr)
+			outputReader.Start(cmdRules.Stderr)
 		}
 
 		if err := runCmd.Wait(); err != nil {

@@ -17,10 +17,10 @@ var StaticRulesDirectory embed.FS
 
 type (
 	CommandRules struct {
-		SkipColor SkipColor `toml:"skip-color"`
-		Rules     []Rule    `toml:"rules"`
-		Stderr    bool      `toml:"stderr"`
-		PTY       bool      `toml:"pty"`
+		SkipColor *SkipColor `toml:"skip-color"`
+		Rules     *[]Rule    `toml:"rules"`
+		Stderr    bool       `toml:"stderr"`
+		PTY       bool       `toml:"pty"`
 	}
 
 	SkipColor struct {
@@ -37,16 +37,16 @@ type (
 	}
 )
 
-func SortRules(cmdRules *CommandRules) {
-	sort.Slice(cmdRules.Rules, func(i int, j int) bool {
-		if cmdRules.Rules[i].Overwrite != cmdRules.Rules[j].Overwrite {
-			return cmdRules.Rules[i].Overwrite
+func SortRules(rules *[]Rule) {
+	sort.Slice(*rules, func(i int, j int) bool {
+		if (*rules)[i].Overwrite != (*rules)[j].Overwrite {
+			return (*rules)[i].Overwrite
 		}
-		return cmdRules.Rules[i].Priority < cmdRules.Rules[j].Priority
+		return (*rules)[i].Priority < (*rules)[j].Priority
 	})
 }
 
-func LoadRules(ruleFile string) (CommandRules, error) {
+func LoadRules(ruleFile string) (*CommandRules, error) {
 	var cmdRules CommandRules
 
 	if len(RulesDirectory) > 0 {
@@ -55,8 +55,8 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 
 		_, err := toml.DecodeFile(ruleFilePath, &cmdRules)
 		if err == nil {
-			SortRules(&cmdRules)
-			return cmdRules, err
+			SortRules(cmdRules.Rules)
+			return &cmdRules, err
 		} else {
 			Debug("Failed decoding toml file:", err)
 		}
@@ -100,10 +100,8 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 			continue
 		}
 
-		SortRules(&cmdRules)
-
-		return cmdRules, nil
-
+		SortRules(cmdRules.Rules)
+		return &cmdRules, nil
 	}
 
 	ruleFilePath := filepath.Join("rules", ruleFile)
@@ -113,9 +111,13 @@ func LoadRules(ruleFile string) (CommandRules, error) {
 	fileContentBytes, err := StaticRulesDirectory.ReadFile(ruleFilePath)
 	if err == nil {
 		_, err := toml.Decode(string(fileContentBytes), &cmdRules)
-		SortRules(&cmdRules)
-		return cmdRules, err
+		if err != nil {
+			return nil, err
+		}
+
+		SortRules(cmdRules.Rules)
+		return &cmdRules, err
 	}
 
-	return cmdRules, fmt.Errorf("No rules found.")
+	return nil, fmt.Errorf("No rules found.")
 }

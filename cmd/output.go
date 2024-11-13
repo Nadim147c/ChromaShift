@@ -21,12 +21,24 @@ type Output struct {
 	Command *exec.Cmd
 	Out     *os.File
 	Buffer  bytes.Buffer
+	Rules   []Rule
+}
+
+func NewOutput(cmd *exec.Cmd, rules *[]Rule, strerr bool) *Output {
+	var out *os.File
+	if strerr {
+		out = os.Stderr
+	} else {
+		out = os.Stdout
+	}
+	output := Output{Command: cmd, Rules: *rules, Out: out}
+	return &output
 }
 
 func (o *Output) Write(char rune) {
 	if char == '\r' {
 		line := o.Buffer.String()
-		coloredLine := ColorizeLine(line, CmdRules.Rules)
+		coloredLine := ColorizeLine(line, o.Rules)
 		if len(coloredLine) > 0 {
 			fmt.Fprint(o.Out, coloredLine+"\r")
 		} else {
@@ -43,7 +55,7 @@ func (o *Output) Write(char rune) {
 
 	if char == '\n' {
 		line := strings.TrimRightFunc(o.Buffer.String(), unicode.IsSpace)
-		coloredLine := ColorizeLine(line, CmdRules.Rules)
+		coloredLine := ColorizeLine(line, o.Rules)
 		if len(coloredLine) > 0 {
 			fmt.Fprint(o.Out, coloredLine+"\n")
 		} else {
