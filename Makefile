@@ -2,6 +2,7 @@ APP_NAME = ChromaShift
 BIN_NAME = cshift
 
 VERSION ?= $(shell git describe --tags)
+PREFIX ?= /usr/local/
 
 BIN_DIR = ./bin
 SRC_DIR = ./cmd
@@ -9,9 +10,9 @@ ARCHIVE_DIR = ./archive
 SCRIPTS_DIR = ./scripts
 COMPLETIONS_DIR = ./completions
 
-BUILD_FLAGS = -X $(BIN_NAME)/cmd.Version=$(VERSION)
+BUILD_FLAGS = -s -w -X $(BIN_NAME)/cmd.Version=$(VERSION)
 
-BUILD = go build -ldflags "$(BUILD_FLAGS)"
+BUILD = go build -trimpath -ldflags "$(BUILD_FLAGS)"
 
 all: build
 
@@ -38,7 +39,10 @@ build: .dependencies-stamp
 	@touch .build-stamp
 
 install:
-	go install -ldflags "$(BUILD_FLAGS)"
+	@echo "Installing to '$(PREFIX)'..."
+	install -Dm755 $(BIN_NAME) "$(PREFIX)/bin/$(BIN_NAME)"
+	install -Dm644 README.md "$(PREFIX)/share/doc/$(APP_NAME)/README.md"
+	install -Dm644 LICENSE "$(PREFIX)/share/licenses/$(APP_NAME)/LICENSE"
 
 run:
 	go run main.go -- $(CMD)
