@@ -109,11 +109,11 @@ func GetRuleFileName(config *ConfigMap, args []string) (string, error) {
 func LoadConfig() (*ConfigMap, error) {
 	var config ConfigMap
 
-	Debug("Loading embeded config")
+	Debug("Loading embedded config")
 
 	_, err := toml.Decode(StaticConfig, &config)
 	if err != nil {
-		Debug("Err loading embeded config", err)
+		Debug("Err loading embedded config", err)
 	}
 
 	if len(ConfigFile) > 0 {
