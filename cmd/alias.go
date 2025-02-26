@@ -9,6 +9,7 @@ import (
 func init() {
 	aliasCmd.AddCommand(aliasZshCmd)
 	aliasCmd.AddCommand(aliasBashCmd)
+	aliasCmd.AddCommand(aliasNuCmd)
 	rootCmd.AddCommand(aliasCmd)
 }
 
@@ -73,6 +74,28 @@ fi
 		fmt.Println(script)
 		for cmd := range *config {
 			fmt.Printf(bashFunction, cmd, cmd, cmd)
+		}
+
+		return nil
+	},
+}
+
+var aliasNuCmd = &cobra.Command{
+	Use: "nu",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		config, err := LoadConfig()
+		if err != nil {
+			return err
+		}
+		script := `#!/bin/nu
+
+if ($env.TERM == "dumb") and (which cshift | is-not-empty) {
+    exit 1
+}
+`
+		fmt.Println(script)
+		for cmd := range *config {
+			fmt.Printf("def --wrapped %s [...p] { cshift -- %s ...$p }\n", cmd, cmd)
 		}
 
 		return nil
