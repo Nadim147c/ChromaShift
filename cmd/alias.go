@@ -87,6 +87,11 @@ var aliasNuCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
+		banned := map[string]bool{
+			"ps": true,
+		}
+
 		script := `#!/bin/nu
 
 if ($env.TERM == "dumb") and (which cshift | is-not-empty) {
@@ -95,6 +100,9 @@ if ($env.TERM == "dumb") and (which cshift | is-not-empty) {
 `
 		fmt.Println(script)
 		for cmd := range *config {
+			if _, ok := banned[cmd]; ok {
+				continue
+			}
 			fmt.Printf("def --wrapped %s [...p] { cshift -- %s ...$p }\n", cmd, cmd)
 		}
 
