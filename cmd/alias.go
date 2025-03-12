@@ -89,8 +89,8 @@ var aliasNuCmd = &cobra.Command{
 		}
 
 		banned := map[string]bool{
-			"ps":   true,
-			"last": true,
+			"ps": true, "last": true, "find": true,
+			"cp": true, "mv": true, "rm": true,
 		}
 
 		script := `#!/bin/nu
