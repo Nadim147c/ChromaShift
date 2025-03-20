@@ -25,23 +25,35 @@ List of available command can be found in [config.toml](./config.toml) file.
 ## Contribution
 
 If your favorite command is not supported yet, feel free to create an [issue](https://github.com/Nadim147c/ChromaShift/issues).
-If you want to contribute your rules for any specific command. Then here's how:
+If you want to contribute your rules for any specific command, follow the guide below.
 
-### Contribution Guide: Creating Custom Rules
+## Creating a New Rule
 
 To create your own colorization rules, you’ll need a basic understanding of regular expressions (regex). Let’s walk through an example where you want to create a colorization rule for the `du` command (note: a rule for `du` already exists).
 
-1. First, add an entry in the [config.toml](./config.toml) file like this:
+1. First, create the configuration file if it doesn’t exist:
+
+   ```sh
+   mkdir -p ~/.config/Chromashift
+   touch ~/.config/Chromashift/config.toml
+   ```
+
+   Then, add an entry in the configuration file located at `~/.config/Chromashift/config.toml` like this:
 
    ```toml
    [du]
-   regexp = '^([/\w\.]+\/)?du\b'
+   regexp = '^([/\w\.]+/)?du\b'
    file = 'du.toml'
    ```
 
    Here's how it works: `ChromaShift` first checks if the command name matches `du` exactly, then loads the corresponding `du.toml` file to apply the colorization rules. If it doesn’t find a direct match, it uses the specified `regexp` to check the command. This means running `cshift -- /usr/bin/du` will also work as expected.
 
-2. Next, create a TOML file in the [rules](./rules/) directory. The file name should match what you specified in [config.toml](./config.toml), in this case, `du.toml`.
+2. Next, create a TOML file in `~/.config/Chromashift/rules/`. The file name should match what you specified in `config.toml`, in this case, `du.toml`:
+
+   ```sh
+   mkdir -p ~/.config/Chromashift/rules
+   touch ~/.config/Chromashift/rules/du.toml
+   ```
 
 3. For schema validation, add the following line to the top of your TOML file:
 
@@ -78,6 +90,14 @@ To create your own colorization rules, you’ll need a basic understanding of re
 
    - The word "Destination" is colored yellow.
    - The second group (anything that comes after "Destination") is colored magenta.
+
+## Contributing Your Rule
+
+If you want to share your rule with the community, add it to the official ChromaShift repository. To do this:
+
+1. Copy your rule file to the repository’s `rules/` directory.
+2. Update the repository's `config.toml` accordingly.
+3. Submit a pull request.
 
 By following these steps, you can easily create new colorization rules for any command!
 
