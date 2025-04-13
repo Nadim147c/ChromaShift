@@ -29,8 +29,8 @@ func GetLsColor(line string) (string, error) {
 	}
 
 	if len(LsColorsMap) == 0 {
-		entries := strings.Split(lsColors, ":")
-		for _, entry := range entries {
+		entries := strings.SplitSeq(lsColors, ":")
+		for entry := range entries {
 			parts := strings.Split(entry, "=")
 			if len(parts) != 2 {
 				continue

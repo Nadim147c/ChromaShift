@@ -10,7 +10,7 @@ func ExtentColorMapFromMatches(colorMap map[int]string, matches [][]int, colors 
 
 			cfgStyle := strings.TrimSpace(colors[i%len(colors)])
 			ansiStyles := ""
-			for _, style := range strings.Split(cfgStyle, " ") {
+			for style := range strings.SplitSeq(cfgStyle, " ") {
 				ansiStyles += Ansi.GetColor(style)
 			}
 			colorMap[start] = ansiStyles

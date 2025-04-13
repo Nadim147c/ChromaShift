@@ -117,21 +117,21 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	cobra.AddTemplateFunc("Heading", func(s interface{}) string {
+	cobra.AddTemplateFunc("Heading", func(s any) string {
 		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
 			return Ansi.Yellow + Ansi.Bold + fmt.Sprint(s) + Ansi.Reset
 		} else {
 			return fmt.Sprint(s)
 		}
 	})
-	cobra.AddTemplateFunc("CommandName", func(s interface{}) string {
+	cobra.AddTemplateFunc("CommandName", func(s any) string {
 		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
 			return Ansi.Green + fmt.Sprint(s) + Ansi.Reset
 		} else {
 			return fmt.Sprint(s)
 		}
 	})
-	cobra.AddTemplateFunc("Option", func(s interface{}) string {
+	cobra.AddTemplateFunc("Option", func(s any) string {
 		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
 			return Ansi.Red + fmt.Sprint(s) + Ansi.Reset
 		} else {

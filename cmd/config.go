@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"maps"
 )
 
 var StaticConfig string
@@ -159,9 +160,7 @@ func LoadConfig() (*ConfigMap, error) {
 		var additionalConfig ConfigMap
 		_, err = toml.Decode(string(content), &additionalConfig)
 		if err == nil {
-			for key, value := range additionalConfig {
-				config[key] = value
-			}
+			maps.Copy(config, additionalConfig)
 		} else {
 			Debug("Can't load config from path:", configPath)
 			Debug(err)
