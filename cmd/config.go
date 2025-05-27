@@ -2,28 +2,28 @@ package cmd
 
 import (
 	"fmt"
-	"io"
+	"maps"
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"maps"
 )
 
 var StaticConfig string
 
 type (
-	ConfigMap map[string]Config
+	Config map[string]Command
 
-	Config struct {
-		Regexp string         `toml:"regexp"`
-		File   string         `toml:"file"`
-		Sub    *SubCommandMap `toml:"sub"`
+	Command struct {
+		Regexp string       `toml:"regexp"`
+		File   string       `toml:"file"`
+		Sub    *SubCommands `toml:"sub"`
 	}
 
-	SubCommandMap map[string]SubCommand
+	SubCommands map[string]SubCommand
 
 	SubCommand struct {
 		Regexp string `toml:"regexp"`
@@ -31,7 +31,7 @@ type (
 	}
 )
 
-func GetRuleFileNameForSubcommand(subCommands *SubCommandMap, args []string) (string, error) {
+func GetRuleFileNameForSubcommand(subCommands *SubCommands, args []string) (string, error) {
 	subCommandName := args[1]
 
 	if (*subCommands)[subCommandName].File != "" {
@@ -50,7 +50,7 @@ func GetRuleFileNameForSubcommand(subCommands *SubCommandMap, args []string) (st
 	return "", fmt.Errorf("No matching subcommand")
 }
 
-func GetRuleFileName(config *ConfigMap, args []string) (string, error) {
+func GetRuleFileName(config *Config, args []string) (string, error) {
 	cmdName := args[0]
 	cmdBaseName := filepath.Base(cmdName)
 	if commandConfig, found := (*config)[cmdBaseName]; found {
@@ -107,8 +107,8 @@ func GetRuleFileName(config *ConfigMap, args []string) (string, error) {
 	return "", fmt.Errorf("No matching command")
 }
 
-func LoadConfig() (*ConfigMap, error) {
-	var config ConfigMap
+func LoadConfig() (*Config, error) {
+	var config Config
 
 	Debug("Loading embedded config")
 
@@ -128,49 +128,47 @@ func LoadConfig() (*ConfigMap, error) {
 	}
 
 	configPaths := []string{}
-	envConfigPath := os.Getenv("CHROMASHIFT_CONFIG")
-	if len(envConfigPath) > 0 {
-		configPaths = append(configPaths, envConfigPath)
+	if path := os.Getenv("CHROMASHIFT_CONFIG"); path != "" {
+		configPaths = append(configPaths, path)
 	}
 
-	homeDir, err := os.UserHomeDir()
-	if err == nil {
-		configPaths = append(configPaths, filepath.Join(homeDir, ".config/ChromaShift/config.toml"))
+	cfgDir, err := os.UserConfigDir()
+	if err != nil {
+		Debug("Error getting config directory:", err)
 	} else {
-		Debug("Error getting home directory:", err)
+		path := filepath.Join(cfgDir, "ChromaShift", "config.toml")
+		configPaths = append(configPaths, path)
 	}
 
-	for _, configPath := range configPaths {
-		file, err := os.Open(configPath)
-		if err != nil {
-			Debug("Failed to loading config file:", configPath)
-			Debug(err)
-			continue
-		}
-		defer file.Close()
-
-		Debug("Loading config file:", configPath)
-
-		content, err := io.ReadAll(file)
-		if err != nil {
-			Debug(err)
-			continue
-		}
-
-		var additionalConfig ConfigMap
-		_, err = toml.Decode(string(content), &additionalConfig)
-		if err == nil {
-			maps.Copy(config, additionalConfig)
-		} else {
-			Debug("Can't load config from path:", configPath)
-			Debug(err)
-		}
-
+	for path := range slices.Values(configPaths) {
+		loadConfigFile(path, config)
 	}
 
-	if len(config) > 0 {
-		return &config, nil
-	} else {
+	if len(config) == 0 {
 		return nil, fmt.Errorf("no config found")
 	}
+
+	return &config, nil
+}
+
+func loadConfigFile(path string, config Config) {
+	file, err := os.Open(path)
+	if err != nil {
+		Debug("Failed to loading config file:", path)
+		Debug(err)
+		return
+	}
+	defer file.Close()
+
+	Debug("Loading config file:", path)
+
+	var additionalConfig Config
+	_, err = toml.NewDecoder(file).Decode(&additionalConfig)
+	if err != nil {
+		Debug("Can't load config from path:", path)
+		Debug(err)
+		return
+	}
+
+	maps.Copy(config, additionalConfig)
 }
