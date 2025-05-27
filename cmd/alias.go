@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -87,6 +88,8 @@ var aliasNuCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
+		fmt.Fprintln(os.Stderr, "The nushell alias script is experimental!!!")
 
 		banned := map[string]bool{
 			"ps": true, "last": true, "find": true,
