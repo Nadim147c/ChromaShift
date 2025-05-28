@@ -88,7 +88,7 @@ var rootCmd = &cobra.Command{
 			startRunWithoutColor(runCmd)
 		}
 
-		Debug("rules found:", len(*cmdRules.Rules))
+		Debug("Rules found:", len(cmdRules.Rules))
 
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -141,7 +141,9 @@ func Execute() {
 
 	rootCmd.SetHelpTemplate("{{ Heading .Short }}\n\n{{.UsageString}}")
 
-	usage := `{{ Heading "Usage" }}:
+	usage := `{{/* gotmpl */}}
+
+{{- Heading "Usage" }}:
   {{ CommandName "cshift" }} [{{ Option "CHROMASHIFT_OPTIONS" }}] {{ Option "--" }} <{{ CommandName "COMMAND" }}> [{{ Option "OPTIONS" }}]
 
 {{ Heading "Examples" }}:
@@ -159,7 +161,7 @@ func Execute() {
 {{ Heading "Flags"}}:
 {{ Option (.LocalFlags.FlagUsages | trimTrailingWhitespaces) }}{{end}}{{if .HasAvailableSubCommands}}
 
-{{ Heading "Use" }}: "{{ CommandName .CommandPath }} <{{ CommandName "COMMAND" }}> {{ Option "--help" }}" for more information about a command.{{end}}
+{{ Heading "Use" }}: "{{ CommandName .CommandPath }} <{{ CommandName "COMMAND" }}> {{ Option "--help" }}" for more information about a command.{{end -}}
 `
 	rootCmd.SetUsageTemplate(usage)
 

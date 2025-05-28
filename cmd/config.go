@@ -18,9 +18,9 @@ type (
 	Config map[string]Command
 
 	Command struct {
-		Regexp string       `toml:"regexp"`
-		File   string       `toml:"file"`
-		Sub    *SubCommands `toml:"sub"`
+		Regexp string      `toml:"regexp"`
+		File   string      `toml:"file"`
+		Sub    SubCommands `toml:"sub"`
 	}
 
 	SubCommands map[string]SubCommand
@@ -31,14 +31,14 @@ type (
 	}
 )
 
-func GetRuleFileNameForSubcommand(subCommands *SubCommands, args []string) (string, error) {
+func GetRuleFileNameForSubcommand(subCommands SubCommands, args []string) (string, error) {
 	subCommandName := args[1]
 
-	if (*subCommands)[subCommandName].File != "" {
-		return (*subCommands)[subCommandName].File, nil
+	if subCommands[subCommandName].File != "" {
+		return subCommands[subCommandName].File, nil
 	}
 
-	for _, values := range *subCommands {
+	for values := range maps.Values(subCommands) {
 		commandStr := strings.Join(args, " ")
 		if values.Regexp == "" {
 			continue
@@ -47,13 +47,15 @@ func GetRuleFileNameForSubcommand(subCommands *SubCommands, args []string) (stri
 			return values.File, nil
 		}
 	}
+
 	return "", fmt.Errorf("No matching subcommand")
 }
 
-func GetRuleFileName(config *Config, args []string) (string, error) {
+func GetRuleFileName(config Config, args []string) (string, error) {
 	cmdName := args[0]
 	cmdBaseName := filepath.Base(cmdName)
-	if commandConfig, found := (*config)[cmdBaseName]; found {
+
+	if commandConfig, found := config[cmdBaseName]; found {
 		if commandConfig.Sub == nil {
 			return commandConfig.File, nil
 		}
@@ -67,7 +69,7 @@ func GetRuleFileName(config *Config, args []string) (string, error) {
 		}
 	}
 
-	for name, values := range *config {
+	for name, values := range config {
 		if cmdName == name || cmdBaseName == name {
 			if values.Sub == nil {
 				return values.File, nil
@@ -107,7 +109,7 @@ func GetRuleFileName(config *Config, args []string) (string, error) {
 	return "", fmt.Errorf("No matching command")
 }
 
-func LoadConfig() (*Config, error) {
+func LoadConfig() (Config, error) {
 	var config Config
 
 	Debug("Loading embedded config")
@@ -148,7 +150,7 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("no config found")
 	}
 
-	return &config, nil
+	return config, nil
 }
 
 func loadConfigFile(path string, config Config) {

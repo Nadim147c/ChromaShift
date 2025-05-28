@@ -24,14 +24,14 @@ type Output struct {
 	Rules   []Rule
 }
 
-func NewOutput(cmd *exec.Cmd, rules *[]Rule, strerr bool) *Output {
+func NewOutput(cmd *exec.Cmd, rules []Rule, strerr bool) *Output {
 	var out *os.File
 	if strerr {
 		out = os.Stderr
 	} else {
 		out = os.Stdout
 	}
-	output := Output{Command: cmd, Rules: *rules, Out: out}
+	output := Output{Command: cmd, Rules: rules, Out: out}
 	return &output
 }
 

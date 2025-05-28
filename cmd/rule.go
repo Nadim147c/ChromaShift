@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -17,9 +16,9 @@ var StaticRulesDirectory embed.FS
 
 type (
 	CommandRules struct {
-		Rules  *[]Rule `toml:"rules"`
-		Stderr bool    `toml:"stderr"`
-		PTY    bool    `toml:"pty"`
+		Rules  []Rule `toml:"rules"`
+		Stderr bool   `toml:"stderr"`
+		PTY    bool   `toml:"pty"`
 	}
 
 	Rule struct {
@@ -31,12 +30,12 @@ type (
 	}
 )
 
-func SortRules(rules *[]Rule) {
-	sort.Slice(*rules, func(i int, j int) bool {
-		if (*rules)[i].Overwrite != (*rules)[j].Overwrite {
-			return (*rules)[i].Overwrite
+func SortRules(rules []Rule) {
+	sort.Slice(rules, func(i int, j int) bool {
+		if rules[i].Overwrite != rules[j].Overwrite {
+			return rules[i].Overwrite
 		}
-		return (*rules)[i].Priority < (*rules)[j].Priority
+		return rules[i].Priority < rules[j].Priority
 	})
 }
 
@@ -72,7 +71,8 @@ func LoadRules(ruleFile string) (*CommandRules, error) {
 	}
 
 	for _, rulesDir := range rulesPaths {
-		ruleFilePath := path.Join(rulesDir, ruleFile)
+		ruleFilePath := filepath.Join(rulesDir, ruleFile)
+
 		file, err := os.Open(ruleFilePath)
 		if err != nil {
 			Debug("Failed to load rules file:", ruleFilePath)
