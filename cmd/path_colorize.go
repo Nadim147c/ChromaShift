@@ -68,18 +68,20 @@ func GetColorForMode(path string) (string, error) {
 
 	mode := info.Mode()
 
-	switch {
-	case mode&os.ModeSymlink != 0:
-		return Ansi.Cyan, nil // Symlink
-	case perms == 0777:
-		return Ansi.Bold + Ansi.Green, nil
-	case mode.IsDir():
+	if mode.IsDir() {
 		return Ansi.Blue, nil // Directory
-	case mode&0111 != 0:
-		return Ansi.Green, nil // Other executable files
-	case mode.IsRegular():
-		return Ansi.White, nil // Regular file
-	default:
-		return "", fmt.Errorf("Failed to find color from mode")
 	}
+	if mode&0111 != 0 {
+		return "*" + Ansi.Red, nil // Other executable files
+	}
+	if mode&os.ModeSymlink != 0 {
+		return Ansi.Cyan, nil // Symlink
+	}
+	if perms == 0777 {
+		return Ansi.Bold + Ansi.Green, nil
+	}
+	if mode.IsRegular() {
+		return Ansi.White, nil // Regular file
+	}
+	return "", fmt.Errorf("Failed to find color from mode")
 }
