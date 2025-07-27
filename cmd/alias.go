@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -10,6 +11,7 @@ import (
 func init() {
 	aliasCmd.AddCommand(aliasZshCmd)
 	aliasCmd.AddCommand(aliasBashCmd)
+	aliasCmd.AddCommand(aliasFishCmd)
 	aliasCmd.AddCommand(aliasNuCmd)
 	rootCmd.AddCommand(aliasCmd)
 }
@@ -76,6 +78,38 @@ fi
 		for cmd := range config {
 			fmt.Printf(bashFunction, cmd, cmd, cmd)
 		}
+
+		return nil
+	},
+}
+
+var aliasFishCmd = &cobra.Command{
+	Use: "fish",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		config, err := LoadConfig()
+		if err != nil {
+			return err
+		}
+		cmds := make([]string, 0, len(config))
+		for cmd := range config {
+			cmds = append(cmds, cmd)
+		}
+		fmt.Printf(`#!/bin/fish
+
+set cshift_cmd_list %s
+
+for executable in $cshift_cmd_list
+    if type -q $executable
+        function $executable --inherit-variable executable --wraps=$executable
+            if isatty 1
+                cshift -- $executable $argv
+            else
+                eval command $executable $argv
+            end
+        end
+    end
+end
+`, strings.Join(cmds, " "))
 
 		return nil
 	},
