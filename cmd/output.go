@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -14,7 +15,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/creack/pty"
-	"github.com/efekarakus/termcolor"
 )
 
 type Output struct {
@@ -66,7 +66,7 @@ func (o *Output) Write(char rune) {
 }
 
 func (o *Output) Start(stderr bool) {
-	if Color != "always" && !termcolor.SupportsBasic(o.Out) {
+	if Color != "always" && !isTerminal(o.Out) {
 		startRunWithoutColor(o.Command)
 		os.Exit(0)
 	}
@@ -77,20 +77,20 @@ func (o *Output) Start(stderr bool) {
 		o.Command.Stderr = os.Stderr
 		ioPipe, err = o.Command.StdoutPipe()
 		if err != nil {
-			Debug("Error creating stdout pipe:", err)
+			slog.Debug("Error creating stdout pipe", "error", err)
 			os.Exit(1)
 		}
 	} else {
 		o.Command.Stdout = os.Stdout
 		ioPipe, err = o.Command.StderrPipe()
 		if err != nil {
-			Debug("Error creating stderr pipe:", err)
+			slog.Debug("Error creating stderr pipe", "error", err)
 			os.Exit(1)
 		}
 	}
 
 	if err := o.Command.Start(); err != nil {
-		Debug("Error starting command:", err)
+		slog.Debug("Error starting command", "error", err)
 		os.Exit(1)
 	}
 
@@ -101,7 +101,7 @@ func (o *Output) Start(stderr bool) {
 			if err == io.EOF {
 				break
 			}
-			Debug("Error reading:", err)
+			slog.Debug("Error reading from pipe", "error", err)
 			break
 		}
 
@@ -110,14 +110,14 @@ func (o *Output) Start(stderr bool) {
 }
 
 func (o *Output) StartWithPTY(stderr bool) {
-	if Color != "always" && (!termcolor.SupportsBasic(os.Stderr) || !termcolor.SupportsBasic(os.Stdout)) {
+	if Color != "always" && (!isTerminal(os.Stderr) || !isTerminal(os.Stdout)) {
 		startRunWithoutColor(o.Command)
 		os.Exit(0)
 	}
 
 	ptmx, err := pty.Start(o.Command)
 	if err != nil {
-		Debug("err starting command", err)
+		slog.Debug("Error starting command with pty", "error", err)
 	} else {
 		defer ptmx.Close()
 	}
@@ -130,7 +130,7 @@ func (o *Output) StartWithPTY(stderr bool) {
 	go func() {
 		for range ch {
 			if err := pty.InheritSize(os.Stdin, ptmx); err != nil {
-				fmt.Printf("error resizing pty: %s", err)
+				slog.Debug("Error resizing pty", "error", err)
 			}
 		}
 	}()
@@ -146,7 +146,7 @@ func (o *Output) StartWithPTY(stderr bool) {
 			if err == io.EOF {
 				break
 			}
-			Debug("Error reading:", err)
+			slog.Debug("Error reading from pty", "error", err)
 			break
 		}
 

@@ -1,13 +1,16 @@
 package cmd
 
 import (
-	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"os/signal"
 	"syscall"
 
-	"github.com/efekarakus/termcolor"
+	"github.com/MatusOllah/slogcolor"
+	termcolor "github.com/fatih/color"
+	cc "github.com/ivanpirog/coloredcobra"
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 )
 
@@ -17,14 +20,22 @@ var (
 	Color          string
 	ConfigFile     string
 	RulesDirectory string
-	Verbose        bool
+	Debug          bool
 	UseColor       bool
 )
 
-func Debug(a ...any) {
-	if Verbose {
-		fmt.Fprintln(os.Stderr, a...)
-	}
+func init() {
+	rootCmd.SetErrPrefix("ChromaShift Error:")
+	rootCmd.Flags().StringVar(&ConfigFile, "config", "", "specify path to the config file")
+	rootCmd.Flags().StringVar(&RulesDirectory, "rules-dir", "", "specify path to the rules directory")
+	rootCmd.Flags().StringVar(&Color, "color", "auto", "whether use color or not (never, auto, always)")
+	rootCmd.Flags().BoolVarP(&Debug, "debug", "d", false, "verbose output")
+}
+
+func isTerminal(f *os.File) bool {
+	return os.Getenv("TERM") != "dumb" &&
+		(isatty.IsTerminal(f.Fd()) ||
+			isatty.IsCygwinTerminal(f.Fd()))
 }
 
 func startRunWithoutColor(runCmd *exec.Cmd) {
@@ -38,6 +49,36 @@ var rootCmd = &cobra.Command{
 	Use:     "cshift",
 	Version: Version,
 	Short:   "A output colorizer for your favorite commands",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		switch Color {
+		case "never":
+			UseColor = false
+		case "always":
+			UseColor = true
+		default:
+			UseColor = isTerminal(os.Stdout)
+		}
+
+		termcolor.NoColor = !isTerminal(os.Stderr)
+
+		opts := slogcolor.DefaultOptions
+		opts.NoTime = true
+		opts.SrcFileMode = 0
+		opts.LevelTags = map[slog.Level]string{
+			slog.LevelDebug: termcolor.New(termcolor.FgGreen).Sprint("ChromaShift"),
+			slog.LevelInfo:  termcolor.New(termcolor.FgCyan).Sprint("ChromaShift"),
+			slog.LevelWarn:  termcolor.New(termcolor.FgYellow).Sprint("ChromaShift"),
+			slog.LevelError: termcolor.New(termcolor.FgRed).Sprint("ChromaShift"),
+		}
+
+		if Debug {
+			opts.Level = slog.LevelDebug
+		} else {
+			opts.Level = slog.LevelInfo + 1000
+		}
+
+		slog.SetDefault(slog.New(slogcolor.NewHandler(os.Stderr, opts)))
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		UseColor = true
 
@@ -51,44 +92,35 @@ var rootCmd = &cobra.Command{
 
 		runCmd := exec.Command(cmdName, cmdArgs...)
 
-		switch Color {
-		case "never":
-			UseColor = false
-		case "always":
-			UseColor = true
-		default:
-			UseColor = termcolor.SupportsBasic(os.Stdout) || termcolor.SupportsBasic(os.Stderr)
-		}
-
 		if !UseColor {
 			startRunWithoutColor(runCmd)
 		}
 
 		config, err := LoadConfig()
 		if err != nil {
-			Debug("Failed to load config:", err)
+			slog.Debug("Failed to load config", "error", err)
 		}
 
 		ruleFileName, err := GetRuleFileName(config, args)
 		if err != nil {
-			Debug("No config exists for current command")
+			slog.Debug("No config exists for current command")
 			startRunWithoutColor(runCmd)
 		} else {
-			Debug("Rules file name", ruleFileName)
+			slog.Debug("Rules file name", "name", ruleFileName)
 		}
 
 		cmdRules, err := LoadRules(ruleFileName)
 		if err != nil {
-			Debug("Failed to load rules for current command:", err)
+			slog.Debug("Failed to load rules for current command", "error", err)
 			startRunWithoutColor(runCmd)
 		}
 
 		if cmdRules.Rules == nil {
-			Debug("No config exists for current command")
+			slog.Debug("No config exists for current command")
 			startRunWithoutColor(runCmd)
 		}
 
-		Debug("Rules found:", len(cmdRules.Rules))
+		slog.Debug("Rules found", "count", len(cmdRules.Rules))
 
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -96,7 +128,7 @@ var rootCmd = &cobra.Command{
 		go func() {
 			sig := <-sigChan
 			if err := runCmd.Process.Signal(sig); err != nil {
-				Debug("Error sending signal to process:", err)
+				slog.Debug("Error sending signal to process", "error", err)
 			}
 		}()
 
@@ -110,71 +142,27 @@ var rootCmd = &cobra.Command{
 		}
 
 		if err := runCmd.Wait(); err != nil {
-			Debug("Error waiting for command:", err)
+			slog.Debug("Error waiting for command", "error", err)
 			os.Exit(1)
 		}
 	},
 }
 
 func Execute() {
-	cobra.AddTemplateFunc("Heading", func(s any) string {
-		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
-			return Ansi.Yellow + Ansi.Bold + fmt.Sprint(s) + Ansi.Reset
-		} else {
-			return fmt.Sprint(s)
-		}
+	cc.Init(&cc.Config{
+		RootCmd:         rootCmd,
+		Headings:        cc.Cyan + cc.Bold + cc.Underline,
+		Commands:        cc.Yellow + cc.Bold,
+		CmdShortDescr:   cc.Bold,
+		Example:         cc.Italic,
+		ExecName:        cc.Bold,
+		Flags:           cc.Green + cc.Bold,
+		FlagsDataType:   cc.Red + cc.Bold,
+		NoExtraNewlines: true,
 	})
-	cobra.AddTemplateFunc("CommandName", func(s any) string {
-		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
-			return Ansi.Green + fmt.Sprint(s) + Ansi.Reset
-		} else {
-			return fmt.Sprint(s)
-		}
-	})
-	cobra.AddTemplateFunc("Option", func(s any) string {
-		if color, _ := rootCmd.Flags().GetString("color"); termcolor.SupportsBasic(os.Stdout) || color == "always" {
-			return Ansi.Red + fmt.Sprint(s) + Ansi.Reset
-		} else {
-			return fmt.Sprint(s)
-		}
-	})
-
-	rootCmd.SetHelpTemplate("{{ Heading .Short }}\n\n{{.UsageString}}")
-
-	usage := `{{/* gotmpl */}}
-
-{{- Heading "Usage" }}:
-  {{ CommandName "cshift" }} [{{ Option "CHROMASHIFT_OPTIONS" }}] {{ Option "--" }} <{{ CommandName "COMMAND" }}> [{{ Option "OPTIONS" }}]
-
-{{ Heading "Examples" }}:
-  {{ CommandName "cshift" }} {{ Option "--" }} {{ CommandName "stat" }} {{ Option "go.mod" }}{{if .HasAvailableSubCommands}}{{$cmds := .Commands}}{{if eq (len .Groups) 0}}
-
-{{ Heading "Available Commands" }}:{{range $cmds}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{ CommandName (rpad .Name .NamePadding) }} {{.Short}}{{end}}{{end}}{{else}}{{range $group := .Groups}}
-
-{{.Title}}{{range $cmds}}{{if (and (eq .GroupID $group.ID) (or .IsAvailableCommand (eq .Name "help")))}}
-  {{ CommandName (rpad .Name .NamePadding) }} {{.Short}}{{end}}{{end}}{{end}}{{if not .AllChildCommandsHaveGroup}}
-
-{{ Heading "Additional Commands" }}:{{range $cmds}}{{if (and (eq .GroupID "") (or .IsAvailableCommand (eq .Name "help")))}}
-  {{ CommandName (rpad .Name .NamePadding) }} {{.Short}}{{end}}{{end}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
-
-{{ Heading "Flags"}}:
-{{ Option (.LocalFlags.FlagUsages | trimTrailingWhitespaces) }}{{end}}{{if .HasAvailableSubCommands}}
-
-{{ Heading "Use" }}: "{{ CommandName .CommandPath }} <{{ CommandName "COMMAND" }}> {{ Option "--help" }}" for more information about a command.{{end -}}
-`
-	rootCmd.SetUsageTemplate(usage)
 
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
-}
-
-func init() {
-	rootCmd.SetErrPrefix("ChromaShift Error:")
-	rootCmd.Flags().StringVar(&ConfigFile, "config", "", "specify path to the config file")
-	rootCmd.Flags().StringVar(&RulesDirectory, "rules-dir", "", "specify path to the rules directory")
-	rootCmd.Flags().StringVar(&Color, "color", "auto", "whether use color or not (never, auto, always)")
-	rootCmd.Flags().BoolVarP(&Verbose, "debug", "d", false, "verbose output")
 }

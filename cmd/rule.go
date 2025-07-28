@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -44,16 +45,15 @@ func LoadRules(ruleFile string) (*CommandRules, error) {
 
 	if len(RulesDirectory) > 0 {
 		ruleFilePath := filepath.Join(RulesDirectory, ruleFile)
-		Debug("Loading rules file:", ruleFilePath)
+		slog.Debug("Loading rules file", "path", ruleFilePath)
 
 		_, err := toml.DecodeFile(ruleFilePath, &cmdRules)
 		if err == nil {
 			SortRules(cmdRules.Rules)
 			return &cmdRules, err
 		} else {
-			Debug("Failed decoding toml file:", err)
+			slog.Debug("Failed decoding toml file", "error", err)
 		}
-
 	}
 
 	rulesPaths := []string{}
@@ -67,7 +67,7 @@ func LoadRules(ruleFile string) (*CommandRules, error) {
 	if err == nil {
 		rulesPaths = append(rulesPaths, filepath.Join(homeDir, ".config/ChromaShift/rules"))
 	} else {
-		Debug("Error getting home directory:", err)
+		slog.Debug("Error getting home directory", "error", err)
 	}
 
 	for _, rulesDir := range rulesPaths {
@@ -75,22 +75,22 @@ func LoadRules(ruleFile string) (*CommandRules, error) {
 
 		file, err := os.Open(ruleFilePath)
 		if err != nil {
-			Debug("Failed to load rules file:", ruleFilePath)
+			slog.Debug("Failed to load rules file", "path", ruleFilePath, "error", err)
 			continue
 		}
 		defer file.Close()
 
-		Debug("Loading rules file:", ruleFilePath)
+		slog.Debug("Loading rules file", "path", ruleFilePath)
 
 		content, err := io.ReadAll(file)
 		if err != nil {
-			Debug(err)
+			slog.Debug("Error reading rules file", "error", err)
 			continue
-
 		}
+
 		_, err = toml.Decode(string(content), &cmdRules)
 		if err != nil {
-			Debug("Error decoding toml", err)
+			slog.Debug("Error decoding toml", "error", err)
 			continue
 		}
 
@@ -100,7 +100,7 @@ func LoadRules(ruleFile string) (*CommandRules, error) {
 
 	ruleFilePath := filepath.Join("rules", ruleFile)
 
-	Debug("Loading rules from embed rules:", ruleFilePath)
+	slog.Debug("Loading rules from embedded rules", "path", ruleFilePath)
 
 	fileContentBytes, err := StaticRulesDirectory.ReadFile(ruleFilePath)
 	if err == nil {
@@ -113,5 +113,5 @@ func LoadRules(ruleFile string) (*CommandRules, error) {
 		return &cmdRules, err
 	}
 
-	return nil, fmt.Errorf("No rules found.")
+	return nil, fmt.Errorf("No rules found")
 }

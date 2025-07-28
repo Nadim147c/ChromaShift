@@ -1,6 +1,9 @@
 package cmd
 
-import "strings"
+import (
+	"log/slog"
+	"strings"
+)
 
 func ExtentColorMapFromMatches(colorMap map[int]string, matches [][]int, colors []string) {
 	for _, match := range matches {
@@ -46,7 +49,7 @@ func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, curren
 
 			path := currentLine[start:end]
 
-			Debug("Path:", path)
+			slog.Debug("Path", "value", path)
 
 			basePathIndex := start
 			for i := len(path) - 1; i >= 0; i-- {
@@ -63,7 +66,7 @@ func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, curren
 				addResetToColorMap(colorMap, end)
 				return
 			} else {
-				Debug(err)
+				slog.Debug("GetLsColor failed", "error", err)
 			}
 
 			if cfgStyle, err := GetColorForMode(path); err == nil {
@@ -71,12 +74,11 @@ func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, curren
 				addResetToColorMap(colorMap, end)
 				return
 			} else {
-				Debug(err)
+				slog.Debug("GetColorForMode failed", "error", err)
 			}
 
 			colorMap[basePathIndex] = Ansi.Reset + Ansi.Bold + Ansi.Gray
 			addResetToColorMap(colorMap, end)
-
 		}
 	}
 }
@@ -101,14 +103,14 @@ func ColorizeLine(line string, rules []Rule) string {
 		}
 
 		if rule.Overwrite {
-			Debug("Overwriting other rules for current line")
+			slog.Debug("Overwriting other rules for current line")
 			colorMap = make(map[int]string)
 			ExtentColorMapFromMatches(colorMap, matches, colors)
 			break
 		}
 
 		if rule.Type == "path" {
-			Debug("Use LS_COLORS parser")
+			slog.Debug("Using Path parser")
 			ExtentColorMapWithLsColors(colorMap, matches, line)
 			continue
 		}

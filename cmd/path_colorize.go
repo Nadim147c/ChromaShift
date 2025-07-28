@@ -3,6 +3,7 @@ package cmd
 import (
 	_ "embed"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,7 +41,7 @@ func GetLsColor(line string) (string, error) {
 
 			g, err := glob.Compile(pattern)
 			if err != nil {
-				Debug("Failed compiling glob", pattern)
+				slog.Debug("Failed compiling glob", "pattern", pattern, "error", err)
 				continue
 			}
 			LsColorsMap = append(LsColorsMap, LsColor{Glob: g, Code: colorCode})

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"maps"
 	"os"
 	"path/filepath"
@@ -60,12 +61,12 @@ func GetRuleFileName(config Config, args []string) (string, error) {
 			return commandConfig.File, nil
 		}
 
-		Debug("Loading sub commands for", cmdBaseName)
+		slog.Debug("Loading sub commands", "command", cmdBaseName)
 		ruleFileName, err := GetRuleFileNameForSubcommand(commandConfig.Sub, args)
 		if err == nil {
 			return ruleFileName, nil
 		} else {
-			Debug(err)
+			slog.Debug("Subcommand resolution failed", "error", err)
 		}
 	}
 
@@ -75,16 +76,16 @@ func GetRuleFileName(config Config, args []string) (string, error) {
 				return values.File, nil
 			}
 
-			Debug("Loading sub commands for", name)
+			slog.Debug("Loading sub commands", "command", name)
 			ruleFileName, err := GetRuleFileNameForSubcommand(values.Sub, args)
 			if err == nil {
 				return ruleFileName, nil
 			} else {
-				Debug(err)
+				slog.Debug("Subcommand resolution failed", "error", err)
 			}
 		}
 
-		Debug("Regex", values.Regexp)
+		slog.Debug("Evaluating regex", "pattern", values.Regexp)
 
 		if values.Regexp == "" {
 			continue
@@ -96,12 +97,12 @@ func GetRuleFileName(config Config, args []string) (string, error) {
 				return values.File, nil
 			}
 
-			Debug("Loading sub commands for", name)
+			slog.Debug("Loading sub commands", "command", name)
 			ruleFileName, err := GetRuleFileNameForSubcommand(values.Sub, args)
 			if err == nil {
 				return ruleFileName, nil
 			} else {
-				Debug(err)
+				slog.Debug("Subcommand resolution failed", "error", err)
 			}
 		}
 	}
@@ -112,20 +113,20 @@ func GetRuleFileName(config Config, args []string) (string, error) {
 func LoadConfig() (Config, error) {
 	var config Config
 
-	Debug("Loading embedded config")
+	slog.Debug("Loading embedded config")
 
 	_, err := toml.Decode(StaticConfig, &config)
 	if err != nil {
-		Debug("Err loading embedded config", err)
+		slog.Debug("Error loading embedded config", "error", err)
 	}
 
 	if len(ConfigFile) > 0 {
-		Debug("Loading config file:", ConfigFile)
+		slog.Debug("Loading config file", "file", ConfigFile)
 		_, err := toml.DecodeFile(ConfigFile, &config)
 		if err == nil {
 			return nil, err
 		} else {
-			Debug("Failed Loading config file:", err)
+			slog.Debug("Failed to load config file", "error", err)
 		}
 	}
 
@@ -136,7 +137,7 @@ func LoadConfig() (Config, error) {
 
 	cfgDir, err := os.UserConfigDir()
 	if err != nil {
-		Debug("Error getting config directory:", err)
+		slog.Debug("Failed to get config directory", "error", err)
 	} else {
 		path := filepath.Join(cfgDir, "ChromaShift", "config.toml")
 		configPaths = append(configPaths, path)
@@ -156,19 +157,17 @@ func LoadConfig() (Config, error) {
 func loadConfigFile(path string, config Config) {
 	file, err := os.Open(path)
 	if err != nil {
-		Debug("Failed to loading config file:", path)
-		Debug(err)
+		slog.Debug("Failed to open config file", "file", path, "error", err)
 		return
 	}
 	defer file.Close()
 
-	Debug("Loading config file:", path)
+	slog.Debug("Loading config file", "file", path)
 
 	var additionalConfig Config
 	_, err = toml.NewDecoder(file).Decode(&additionalConfig)
 	if err != nil {
-		Debug("Can't load config from path:", path)
-		Debug(err)
+		slog.Debug("Failed to decode config", "file", path, "error", err)
 		return
 	}
 
