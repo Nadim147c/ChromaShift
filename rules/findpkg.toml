@@ -2,4 +2,4 @@
 
 [[rules]]
 regexp = '\s+(.+)/(.+)\s+(.+/)(.+)'
-colors = 'bold blue,green,gray,red'
+colors = ',bold blue,green,gray,red'

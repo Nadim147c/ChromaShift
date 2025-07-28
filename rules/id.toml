@@ -2,12 +2,12 @@
 
 [[rules]] # Groups
 regexp = '(\d+)\((\w+)\)'
-colors = 'yellow,bold yellow'
+colors = ',yellow,bold yellow'
 
 [[rules]] # User
 regexp = 'uid.(\d+)\((\w+)\)'
-colors = 'green,bold green'
+colors = ',green,bold green'
 
 [[rules]] # SELinux
 regexp = '(\w+_u):(\w+_r):(\w+_t):([\w\-.:]+)'
-colors = 'green,yellow,cyan,magenta'
+colors = ',green,yellow,cyan,magenta'

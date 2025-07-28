@@ -2,20 +2,20 @@
 
 [[rules]] # Field
 regexp = '((?:IO )?\S+):\s'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]] # Filename
 regexp = 'File: ‘?(\S+)’?'
-type = "path"
+colors = ",path"
 
 [[rules]] # File-Type
 regexp = 'IO\s*Block:\s*\d+\s+(.*)$'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]] # Permission-Numbers
 regexp = '\((\d)(\d)(\d)(\d)\/'
-colors = 'blue,red,yellow,green'
+colors = ',blue,red,yellow,green'
 
 [[rules]] # owner-rwx
 regexp = '([-bcCdDlMnpPs?]((-|r))(-|w)(-|[xsStT]))(-|r)(-|w)(-|[xsStT])(-|r)(-|w)(-|[xsStT])'
-colors = 'blue,green,red,yellow,green,red,yellow,green,red,yellow,green'
+colors = ',blue,green,red,yellow,green,red,yellow,green,red,yellow,green'

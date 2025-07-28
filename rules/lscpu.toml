@@ -4,12 +4,12 @@ pty = true
 
 [[rules]]
 regexp = '(.+)'
-colors = 'yellow'
+colors = ',yellow'
 
 [[rules]]
 regexp = '^(\S[^:]+):(.+)?'
-colors = "green,yellow"
+colors = ",green,yellow"
 
 [[rules]]
 regexp = '^\s+(\S[^:]+):(.+)?'
-colors = "cyan,yellow"
+colors = ",cyan,yellow"

@@ -2,64 +2,64 @@
 
 [[rules]] # IP
 regexp = '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-colors = 'bold magenta'
+colors = ',bold magenta'
 
 [[rules]] # IPv6
 regexp = '(([0-9a-fA-F]{1,4})?\:\:?[0-9a-fA-F]{1,4})+'
-colors = 'bold magenta'
+colors = ',bold magenta'
 
 [[rules]] # Icmp_Seq
 regexp = 'icmp_seq=(\d+)'
-colors = 'bold yellow'
+colors = ',bold yellow'
 
 [[rules]] # TTL
 regexp = 'ttl=(\d+)'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]] # Name
 regexp = '(?:[fF]rom|PING)\s(\S+)\s'
-colors = 'blue'
+colors = ',blue'
 
 [[rules]] # Time
 regexp = '([0-9\.]+)\s?(ms)'
-colors = 'bold green,bold'
+colors = ',bold green,bold'
 
 [[rules]] # Bytes
 regexp = '([0-9]+)\s?(bytes)'
-colors = 'bold red,bold'
+colors = ',bold red,bold'
 
 [[rules]] # DUP
 regexp = 'DUP\!'
-colors = 'red'
+colors = ',red'
 
 [[rules]] # OK
 regexp = ' 0(\.0)?% packet loss'
-colors = 'green'
+colors = ',green'
 
 [[rules]] # Errors
 regexp = '(Destination Host Unreachable|100(\.0)?% packet loss)'
-colors = 'red'
+colors = ',red'
 
 [[rules]] # Unknown-Host
 regexp = '.+unknown\shost\s(.+)'
-colors = 'red,bold red'
+colors = ',red,bold red'
 
 [[rules]] # Statistics-Header
 regexp = '--- (\S+) ping statistics ---'
-colors = 'bold,bold blue'
+colors = ',bold,bold blue'
 
 [[rules]] # min_avg_max_mdev
 regexp = 'rtt (min)/(avg)/(max)/(mdev)'
-colors = 'yellow,blue,red,magenta'
+colors = ',yellow,blue,red,magenta'
 
 [[rules]] # Last-Line-Values
 regexp = '\=\s([0-9\.]+)\/([0-9\.]+)\/([0-9\.]+)\/([0-9\.]+)'
-colors = 'yellow,blue,red,magenta'
+colors = ',yellow,blue,red,magenta'
 
 [[rules]] # these-are-good-for-nping
 regexp = 'SENT|RCVD'
-colors = 'red'
+colors = ',red'
 
 [[rules]] # NPing
 regexp = 'unreachable'
-colors = 'red'
+colors = ',red'

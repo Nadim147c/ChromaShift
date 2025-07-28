@@ -4,133 +4,133 @@ stderr = true
 
 [[rules]]
 regexp = '\s(read)\b'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]]
 regexp = '\s(write)\b'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]]
 regexp = '\s(openat)\b'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
 regexp = '\s(close)\b'
-colors = 'bold yellow'
+colors = ',bold yellow'
 
 [[rules]]
 regexp = '\s(execve)\b'
-colors = 'bold gray'
+colors = ',bold gray'
 
 [[rules]]
 regexp = '\s(fork)\b'
-colors = 'bold yellow'
+colors = ',bold yellow'
 
 [[rules]]
 regexp = '\s(clone)\b'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]]
 regexp = '\s(wait4)\b'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]]
 regexp = '\s(exit)\b'
-colors = 'bold magenta'
+colors = ',bold magenta'
 
 [[rules]]
 regexp = '\s(kill)\b'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]]
 regexp = '\s(mmap)\b'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
 regexp = '\s(munmap)\b'
-colors = 'bold magenta'
+colors = ',bold magenta'
 
 [[rules]]
 regexp = '\s(stat)\b'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]]
 regexp = '\s(statfs)\b'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]]
 regexp = '\s(lstat)\b'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]]
 regexp = '\s(arch_prctl)\b'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]]
 priority = 100
 regexp = '\s(fstat)\b'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
 regexp = '\s(lseek)\b'
-colors = 'bold gray'
+colors = ',bold gray'
 
 [[rules]]
 regexp = '\s(ioctl)\b'
-colors = 'bold magenta'
+colors = ',bold magenta'
 
 [[rules]]
 regexp = '\s(getpid)\b'
-colors = 'bold yellow'
+colors = ',bold yellow'
 
 [[rules]]
 regexp = '\s(brk)\b'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]]
 regexp = '\s(uname)\b'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]]
 regexp = '\s(access)\b'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
 regexp = '\s(pipe)\b'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]]
 regexp = '\s(dup)\b'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]]
 regexp = '\s(chdir)\b'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]]
 regexp = '\s(chmod)\b'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]]
 regexp = '\s(futex)\b'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]]
 regexp = '\s(chown)\b'
-colors = 'bold black'
+colors = ',bold black'
 
 [[rules]]
 regexp = '\s(symlink)\b'
-colors = 'bold yellow'
+colors = ',bold yellow'
 
 [[rules]]
 regexp = '\s(unlink)\b'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
 regexp = '\s(mkdir)\b'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]]
 regexp = '\s(rmdir)\b'
-colors = 'bold red'
+colors = ',bold red'

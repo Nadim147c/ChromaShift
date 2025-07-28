@@ -1,5 +1,5 @@
 "$schema" = "../rule.schema.json"
 
 [[rules]]
-regexp = '(.*)'
-type = "path"
+regexp = '.*'
+colors = "path"

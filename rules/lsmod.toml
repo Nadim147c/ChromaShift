@@ -2,4 +2,4 @@
 
 [[rules]] # Main
 regexp = '(\S+)\s+(\d+)\s+(\d+)'
-colors = 'green,cyan,yellow'
+colors = ',green,cyan,yellow'

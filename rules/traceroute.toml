@@ -2,44 +2,44 @@
 
 [[rules]] # Number
 regexp = '^\s*(\d+)\s+'
-colors = 'bold white'
+colors = ',bold white'
 
 [[rules]] # hostname
 regexp = '(\s\w+[\w\-\.]+\w+)'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]] # IP
 regexp = '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-colors = 'magenta'
+colors = ',magenta'
 
 [[rules]] # IPv6
 regexp = '(([0-9a-fA-F]{1,4})?\:\:?[0-9a-fA-F]{1,4})+'
-colors = 'magenta'
+colors = ',magenta'
 
 [[rules]] # Time
 regexp = '(?:(\d+\.?\d*)\s*ms)'
-colors = 'green'
+colors = ',green'
 
 [[rules]] # ms
 regexp = '\b(ms)\b'
-colors = 'yellow'
+colors = ',yellow'
 
 [[rules]] # DUP
 regexp = '\b(DUP)'
-colors = 'red'
+colors = ',red'
 
 [[rules]] # host_unreachable
 regexp = '\s\!([HNPSFXVC]|\d+)'
-colors = 'red'
+colors = ',red'
 
 [[rules]] # TTL
 regexp = '(ttl=\d+\!)'
-colors = 'cyan'
+colors = ',cyan'
 
 [[rules]] # star
 regexp = '(\*)'
-colors = 'red'
+colors = ',red'
 
 [[rules]] # parenthesis
 regexp = '(\(|\))'
-colors = 'yellow'
+colors = ',yellow'

@@ -3,68 +3,68 @@
 [[rules]] # Heading
 overwrite = true
 regexp = '^([A-Z\s%]*([A-Z]{3})[A-Z\s%]*)$'
-colors = 'bold blue underline'
+colors = ',bold blue underline'
 
 [[rules]] # fullpath
 regexp = '(?:\s|^)(/[-\w\d\.]+/[-\w\d./]+)'
-type = "path"
+colors = ",path"
 
 [[rules]] # Capd_Line
 regexp = '^([A-Z][-a-z0-9]+(\s+|$)){3,}$'
-colors = 'underline'
+colors = ',underline'
 
 [[rules]] # PID
 regexp = '^[a-zA-Z]+\w+\+?\s+(\d+)|^\d\s+\w\s+(?:\w+\s+)?(\d+)|^\s*(\d+)'
-colors = 'bold magenta'
+colors = ',bold magenta'
 
 [[rules]] # nnn
 regexp = '(\s|^)(?:(\d+\.\d+\.\d+)[\s,]|$)'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]] # username
 regexp = '^([a-zA-z]\S+)\b'
-colors = 'green'
+colors = ',green'
 
 [[rules]] # root
 regexp = '(?:(root|wheel)\s|$)'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]] # text2
 regexp = '^([-a-z0-9]+):\s'
-colors = 'yellow'
+colors = ',yellow'
 
 [[rules]] # options
 regexp = '\s(-\w+)\s|$'
-colors = 'cyan'
+colors = ',cyan'
 
 [[rules]] # long_option
 regexp = '\s(-(?:-[\w\d]+)+(=|\s)?([^ ]+)?)'
-colors = 'cyan'
+colors = ',cyan'
 
 [[rules]] # pts
 regexp = '(?:(?:\s|^)(pts/\d+)[^\w\d]|$)'
-colors = 'yellow'
+colors = ',yellow'
 
 [[rules]] # tty
 regexp = '(?:(?:\s|^)(tty\d+)[^\w\d]|$)'
-colors = 'cyan'
+colors = ',cyan'
 
 [[rules]] # Negative_NICE
 regexp = '^\d\s+\w\s+\w+\s+\d+\s+\d+\s+\d\s+\d+\s+(-\d+)'
-colors = 'bgred bold white'
+colors = ',bgred bold white'
 
 [[rules]] # Neutral_NICE
 regexp = '^\d\s+\w\s+\w+\s+\d+\s+\d+\s+\d\s+\d+\s+(\d+)'
-colors = 'cyan'
+colors = ',cyan'
 
 [[rules]] # Positive_NICE
 regexp = '^\d\s+\w\s+\w+\s+\d+\s+\d+\s+\d\s+\d+\s+(1\d)'
-colors = 'bgcycan bold white'
+colors = ',bgcycan bold white'
 
 [[rules]] # Process_ZOMBIE
 regexp = '^\d\s+([zZ])\s'
-colors = 'bgred bold white'
+colors = ',bgred bold white'
 
 [[rules]] # Process_RS
 regexp = '^\d\s+([sSrR])\s'
-colors = 'unchanged,on_magenta black'
+colors = ',unchanged,on_magenta black'

@@ -2,41 +2,45 @@
 
 [[rules]] # Url
 regexp = '(https?://(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?)'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]] # youtube
 regexp = '^\[(youtube)\]'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]] # youtube
 regexp = '^\[(Cookies)\]'
-colors = 'bold magenta'
+colors = ',bold magenta'
 
 [[rules]] # youtube
 regexp = '^\[(debug)\]'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]] # info
 regexp = '^\[(info)\]'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]] # download
 regexp = '^\[(download)\]'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]] # download progress
 overwrite = true
 regexp = '^\[(download)\]\s+(\d*[\.,]?\d+%)\s+of\s+(\d*[\.,]?\d+(?:K|M|G|T)iB)\s+at\s+(\d*[\.,]?\d+(?:K|M|G|T)iB/s)\s+ETA(.*)$'
-colors = 'bold green,yellow,green,cyan,blue'
+colors = ',bold green,yellow,green,cyan,blue'
 
 [[rules]] # Merger
 regexp = '^\[(Merger)\] Merging formats into "(.*)"'
-colors = 'bold yellow,magenta'
+colors = ',bold yellow,path'
+
+[[rules]]
+regexp = '\[info\] Writing video thumbnail \d+ to: (.*)'
+colors = ',path'
 
 [[rules]] # Destination
 regexp = '^\[download\] (Destination): (.*)'
-colors = 'yellow,magenta'
+colors = ',yellow,path'
 
 [[rules]] # Deleting
 regexp = '^Deleting original file (.*) \(pass -k to keep\)'
-colors = 'magenta'
+colors = ',magenta'

@@ -2,24 +2,24 @@
 
 [[rules]] # Main Nodes
 regexp = '^(\S[^:]+):$'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]] # Sub Nodes
 regexp = '^\s([^:]+):\s?(.*)$'
-colors = 'cyan,magenta'
+colors = ',cyan,magenta'
 
 [[rules]] # Other headings
 regexp = '^\s([^:]+):$'
-colors = 'yellow'
+colors = ',yellow'
 
 [[rules]] # Warning
 regexp = '(WARNING):\s(.+)$'
-colors = 'bold yellow, yellow'
+colors = ',bold yellow, yellow'
 
 [[rules]] # devicemapper
 regexp = 'devicemapper$'
-colors = 'red'
+colors = ',red'
 
 [[rules]] # loop-lvm
 regexp = ': (/var/lib/docker/devicemapper/devicemapper/(?:meta)?data)'
-colors = 'red'
+colors = ',red'

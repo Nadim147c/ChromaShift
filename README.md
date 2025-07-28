@@ -82,11 +82,10 @@ colorization rule for the `du` command (note: a rule for `du` already exists).
    ```toml
    [[rules]] # Total
    regexp = '(.*)\s+(total)$'
-   colors = 'bold yellow bgblue'
+   colors = ',bold yellow bgblue'
    ```
 
    In this example:
-
    - `regexp` is the regular expression that matches the text you want to style.
    - `colors` specifies the styles to apply. You can use multiple styles by
      separating them with spaces (e.g., `bold yellow bgblue` applies bold yellow text
@@ -98,13 +97,14 @@ colorization rule for the `du` command (note: a rule for `du` already exists).
    ```toml
    [[rules]] # Destination
    regexp = '^\[download\] (Destination): (.*)'
-   colors = 'yellow,magenta'
+   colors = ',yellow,path'
    ```
 
    In this rule:
-
    - The word "Destination" is colored yellow.
-   - The second group (anything that comes after "Destination") is colored magenta.
+   - The second group (anything that comes after "Destination") is colored using
+     path. The path is special color because it looks the file permission and your
+     `LS_COLORS` variable to style the selected group.
 
 5. **More Options:**
    - `pty`: Executes the command inside a pseudo-terminal (pty).
@@ -112,7 +112,6 @@ colorization rule for the `du` command (note: a rule for `du` already exists).
    - `rules.overwrite`: Overwrites a matching rule if another rule applies to the
      current line.
    - `rules.priority`: Sets the priority for a rule if multiple rules match a line.
-   - `rules.type = path`: Colors the path using LS_COLORS and file permissions.
 
 ## Contributing Your Rule
 

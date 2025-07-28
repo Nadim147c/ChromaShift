@@ -1,7 +1,5 @@
 package cmd
 
-import "strings"
-
 type AnsiCode struct {
 	Reset     string
 	Bold      string
@@ -57,8 +55,6 @@ var Ansi = AnsiCode{
 }
 
 func (a AnsiCode) GetColor(colorName string) string {
-	colorName = strings.ToLower(strings.TrimSpace(colorName))
-
 	switch colorName {
 	case "reset":
 		return a.Reset

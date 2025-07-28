@@ -2,55 +2,55 @@
 
 [[rules]] # FS
 overwrite = true
-regexp = '^(Filesystem.*)$'
+regexp = '^Filesystem.*$'
 colors = 'bold blue underline'
 
 [[rules]] # Device
 regexp = '^((\/?[-\w\d.\s]+)+)\s'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]] # Mounted
 regexp = '(\/$|(\/[-\w\d. ]+)+)$'
-colors = 'bold green'
+colors = 'path'
 
 [[rules]] # Size-K-OR-B
-regexp = '(\s\d*[.,]?\d(K|B)i?\s)|\s(\d{1,3}\s)'
+regexp = '\s\d*[.,]?\d(K|B)i?\s|\s(\d{1,3}\s)'
 colors = 'green'
 
 [[rules]] # Size-M
-regexp = '(\s\d*[.,]?\dMi?\s)|\s(\d{4,6}\s)'
+regexp = '\s\d*[.,]?\dMi?\s|\s(\d{4,6}\s)'
 colors = 'yellow'
 
 [[rules]] # Size-G
-regexp = '(\s\d*[.,]?\dGi?\s)|\s(\d{7,9}\s)'
+regexp = '\s\d*[.,]?\dGi?\s|\s(\d{7,9}\s)'
 colors = 'red'
 
 [[rules]] # Size-T
-regexp = '(\s\d*[.,]?\dTi?\s)|\s(\d{10,12}\s)'
+regexp = '\s\d*[.,]?\dTi?\s|\s(\d{10,12}\s)'
 colors = 'bold red'
 
 [[rules]] # Use_0-60
-regexp = '(\s[1-6]?[0-9]%\s)'
+regexp = '\s[1-6]?[0-9]%\s'
 colors = 'green'
 
 [[rules]] # Use_70-89
-regexp = '(\s[78][0-9]%\s)'
+regexp = '\s[78][0-9]%\s'
 colors = 'yellow'
 
 [[rules]] # Use_90-97
-regexp = '(\s9[0-7]%\s)'
+regexp = '\s9[0-7]%\s'
 colors = 'red'
 
 [[rules]] # Use_98-100
-regexp = '(\s9[89]%|100%\s)'
+regexp = '\s9[89]%|100%\s'
 colors = 'bold red'
 
 [[rules]] # Tmpfs_Lines
 overwrite = true
-regexp = '(^tmpfs.*)'
+regexp = '^tmpfs.*'
 colors = 'black'
 
 [[rules]] # overlay
 overwrite = true
-regexp = '(^overlay.*)'
+regexp = '^overlay.*'
 colors = 'black'

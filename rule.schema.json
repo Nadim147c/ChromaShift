@@ -14,7 +14,7 @@
             "type": "string"
           },
           "colors": {
-            "pattern": "^( ?((reset|bold|underline|blink|reverse|conceal)|((bg)?(black|red|green|yellow|blue|magenta|cyan|white|gray))) ?,?)+$"
+            "pattern": "^( ?((reset|bold|underline|blink|reverse|conceal|path)|((bg)?(black|red|green|yellow|blue|magenta|cyan|white|gray))) ?,?)+$"
           },
           "overwrite": {
             "type": "boolean",
@@ -23,11 +23,6 @@
           "priority": {
             "type": "integer",
             "default": 0
-          },
-          "type": {
-            "type": "string",
-            "default": "",
-            "enum": ["path"]
           }
         },
         "additionalProperties": false

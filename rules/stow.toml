@@ -4,60 +4,50 @@ stderr = true
 
 [[rules]] #
 regexp = 'stow dir is (.*)'
-type = 'path'
+colors = ",path"
 
 [[rules]]
 regexp = 'stow dir path relative to target (.*) is (.*)'
-type = 'path'
+colors = ',path,path'
 
 [[rules]] # cwd no/restored to
 regexp = 'cwd (?:now|restored to) (.*)'
-type = "path"
+colors = ",path"
 
 [[rules]]
 regexp = 'Planning stow of: (.*) ...'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
 regexp = 'Planning stow of package ....'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
-regexp = 'level of (.*) is \d+'
-type = "path"
+regexp = 'level of (.*) is (\d+)'
+colors = ',path,red'
 
 [[rules]]
-regexp = 'level of .* is (\d+)'
-colors = 'red'
+regexp = '(---) (Skipping) (.*) as it already points to (.*)'
+colors = ',red,bold yellow,path,path'
+
 
 [[rules]]
-regexp = '(---) (Skipping) .* as it already points to .*'
-colors = 'red,bold yellow'
+regexp = '^Stowing (?:entry|contents of) (.*) / (.*) / (.*)(?: \(cwd=(.*)\))$'
+colors = ',path,path,path,path'
+priority = 100
 
 [[rules]]
-regexp = '--- Skipping (.*) as it already points to .*'
-type = "path"
-
-[[rules]]
-regexp = '--- Skipping .* as it already points to (.*)'
-type = "path"
-
-[[rules]]
-regexp = '^(Stowing (?:entry|contents of)) .* / (.*) / .*$'
-colors = 'cyan,bold green,green'
-
-[[rules]]
-regexp = '^Stowing (?:entry|contents of) (.*) / .* / ([^\(]+)(?:\s\(|$)'
-type = 'path'
+regexp = '^Stowing (?:entry|contents of) (.*) / (.*) / (.*)$'
+colors = ',path,path,path'
 
 [[rules]]
 regexp = '^\s*(\|)'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
 regexp = '^\s*(yes) -'
-colors = 'bold green'
+colors = ',bold green'
 
 [[rules]]
 regexp = '^\s*(is_a_link)\((.*)\):(.*)'
-colors = 'bold cyan,red,green'
+colors = ',bold cyan,red,green'

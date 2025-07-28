@@ -3,64 +3,64 @@
 [[rules]] # Headings
 overwrite = true
 regexp = '^(([A-Z:-]+\s*)+)$'
-colors = 'bold blue'
+colors = ',bold blue'
 
 [[rules]] # Main_HD
 regexp = '^([a-z]+\d?)\s'
-colors = 'bold white'
+colors = ',bold white'
 
 [[rules]] # Partition
 regexp = '([├└─│]+|[\|\`\-]+)(\S+)'
-colors = 'green'
+colors = ',green'
 
 [[rules]] # Partition_LVM
 regexp = '\s+([├└─│]+|[\|\`\-]+)(\S+)'
-colors = 'default,default,cyan'
+colors = ',default,default,cyan'
 
 [[rules]] # Type_Crypt
 regexp = '(?:\s(crypt))\b'
-colors = 'bgmagenta white'
+colors = ',bgmagenta white'
 
 [[rules]] # Type_Disk
 regexp = '(?:\s(disk))\b'
-colors = 'magenta'
+colors = ',magenta'
 
 [[rules]] # Type_LVM
 regexp = '(?:\s(lvm))\b'
-colors = 'bold cyan'
+colors = ',bold cyan'
 
 [[rules]] # Type_Part
 regexp = '(?:\s(part))\b'
-colors = 'cyan'
+colors = ',cyan'
 
 [[rules]] # Type_Loop
 regexp = '(?:\s(loop))\b'
-colors = 'bright_red'
+colors = ',bright_red'
 
 [[rules]] # Size_K
 regexp = '\s(\d*[.,]?\dKi?)\s'
-colors = 'green'
+colors = ',green'
 
 [[rules]] # Size_M
 regexp = '\s(\d*[.,]?\dMi?)\s'
-colors = 'yellow'
+colors = ',yellow'
 
 [[rules]] # Size_G
 regexp = '\s(\d*[.,]?\dGi?)\s'
-colors = 'red'
+colors = ',red'
 
 [[rules]] # Size_T
 regexp = '\s(\d*[.,]?\dTi?)\s'
-colors = 'bold red'
+colors = ',bold red'
 
 [[rules]] # Mount_Path
 regexp = '(?:\s(\/[^\/ ]*))+$'
-colors = 'bold yellow'
+colors = ',bold yellow'
 
 [[rules]] # Mount_SWAP
 regexp = '\s\[(SWAP)\]'
-colors = 'magenta'
+colors = ',magenta'
 
 [[rules]] # UUID
 regexp = '(?:\s([0-9a-fA-F-]{4,}|[\w-]{38}))\b'
-colors = 'magenta'
+colors = ',magenta'
