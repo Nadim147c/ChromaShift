@@ -84,8 +84,7 @@ func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, curren
 }
 
 func ColorizeLine(line string, rules []Rule) string {
-	coloredLine := ""
-
+	var buf strings.Builder
 	colorMap := make(map[int]string)
 
 	for _, rule := range rules {
@@ -119,13 +118,12 @@ func ColorizeLine(line string, rules []Rule) string {
 	}
 
 	for i, char := range line {
-		if len(colorMap[i]) > 0 {
-			color := colorMap[i]
-			coloredLine = coloredLine + color + string(char)
-		} else {
-			coloredLine += string(char)
+		if v, ok := colorMap[i]; ok {
+			buf.WriteString(v)
 		}
+		buf.WriteRune(char)
 	}
+	buf.WriteString(Ansi.Reset)
 
-	return coloredLine + Ansi.Reset
+	return buf.String()
 }

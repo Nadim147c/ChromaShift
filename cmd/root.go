@@ -59,9 +59,15 @@ var rootCmd = &cobra.Command{
 			UseColor = isTerminal(os.Stdout)
 		}
 
-		termcolor.NoColor = !isTerminal(os.Stderr)
-
 		opts := slogcolor.DefaultOptions
+		if Debug {
+			opts.Level = slog.LevelDebug
+		} else {
+			opts.Level = slog.LevelInfo + 1000
+			return
+		}
+
+		termcolor.NoColor = !isTerminal(os.Stderr)
 		opts.NoTime = true
 		opts.SrcFileMode = 0
 		opts.LevelTags = map[slog.Level]string{
@@ -69,12 +75,6 @@ var rootCmd = &cobra.Command{
 			slog.LevelInfo:  termcolor.New(termcolor.FgCyan).Sprint("ChromaShift"),
 			slog.LevelWarn:  termcolor.New(termcolor.FgYellow).Sprint("ChromaShift"),
 			slog.LevelError: termcolor.New(termcolor.FgRed).Sprint("ChromaShift"),
-		}
-
-		if Debug {
-			opts.Level = slog.LevelDebug
-		} else {
-			opts.Level = slog.LevelInfo + 1000
 		}
 
 		slog.SetDefault(slog.New(slogcolor.NewHandler(os.Stderr, opts)))
