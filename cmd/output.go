@@ -38,7 +38,7 @@ func NewOutput(cmd *exec.Cmd, rules []Rule, strerr bool) *Output {
 func (o *Output) Write(char rune) {
 	if char == '\r' {
 		line := o.Buffer.String()
-		coloredLine := ColorizeLine(line, o.Rules)
+		coloredLine := Colorize(line, o.Rules)
 		if len(coloredLine) > 0 {
 			fmt.Fprint(o.Out, coloredLine+"\r")
 		} else {
@@ -55,7 +55,7 @@ func (o *Output) Write(char rune) {
 
 	if char == '\n' {
 		line := strings.TrimRightFunc(o.Buffer.String(), unicode.IsSpace)
-		coloredLine := ColorizeLine(line, o.Rules)
+		coloredLine := Colorize(line, o.Rules)
 		if len(coloredLine) > 0 {
 			fmt.Fprint(o.Out, coloredLine+"\n")
 		} else {

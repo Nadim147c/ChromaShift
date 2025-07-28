@@ -5,38 +5,35 @@ import (
 	"strings"
 )
 
-func ExtentColorMapFromMatches(colorMap map[int]string, matches [][]int, colors []string) {
+type Index map[int]string
+
+func (i Index) Add(idx int, style string) {
+	i[idx] = i[idx] + style
+}
+
+func (i Index) Reset(idx int) {
+	i.Add(idx, Ansi.Reset)
+}
+
+func ExtentIndexFromMatches(index Index, matches [][]int, colors []string) {
 	for _, match := range matches {
 		for i := range (len(match) - 2) / 2 {
 			start := match[i*2+2]
 			end := match[i*2+3]
 
 			cfgStyle := strings.TrimSpace(colors[i%len(colors)])
-			ansiStyles := ""
+
+			var ansiStyles strings.Builder
 			for style := range strings.SplitSeq(cfgStyle, " ") {
-				ansiStyles += Ansi.GetColor(style)
+				ansiStyles.WriteString(Ansi.GetColor(style))
 			}
-			colorMap[start] = ansiStyles
-
-			if len(colorMap[end]) > 0 {
-				colorMap[end] = Ansi.Reset + colorMap[end]
-			} else {
-				colorMap[end] = Ansi.Reset
-			}
-
+			index.Add(start, ansiStyles.String())
+			index.Reset(end)
 		}
 	}
 }
 
-func addResetToColorMap(colorMap map[int]string, index int) {
-	if _, found := colorMap[index]; found {
-		colorMap[index] = Ansi.Reset + colorMap[index]
-	} else {
-		colorMap[index] = Ansi.Reset
-	}
-}
-
-func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, currentLine string) {
+func ExtentIndexForPath(index Index, matches [][]int, line string) {
 	for _, match := range matches {
 		groups := match[2:]
 		for i := range len(groups) / 2 {
@@ -47,7 +44,7 @@ func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, curren
 				continue
 			}
 
-			path := currentLine[start:end]
+			path := line[start:end]
 
 			slog.Debug("Path", "value", path)
 
@@ -59,34 +56,57 @@ func ExtentColorMapWithLsColors(colorMap map[int]string, matches [][]int, curren
 				}
 			}
 
-			colorMap[start] = Ansi.Blue
+			index.Add(start, Ansi.Blue)
 
-			if cfgStyle, err := GetLsColor(currentLine[basePathIndex:end]); err == nil {
-				colorMap[basePathIndex] = Ansi.Reset + cfgStyle
-				addResetToColorMap(colorMap, end)
+			meta, metaErr := GetFileMetadata(path)
+
+			if metaErr == nil && meta.IsEveyone {
+				index.Add(basePathIndex, Ansi.Green+Ansi.Bold)
+				index.Add(end, Ansi.Reset+"!")
 				return
-			} else {
-				slog.Debug("GetLsColor failed", "error", err)
 			}
 
-			if cfgStyle, err := GetColorForMode(path); err == nil {
-				colorMap[basePathIndex] = Ansi.Reset + cfgStyle
-				addResetToColorMap(colorMap, end)
+			if metaErr == nil && meta.IsExecutable {
+				index.Add(basePathIndex, Ansi.Red+Ansi.Bold)
+				index.Add(end, Ansi.Reset+"*")
 				return
-			} else {
-				slog.Debug("GetColorForMode failed", "error", err)
 			}
 
-			colorMap[basePathIndex] = Ansi.Reset + Ansi.Bold + Ansi.Gray
-			addResetToColorMap(colorMap, end)
+			defer index.Reset(end)
+
+			style, err := GetLsColor(line[basePathIndex:end])
+			if err == nil {
+				slog.Debug("GetLsColor (LS_COLORS) failed", "error", err)
+				index.Add(basePathIndex, style)
+				return
+			}
+
+			if metaErr != nil {
+				index.Add(basePathIndex, Ansi.Gray)
+				return
+			}
+			if meta.IsSymlink {
+				index.Add(basePathIndex, Ansi.Magenta)
+				return
+			}
+			if meta.IsDirectory {
+				index.Add(basePathIndex, Ansi.Bold+Ansi.Blue)
+				return
+			}
+
+			if line[basePathIndex] == '.' {
+				index.Add(basePathIndex, Ansi.Gray)
+				return
+			}
+			index.Add(basePathIndex, Ansi.Reset)
 		}
 	}
 }
 
-func ColorizeLine(line string, rules []Rule) string {
+func Colorize(line string, rules []Rule) string {
 	var buf strings.Builder
-	colorMap := make(map[int]string)
 
+	colorMap := make(Index)
 	for _, rule := range rules {
 		re := rule.Regexp
 		if re == nil {
@@ -103,26 +123,33 @@ func ColorizeLine(line string, rules []Rule) string {
 
 		if rule.Overwrite {
 			slog.Debug("Overwriting other rules for current line")
-			colorMap = make(map[int]string)
-			ExtentColorMapFromMatches(colorMap, matches, colors)
+			colorMap = make(Index)
+			ExtentIndexFromMatches(colorMap, matches, colors)
 			break
 		}
 
 		if rule.Type == "path" {
 			slog.Debug("Using Path parser")
-			ExtentColorMapWithLsColors(colorMap, matches, line)
+			ExtentIndexForPath(colorMap, matches, line)
 			continue
 		}
 
-		ExtentColorMapFromMatches(colorMap, matches, colors)
+		ExtentIndexFromMatches(colorMap, matches, colors)
 	}
 
+	var last int
 	for i, char := range line {
 		if v, ok := colorMap[i]; ok {
 			buf.WriteString(v)
 		}
 		buf.WriteRune(char)
+		last++
 	}
+
+	if v, ok := colorMap[last]; ok {
+		buf.WriteString(v)
+	}
+
 	buf.WriteString(Ansi.Reset)
 
 	return buf.String()
