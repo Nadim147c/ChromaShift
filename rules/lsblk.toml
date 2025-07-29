@@ -3,7 +3,7 @@
 [[rules]] # Headings
 overwrite = true
 regexp = '^(([A-Z:-]+\s*)+)$'
-colors = ',bold blue'
+colors = ',bold blue underline'
 
 [[rules]] # Main_HD
 regexp = '^([a-z]+\d?)\s'
@@ -19,7 +19,7 @@ colors = ',default,default,cyan'
 
 [[rules]] # Type_Crypt
 regexp = '(?:\s(crypt))\b'
-colors = ',bgmagenta white'
+colors = ',bgmagenta black'
 
 [[rules]] # Type_Disk
 regexp = '(?:\s(disk))\b'
@@ -54,8 +54,8 @@ regexp = '\s(\d*[.,]?\dTi?)\s'
 colors = ',bold red'
 
 [[rules]] # Mount_Path
-regexp = '(?:\s(\/[^\/ ]*))+$'
-colors = ',bold yellow'
+regexp = '\s(\/.*)+$'
+colors = ',path'
 
 [[rules]] # Mount_SWAP
 regexp = '\s\[(SWAP)\]'
