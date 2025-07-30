@@ -1,8 +1,8 @@
 "$schema" = "../rule.schema.json"
 
 [[rules]] # Path
-regexp = '\s+([\.\/]+.*)$'
-colors = ',path'
+regexp = '^\s*([0-9\.]+\w*)\s+(.*)$'
+colors = ',,path'
 priority = 100
 
 [[rules]] # Size 'K'
