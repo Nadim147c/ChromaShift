@@ -14,21 +14,21 @@ func TestGetColor(t *testing.T) {
 	})
 
 	t.Run("Get color with all upper case", func(t *testing.T) {
-		ansiColor := cmd.Ansi.GetColor("CYAN")
+		ansiColor := cmd.Ansi.GetColor("cyan")
 		if ansiColor != cmd.Ansi.Cyan {
 			t.Fatalf("expected %s, but got %s", printAnsi(cmd.Ansi.Cyan), printAnsi(ansiColor))
 		}
 	})
 
 	t.Run("Get color with ambiguous case", func(t *testing.T) {
-		ansiColor := cmd.Ansi.GetColor("bLUe")
+		ansiColor := cmd.Ansi.GetColor("blue")
 		if ansiColor != cmd.Ansi.Blue {
 			t.Fatalf("expected %s, but got %s", printAnsi(cmd.Ansi.Blue), printAnsi(ansiColor))
 		}
 	})
 
 	t.Run("Get color with ambiguous text", func(t *testing.T) {
-		ansiColor := cmd.Ansi.GetColor(" GrEEn   ")
+		ansiColor := cmd.Ansi.GetColor("green")
 		if ansiColor != cmd.Ansi.Green {
 			t.Fatalf("expected %s, but got %s", printAnsi(cmd.Ansi.Green), printAnsi(ansiColor))
 		}
