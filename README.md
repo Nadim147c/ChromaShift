@@ -18,6 +18,17 @@ Or,
 yay -S chromashift-git
 ```
 
+### Pre-Build Binary
+
+Download pre-build binary from
+[release](https://github.com/Nadim147c/ChromaShift/releases).
+
+### Build from source
+
+```bash
+
+```
+
 ## Usage
 
 Simply run your favorite commands through ChromaShift to see the output in enhanced
