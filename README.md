@@ -6,10 +6,16 @@ A output colorizer for your favorite commands.
 
 ## Installation
 
-To install ChromaShift, run the following script:
+### Arch User Repository (AUR)
 
-```sh
-curl -s https://raw.githubusercontent.com/Nadim147c/ChromaShift/main/scripts/install.gh-release.sh | sh
+```bash
+yay -S chromashift
+```
+
+Or,
+
+```bash
+yay -S chromashift-git
 ```
 
 ## Usage
