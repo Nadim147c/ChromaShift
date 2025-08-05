@@ -2,7 +2,7 @@
 
 A output colorizer for your favorite commands.
 
-![](./assets/free.png)
+![preview](./assets/cshift.png)
 
 ## Installation
 
