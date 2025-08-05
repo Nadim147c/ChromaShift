@@ -26,7 +26,10 @@ Download pre-build binary from
 ### Build from source
 
 ```bash
-
+git clone https://github.com/Nadim147c/ChromaShift.git
+cd ChromaShift
+make
+sudo make install PREFIX=/usr
 ```
 
 ## Usage
