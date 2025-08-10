@@ -2,4 +2,4 @@
 
 [[rules]] # Main
 regexp = "(renamed) '(.*)' (->) '(.*)'"
-colors = ',bold green,magenta,bold yellow,green'
+colors = ',bold green,path,bold yellow,path'

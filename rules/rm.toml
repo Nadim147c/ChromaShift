@@ -2,9 +2,9 @@
 
 [[rules]] # Main
 regexp = "(.*) '(.*)'"
-colors = ',bold red,yellow'
+colors = ',bold red,path'
 
 [[rules]] # Directory
 regexp = "(.*) (directory) '(.*)'"
-colors = ',bold red,bold magenta,yellow'
+colors = ',bold red,bold magenta,path'
 overwrite = true
