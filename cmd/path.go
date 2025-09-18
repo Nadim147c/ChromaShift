@@ -54,7 +54,7 @@ func GetLsColor(line string) (string, error) {
 	for _, lsColor := range LsColorsMap {
 		fileName := filepath.Base(line)
 		if lsColor.Glob.Match(fileName) {
-			return fmt.Sprintf("\033[%sm", lsColor.Code), nil
+			return lsColor.Code, nil
 		}
 	}
 

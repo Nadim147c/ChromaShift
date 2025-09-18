@@ -29,7 +29,7 @@ colors = ',yellow'
 
 [[rules]] # big options
 regexp = '\s(-?(?:-[\w\d]+)+)(?:([\=\s])([^\-]\S+))?\b'
-colors = ',cyan,gray,yellow'
+colors = ',cyan,hiblack,yellow'
 
 # warning and error won't work, unless you redirect also
 [[rules]] # warning

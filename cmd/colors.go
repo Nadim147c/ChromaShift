@@ -1,109 +1,83 @@
 package cmd
 
-type AnsiCode struct {
-	Reset     string
-	Bold      string
-	Underline string
-	Blink     string
-	Reverse   string
-	Conceal   string
-	Black     string
-	Red       string
-	Green     string
-	Yellow    string
-	Blue      string
-	Magenta   string
-	Cyan      string
-	White     string
-	Gray      string
-	BgBlack   string
-	BgRed     string
-	BgGreen   string
-	BgYellow  string
-	BgBlue    string
-	BgMagenta string
-	BgCyan    string
-	BgWhite   string
-	BgGray    string
-}
+import "github.com/muesli/termenv"
 
-var Ansi = AnsiCode{
-	Reset:     "\033[0m",
-	Bold:      "\033[1m",
-	Underline: "\033[4m",
-	Blink:     "\033[5m",
-	Reverse:   "\033[7m",
-	Conceal:   "\033[8m",
-	Black:     "\033[30m",
-	Red:       "\033[31m",
-	Green:     "\033[32m",
-	Yellow:    "\033[33m",
-	Blue:      "\033[34m",
-	Magenta:   "\033[35m",
-	Cyan:      "\033[36m",
-	White:     "\033[37m",
-	Gray:      "\033[90m",
-	BgBlack:   "\033[40m",
-	BgRed:     "\033[41m",
-	BgGreen:   "\033[42m",
-	BgYellow:  "\033[43m",
-	BgBlue:    "\033[44m",
-	BgMagenta: "\033[45m",
-	BgCyan:    "\033[46m",
-	BgWhite:   "\033[47m",
-	BgGray:    "\033[100",
-}
-
-func (a AnsiCode) GetColor(colorName string) string {
+func GetColorCode(colorName string) string {
 	switch colorName {
 	case "reset":
-		return a.Reset
+		return termenv.ResetSeq
 	case "bold":
-		return a.Bold
+		return termenv.BoldSeq
 	case "underline":
-		return a.Underline
+		return termenv.UnderlineSeq
 	case "blink":
-		return a.Blink
+		return termenv.BlinkSeq
 	case "reverse":
-		return a.Reverse
-	case "conceal":
-		return a.Conceal
+		return termenv.ReverseSeq
 	case "black":
-		return a.Black
+		return termenv.ANSIBlack.Sequence(false)
 	case "red":
-		return a.Red
+		return termenv.ANSIRed.Sequence(false)
 	case "green":
-		return a.Green
+		return termenv.ANSIGreen.Sequence(false)
 	case "yellow":
-		return a.Yellow
+		return termenv.ANSIYellow.Sequence(false)
 	case "blue":
-		return a.Blue
+		return termenv.ANSIBlue.Sequence(false)
 	case "magenta":
-		return a.Magenta
+		return termenv.ANSIMagenta.Sequence(false)
 	case "cyan":
-		return a.Cyan
+		return termenv.ANSICyan.Sequence(false)
 	case "white":
-		return a.White
-	case "gray":
-		return a.Gray
+		return termenv.ANSIWhite.Sequence(false)
+	case "hiblack":
+		return termenv.ANSIBrightBlack.Sequence(false)
+	case "hired":
+		return termenv.ANSIBrightRed.Sequence(false)
+	case "higreen":
+		return termenv.ANSIBrightGreen.Sequence(false)
+	case "hiyellow":
+		return termenv.ANSIBrightYellow.Sequence(false)
+	case "hiblue":
+		return termenv.ANSIBrightBlue.Sequence(false)
+	case "himagenta":
+		return termenv.ANSIBrightMagenta.Sequence(false)
+	case "hicyan":
+		return termenv.ANSIBrightCyan.Sequence(false)
+	case "hiwhite":
+		return termenv.ANSIBrightWhite.Sequence(false)
 	case "bgblack":
-		return a.BgBlack
+		return termenv.ANSIBlack.Sequence(true)
 	case "bgred":
-		return a.BgRed
+		return termenv.ANSIRed.Sequence(true)
 	case "bggreen":
-		return a.BgGreen
+		return termenv.ANSIGreen.Sequence(true)
 	case "bgyellow":
-		return a.BgYellow
+		return termenv.ANSIYellow.Sequence(true)
 	case "bgblue":
-		return a.BgBlue
+		return termenv.ANSIBlue.Sequence(true)
 	case "bgmagenta":
-		return a.BgMagenta
+		return termenv.ANSIMagenta.Sequence(true)
 	case "bgcyan":
-		return a.BgCyan
+		return termenv.ANSICyan.Sequence(true)
 	case "bgwhite":
-		return a.BgWhite
-	case "bggray":
-		return a.BgGray
+		return termenv.ANSIWhite.Sequence(true)
+	case "bghiblack":
+		return termenv.ANSIBrightBlack.Sequence(true)
+	case "bghired":
+		return termenv.ANSIBrightRed.Sequence(true)
+	case "bghigreen":
+		return termenv.ANSIBrightGreen.Sequence(true)
+	case "bghiyellow":
+		return termenv.ANSIBrightYellow.Sequence(true)
+	case "bghiblue":
+		return termenv.ANSIBrightBlue.Sequence(true)
+	case "bghimagenta":
+		return termenv.ANSIBrightMagenta.Sequence(true)
+	case "bghicyan":
+		return termenv.ANSIBrightCyan.Sequence(true)
+	case "bghiwhite":
+		return termenv.ANSIBrightWhite.Sequence(true)
 	default:
 		return ""
 	}

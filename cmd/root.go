@@ -10,7 +10,7 @@ import (
 	"github.com/MatusOllah/slogcolor"
 	termcolor "github.com/fatih/color"
 	cc "github.com/ivanpirog/coloredcobra"
-	"github.com/mattn/go-isatty"
+	"github.com/muesli/termenv"
 	"github.com/spf13/cobra"
 )
 
@@ -33,9 +33,7 @@ func init() {
 }
 
 func isTerminal(f *os.File) bool {
-	return os.Getenv("TERM") != "dumb" &&
-		(isatty.IsTerminal(f.Fd()) ||
-			isatty.IsCygwinTerminal(f.Fd()))
+	return termenv.NewOutput(f).EnvColorProfile() == termenv.TrueColor
 }
 
 func startRunWithoutColor(runCmd *exec.Cmd) {
@@ -67,7 +65,7 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
-		termcolor.NoColor = !isTerminal(os.Stderr)
+		termcolor.NoColor = termenv.NewOutput(os.Stderr).EnvNoColor()
 		opts.NoTime = true
 		opts.SrcFileMode = 0
 		opts.LevelTags = map[slog.Level]string{

@@ -4,6 +4,8 @@ import (
 	"iter"
 	"log/slog"
 	"strings"
+
+	"github.com/muesli/termenv"
 )
 
 type Match [3]int
@@ -30,18 +32,18 @@ func RegexMatches(matches [][]int) iter.Seq[Match] {
 	}
 }
 
-type Index map[int]string
+type Index map[int][]string
 
 func (i *Index) Reset() {
 	*i = make(Index)
 }
 
-func (i Index) AddStyle(idx int, style string) {
-	i[idx] = i[idx] + style
+func (i Index) AddStyle(idx int, style ...string) {
+	i[idx] = append(i[idx], style...)
 }
 
 func (i Index) ResetStyle(idx int) {
-	i.AddStyle(idx, Ansi.Reset)
+	i.AddStyle(idx, termenv.ResetSeq)
 }
 
 func (i Index) Extent(line string, matches [][]int, colors []string) {
@@ -51,7 +53,6 @@ loop:
 
 		cfgStyle := strings.TrimSpace(colors[idx%len(colors)])
 
-		var ansiStyles strings.Builder
 		for style := range strings.SplitSeq(cfgStyle, " ") {
 			style = strings.ToLower(strings.TrimSpace(style))
 			if style == "path" {
@@ -59,10 +60,10 @@ loop:
 				continue loop
 			}
 
-			ansiStyles.WriteString(Ansi.GetColor(style))
+			seq := GetColorCode(style)
+			i.AddStyle(start, seq)
 		}
 
-		i.AddStyle(start, ansiStyles.String())
 		i.ResetStyle(end)
 	}
 }
@@ -80,19 +81,19 @@ func (i Index) ExtentPath(line string, start, end int) {
 		}
 	}
 
-	i.AddStyle(start, Ansi.Blue)
+	i.AddStyle(start, termenv.ANSIBlue.Sequence(false))
 
 	meta, metaErr := GetFileMetadata(path)
 
 	if metaErr == nil && meta.IsEveyone {
-		i.AddStyle(basePathIndex, Ansi.Green+Ansi.Bold)
-		i.AddStyle(end, Ansi.Reset+"!")
+		i.AddStyle(basePathIndex, termenv.ANSIGreen.Sequence(false), termenv.BoldSeq)
+		i.AddStyle(end, termenv.ResetSeq)
 		return
 	}
 
 	if metaErr == nil && meta.IsExecutable {
-		i.AddStyle(basePathIndex, Ansi.Red+Ansi.Bold)
-		i.AddStyle(end, Ansi.Reset+"*")
+		i.AddStyle(basePathIndex, termenv.ANSIRed.Sequence(false), termenv.BoldSeq)
+		i.AddStyle(end, termenv.ResetSeq)
 		return
 	}
 
@@ -106,28 +107,26 @@ func (i Index) ExtentPath(line string, start, end int) {
 	}
 
 	if metaErr != nil {
-		i.AddStyle(basePathIndex, Ansi.Gray)
+		i.AddStyle(basePathIndex, termenv.ANSIBrightBlack.Sequence(false))
 		return
 	}
 	if meta.IsSymlink {
-		i.AddStyle(basePathIndex, Ansi.Magenta)
+		i.AddStyle(basePathIndex, termenv.ANSIMagenta.Sequence(false))
 		return
 	}
 	if meta.IsDirectory {
-		i.AddStyle(basePathIndex, Ansi.Bold+Ansi.Blue)
+		i.AddStyle(basePathIndex, termenv.BoldSeq, termenv.ANSIBlue.Sequence(false))
 		return
 	}
 
 	if line[basePathIndex] == '.' {
-		i.AddStyle(basePathIndex, Ansi.Gray)
+		i.AddStyle(basePathIndex, termenv.ANSIBrightBlack.Sequence(false))
 		return
 	}
-	i.AddStyle(basePathIndex, Ansi.Reset)
+	i.AddStyle(basePathIndex, termenv.ResetSeq)
 }
 
 func Colorize(line string, rules []Rule) string {
-	var buf strings.Builder
-
 	index := make(Index)
 	for _, rule := range rules {
 		re := rule.Regexp
@@ -153,20 +152,22 @@ func Colorize(line string, rules []Rule) string {
 		index.Extent(line, matches, colors)
 	}
 
+	var buf strings.Builder
+
 	var last int
 	for i, char := range line {
 		if v, ok := index[i]; ok {
-			buf.WriteString(v)
+			buf.WriteString("\x1b[" + strings.Join(v, ";") + "m")
 		}
 		buf.WriteRune(char)
 		last++
 	}
 
 	if v, ok := index[last]; ok {
-		buf.WriteString(v)
+		buf.WriteString("\x1b[" + strings.Join(v, ";") + "m")
 	}
 
-	buf.WriteString(Ansi.Reset)
+	buf.WriteString("\x1b[" + termenv.ResetSeq + "m")
 
 	return buf.String()
 }

@@ -20,7 +20,7 @@ colors = ',bold yellow'
 
 [[rules]]
 regexp = '\s(execve)\b'
-colors = ',bold gray'
+colors = ',bold hiblack'
 
 [[rules]]
 regexp = '\s(fork)\b'
@@ -73,7 +73,7 @@ colors = ',bold green'
 
 [[rules]]
 regexp = '\s(lseek)\b'
-colors = ',bold gray'
+colors = ',bold hiblack'
 
 [[rules]]
 regexp = '\s(ioctl)\b'

@@ -14,7 +14,7 @@
             "type": "string"
           },
           "colors": {
-            "pattern": "^( ?((reset|bold|underline|blink|reverse|conceal|path)|((bg)?(black|red|green|yellow|blue|magenta|cyan|white|gray))) ?,?)+$"
+            "pattern": "^( ?((reset|bold|underline|blink|reverse|conceal|path)|((bg)?(black|red|green|yellow|blue|magenta|cyan|white|hiblack))) ?,?)+$"
           },
           "overwrite": {
             "type": "boolean",

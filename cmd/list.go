@@ -20,10 +20,7 @@ var listCommandsCmd = &cobra.Command{
 		}
 
 		for name, values := range config {
-			fmt.Printf("%s[%s%s%s] %s%s%s%s = %s%s%s\n",
-				Ansi.Bold, Ansi.Yellow, values.File, Ansi.Reset,
-				Ansi.Bold, Ansi.Green, name, Ansi.Reset,
-				Ansi.Cyan, values.Regexp, Ansi.Reset)
+			fmt.Printf("[%s] %s = %s\n", values.File, name, values.Regexp)
 		}
 		return nil
 	},

@@ -7,7 +7,7 @@ colors = ',bold blue underline'
 
 [[rules]] # Line
 regexp = '^(\S+)\s+(\S+)'
-colors = ',gray,blue'
+colors = ',hiblack,blue'
 
 [[rules]] # Driver BRIDGE
 regexp = '^\S+\s+\S+\s+(bridge)'
