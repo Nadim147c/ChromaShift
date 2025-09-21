@@ -3,15 +3,10 @@ package cmd_test
 import (
 	"cshift/cmd"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/gobwas/glob"
 )
-
-func printAnsi(s string) string {
-	return strings.ReplaceAll(s, "\033", "\\033")
-}
 
 func TestGetLsColor(t *testing.T) {
 	LsColorsMap := cmd.LsColorsMap
@@ -27,8 +22,8 @@ func TestGetLsColor(t *testing.T) {
 
 		lsColor, err := cmd.GetLsColor("main.go")
 
-		if err != nil || (lsColor != "\033[36m") {
-			t.Fatalf("expected %s, but got %s", printAnsi("\033[36m"), printAnsi(lsColor))
+		if err != nil || (lsColor != "36") {
+			t.Fatalf("expected %s, but got %s", "36", lsColor)
 		}
 	})
 
@@ -38,8 +33,8 @@ func TestGetLsColor(t *testing.T) {
 
 		lsColor, err := cmd.GetLsColor("main.go")
 
-		if err != nil || lsColor != "\033[31m" {
-			t.Fatalf("expected %s, but got %s", printAnsi("\033[31m"), printAnsi(lsColor))
+		if err != nil || lsColor != "31" {
+			t.Fatalf("expected %s, but got %s", "31", lsColor)
 		}
 	})
 
@@ -54,8 +49,8 @@ func TestGetLsColor(t *testing.T) {
 
 		lsColor, err := cmd.GetLsColor("main.go")
 
-		if err != nil || lsColor != "\033[32m" {
-			t.Fatalf("expected %s, but got %s", printAnsi("\033[32m"), printAnsi(lsColor))
+		if err != nil || lsColor != "32" {
+			t.Fatalf("expected %s, but got %s", "32", lsColor)
 		}
 	})
 }
