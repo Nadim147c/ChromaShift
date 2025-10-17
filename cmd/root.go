@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/MatusOllah/slogcolor"
+	"github.com/carapace-sh/carapace"
 	termcolor "github.com/fatih/color"
 	cc "github.com/ivanpirog/coloredcobra"
 	"github.com/muesli/termenv"
@@ -30,6 +31,7 @@ func init() {
 	rootCmd.Flags().StringVar(&RulesDirectory, "rules-dir", "", "specify path to the rules directory")
 	rootCmd.Flags().StringVar(&Color, "color", "auto", "whether use color or not (never, auto, always)")
 	rootCmd.Flags().BoolVarP(&Debug, "debug", "d", false, "verbose output")
+	carapace.Gen(rootCmd)
 }
 
 func isTerminal(f *os.File) bool {

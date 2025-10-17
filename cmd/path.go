@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"syscall"
 
 	"github.com/adrg/xdg"
 	"github.com/gobwas/glob"
@@ -75,7 +74,6 @@ type FileMetadata struct {
 	IsSymlink    bool
 	IsExecutable bool
 	IsEveyone    bool
-	Permissions  uint32
 	Kind         PathKind
 }
 
@@ -95,13 +93,8 @@ func GetFileMetadata(path string) (*FileMetadata, error) {
 		return nil, err
 	}
 
-	stat := info.Sys().(*syscall.Stat_t)
-	perms := stat.Mode & 0777
-
 	mode := info.Mode()
-	metadata := &FileMetadata{
-		Permissions: perms,
-	}
+	metadata := &FileMetadata{}
 
 	if mode&os.ModeSymlink != 0 {
 		metadata.IsSymlink = true
@@ -113,7 +106,7 @@ func GetFileMetadata(path string) (*FileMetadata, error) {
 	} else if mode.IsRegular() {
 		metadata.Kind = PathDirectory
 		metadata.IsExecutable = mode&0111 != 0
-		metadata.IsEveyone = perms == 0777
+		metadata.IsEveyone = mode.Perm()&0o777 != 0
 	} else {
 		metadata.Kind = PathSpecial
 	}
