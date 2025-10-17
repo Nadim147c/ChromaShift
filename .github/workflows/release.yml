@@ -28,16 +28,17 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: "**/*.sum"
 
-      - name: Archive Builds
-        run: |
-          make VERSION=${{ steps.version.outputs.tag }} archive
+      - name: Builds
+        run: VERSION=${{ steps.version.outputs.tag }} ./build.sh
 
       - name: Create release
         uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          artifacts: "archive/*"
           tag: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
           draft: true
+          files: |
+            build/*.tar.gz
+            build/*.sha256
