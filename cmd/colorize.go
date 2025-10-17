@@ -3,6 +3,7 @@ package cmd
 import (
 	"iter"
 	"log/slog"
+	"slices"
 	"strings"
 
 	"github.com/muesli/termenv"
@@ -153,21 +154,26 @@ func Colorize(line string, rules []Rule) string {
 	}
 
 	var buf strings.Builder
+	size := len(line)
+	buf.Grow(2 * size)
 
-	var last int
-	for i, char := range line {
+	for i := range size {
 		if v, ok := index[i]; ok {
-			buf.WriteString("\x1b[" + strings.Join(v, ";") + "m")
+			buf.WriteString("\x1b[" + join(v) + "m")
 		}
-		buf.WriteRune(char)
-		last++
+		buf.WriteByte(line[i])
 	}
 
-	if v, ok := index[last]; ok {
+	if v, ok := index[size]; ok {
 		buf.WriteString("\x1b[" + strings.Join(v, ";") + "m")
 	}
 
 	buf.WriteString("\x1b[" + termenv.ResetSeq + "m")
 
 	return buf.String()
+}
+
+func join(s []string) string {
+	f := slices.DeleteFunc(s, func(str string) bool { return str == "" })
+	return strings.Join(f, ";")
 }
