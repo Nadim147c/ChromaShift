@@ -2,7 +2,7 @@
 
 A output colorizer for your favorite commands.
 
-![preview](./assets/cshift.png)
+![Made with VHS](https://vhs.charm.sh/vhs-3mPlkO1SuQVv3FhFsEJxgh.gif)
 
 ## Installation
 
