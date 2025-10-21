@@ -1,96 +1,44 @@
-APP_NAME = ChromaShift
-BIN_NAME = cshift
+GO       ?= go
+BIN_NAME ?= cshift
+VERSION  ?= $(shell git describe --tags)
+PREFIX   ?= /usr/local/
+TOOL_MOD ?= -modfile tool.go.mod
+TOOL     ?= $(GO) tool $(TOOL_MOD)
 
-VERSION ?= $(shell git describe --tags)
-PREFIX ?= /usr/local/
+BIN_FILE            = $(shell realpath -m "$(PREFIX)/bin/$(BIN_NAME)")
+LICENSE_FILE        = $(shell realpath -m "$(PREFIX)/share/licenses/$(BIN_NAME)/LICENSE")
+BASH_COMPLETION_DIR = $(shell realpath -m "$(PREFIX)/share/bash-completion/completions")
+ZSH_COMPLETION_DIR  = $(shell realpath -m "$(PREFIX)/share/zsh/site-functions")
+FISH_COMPLETION_DIR = $(shell realpath -m "$(PREFIX)/share/fish/vendor_completions.d")
 
-BIN_DIR = ./bin
-SRC_DIR = ./cmd
-ARCHIVE_DIR = ./archive
-SCRIPTS_DIR = ./scripts
-COMPLETIONS_DIR = ./completions
+-include Makefile.local
 
-BUILD_FLAGS = -s -w -X $(BIN_NAME)/cmd.Version=$(VERSION)
+.PHONY: build install test docs-dev
 
-BUILD = go build -trimpath -ldflags "$(BUILD_FLAGS)"
-
-all: build
-
-dependencies: .dependencies-stamp
-
-.dependencies-stamp:
-	@echo "Installing dependencies..."
-	go mod download
-	go mod verify
-	go get -v
-
-	@touch .dependencies-stamp
-
-build: .dependencies-stamp
-	@echo "Building $(BIN_NAME)..."
-	$(BUILD) -o $(BIN_NAME)
-
-	@touch .build-stamp
-
-.build-stamp: .dependencies-stamp
-	@echo "Building $(BIN_NAME)..."
-	$(BUILD) -o $(BIN_NAME)
-
-	@touch .build-stamp
+build:
+	$(GO) build -trimpath -ldflags '-X main.Version=$(VERSION)' -o $(BIN_NAME)
 
 install:
-	@echo "Installing to '$(PREFIX)'..."
-	install -Dm755 $(BIN_NAME) "$(PREFIX)/bin/$(BIN_NAME)"
-	install -Dm644 README.md "$(PREFIX)/share/doc/$(APP_NAME)/README.md"
-	install -Dm644 LICENSE "$(PREFIX)/share/licenses/$(APP_NAME)/LICENSE"
+	install -Dm755 $(BIN_NAME) "$(BIN_FILE)"
+	install -Dm644 LICENSE "$(LICENSE_FILE)"
+	$(BIN_NAME) _carapace bash | install -Dm644 /dev/stdin "$(BASH_COMPLETION_DIR)/$(BIN_NAME)"
+	$(BIN_NAME) _carapace zsh  | install -Dm644 /dev/stdin "$(ZSH_COMPLETION_DIR)/_$(BIN_NAME)"
+	$(BIN_NAME) _carapace fish | install -Dm644 /dev/stdin "$(FISH_COMPLETION_DIR)/$(BIN_NAME).fish"
 
-run:
-	go run main.go -- $(CMD)
+tools-install:
+	$(GO) get $(TOOL_MOD) -tool github.com/mgechev/revive@latest
+	$(GO) get $(TOOL_MOD) -tool github.com/segmentio/golines@latest
+	$(GO) get $(TOOL_MOD) -tool mvdan.cc/gofumpt@latest
+	$(GO) mod tidy $(TOOL_MOD)
 
-test: .build-stamp
-	./$(BIN_NAME) --color=always -- go test $(SRC_DIR) -failfast -v -parallel 4
+format:
+	find -iname '*.go' -print0 | xargs -0 $(TOOL) golines --max-len 80 -w
+	find -iname '*.go' -print0 | xargs -0 $(TOOL) gofumpt -w
 
-test-all:
-	go test $(SRC_DIR) -v -parallel 4
+test:
+	$(GO) test -v ./...
+	$(TOOL) revive -config revive.toml -formatter friendly ./...
 
-alias: .alias-stamp
+docs-dev:
+	bun run dev
 
-.alias-stamp: .build-stamp
-	mkdir -pv $(COMPLETIONS_DIR)
-	./$(BIN_NAME) alias zsh > $(SCRIPTS_DIR)/alias.zsh
-	./$(BIN_NAME) alias bash > $(SCRIPTS_DIR)/alias.bash
-
-	@touch .alias-stamp
-
-completion: .completion-stamp
-
-.completion-stamp: .build-stamp
-	mkdir -pv $(COMPLETIONS_DIR)
-	./$(BIN_NAME) completion zsh > $(COMPLETIONS_DIR)/_$(BIN_NAME)
-	./$(BIN_NAME) completion bash > $(COMPLETIONS_DIR)/$(BIN_NAME).bash
-	./$(BIN_NAME) completion fish > $(COMPLETIONS_DIR)/$(BIN_NAME).fish
-
-	@touch .completion-stamp
-
-clean:
-	rm -vrf $(BIN_DIR) $(BIN_NAME) $(ARCHIVE_DIR) $(COMPLETIONS_DIR) .*-stamp
-
-compile:
-	mkdir -vp $(BIN_DIR)
-
-	@echo "Compiling for Unix-like OS and Platforms"
-	# Linux
-	GOOS=linux GOARCH=amd64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-linux-amd64 
-	GOOS=linux GOARCH=arm $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-linux-arm 
-	GOOS=linux GOARCH=arm64 $(BUILD) -o $(BIN_DIR)/$(APP_NAME)-linux-arm64 
-
-archive: .alias-stamp .completion-stamp compile
-	mkdir -p $(ARCHIVE_DIR)
-	
-	find $(BIN_DIR) -iname "$(APP_NAME)-*-*" | while read binary; do \
-		basename=$$(basename $$binary); \
-		printf "\n\n%s\n\n" "Archiving : $$basename"; \
-		cp -vf $$binary $(BIN_DIR)/$(BIN_NAME); \
-		tar -czvf "$(ARCHIVE_DIR)/$${basename}-$(VERSION).tar.gz" $(BIN_DIR)/$(BIN_NAME) $(SCRIPTS_DIR)/* $(COMPLETIONS_DIR)/* ; \
-		echo "Created archive: $(ARCHIVE_DIR)/$${basename}-$(VERSION).tar.gz"; \
-	done
