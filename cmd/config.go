@@ -32,7 +32,10 @@ type (
 	}
 )
 
-func GetRuleFileNameForSubcommand(subCommands SubCommands, args []string) (string, error) {
+func GetRuleFileNameForSubcommand(
+	subCommands SubCommands,
+	args []string,
+) (string, error) {
 	subCommandName := args[1]
 
 	if subCommands[subCommandName].File != "" {
@@ -62,7 +65,10 @@ func GetRuleFileName(config Config, args []string) (string, error) {
 		}
 
 		slog.Debug("Loading sub commands", "command", cmdBaseName)
-		ruleFileName, err := GetRuleFileNameForSubcommand(commandConfig.Sub, args)
+		ruleFileName, err := GetRuleFileNameForSubcommand(
+			commandConfig.Sub,
+			args,
+		)
 		if err == nil {
 			return ruleFileName, nil
 		} else {

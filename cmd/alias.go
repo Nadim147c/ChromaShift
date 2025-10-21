@@ -141,7 +141,11 @@ if ($env.TERM == "dumb") and (which cshift | is-not-empty) {
 			if _, ok := banned[cmd]; ok {
 				continue
 			}
-			fmt.Printf("def --wrapped %s [...p] { cshift -- %s ...$p }\n", cmd, cmd)
+			fmt.Printf(
+				"def --wrapped %s [...p] { cshift -- %s ...$p }\n",
+				cmd,
+				cmd,
+			)
 		}
 
 		return nil

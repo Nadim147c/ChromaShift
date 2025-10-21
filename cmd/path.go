@@ -43,7 +43,13 @@ func GetLsColor(line string) (string, error) {
 
 			g, err := glob.Compile(pattern)
 			if err != nil {
-				slog.Debug("Failed compiling glob", "pattern", pattern, "error", err)
+				slog.Debug(
+					"Failed compiling glob",
+					"pattern",
+					pattern,
+					"error",
+					err,
+				)
 				continue
 			}
 			LsColorsMap = append(LsColorsMap, LsColor{Glob: g, Code: colorCode})
@@ -98,14 +104,14 @@ func GetFileMetadata(path string) (*FileMetadata, error) {
 
 	if mode&os.ModeSymlink != 0 {
 		metadata.IsSymlink = true
-		metadata.IsExecutable = mode&0111 != 0
+		metadata.IsExecutable = mode&0o111 != 0
 		metadata.Kind = PathSymlink
 	} else if mode.IsDir() {
 		metadata.IsDirectory = true
 		metadata.Kind = PathDirectory
 	} else if mode.IsRegular() {
 		metadata.Kind = PathDirectory
-		metadata.IsExecutable = mode&0111 != 0
+		metadata.IsExecutable = mode&0o111 != 0
 		metadata.IsEveyone = mode.Perm()&0o777 != 0
 	} else {
 		metadata.Kind = PathSpecial

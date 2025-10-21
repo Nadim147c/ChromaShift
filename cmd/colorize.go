@@ -87,13 +87,21 @@ func (i Index) ExtentPath(line string, start, end int) {
 	meta, metaErr := GetFileMetadata(path)
 
 	if metaErr == nil && meta.IsEveyone {
-		i.AddStyle(basePathIndex, termenv.ANSIGreen.Sequence(false), termenv.BoldSeq)
+		i.AddStyle(
+			basePathIndex,
+			termenv.ANSIGreen.Sequence(false),
+			termenv.BoldSeq,
+		)
 		i.AddStyle(end, termenv.ResetSeq)
 		return
 	}
 
 	if metaErr == nil && meta.IsExecutable {
-		i.AddStyle(basePathIndex, termenv.ANSIRed.Sequence(false), termenv.BoldSeq)
+		i.AddStyle(
+			basePathIndex,
+			termenv.ANSIRed.Sequence(false),
+			termenv.BoldSeq,
+		)
 		i.AddStyle(end, termenv.ResetSeq)
 		return
 	}
@@ -116,7 +124,11 @@ func (i Index) ExtentPath(line string, start, end int) {
 		return
 	}
 	if meta.IsDirectory {
-		i.AddStyle(basePathIndex, termenv.BoldSeq, termenv.ANSIBlue.Sequence(false))
+		i.AddStyle(
+			basePathIndex,
+			termenv.BoldSeq,
+			termenv.ANSIBlue.Sequence(false),
+		)
 		return
 	}
 

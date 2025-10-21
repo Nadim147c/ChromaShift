@@ -27,9 +27,12 @@ var (
 
 func init() {
 	rootCmd.SetErrPrefix("ChromaShift Error:")
-	rootCmd.Flags().StringVar(&ConfigFile, "config", "", "specify path to the config file")
-	rootCmd.Flags().StringVar(&RulesDirectory, "rules-dir", "", "specify path to the rules directory")
-	rootCmd.Flags().StringVar(&Color, "color", "auto", "whether use color or not (never, auto, always)")
+	rootCmd.Flags().
+		StringVar(&ConfigFile, "config", "", "specify path to the config file")
+	rootCmd.Flags().
+		StringVar(&RulesDirectory, "rules-dir", "", "specify path to the rules directory")
+	rootCmd.Flags().
+		StringVar(&Color, "color", "auto", "whether use color or not (never, auto, always)")
 	rootCmd.Flags().BoolVarP(&Debug, "debug", "d", false, "verbose output")
 	carapace.Gen(rootCmd)
 }
@@ -71,10 +74,14 @@ var rootCmd = &cobra.Command{
 		opts.NoTime = true
 		opts.SrcFileMode = 0
 		opts.LevelTags = map[slog.Level]string{
-			slog.LevelDebug: termcolor.New(termcolor.FgGreen).Sprint("ChromaShift"),
-			slog.LevelInfo:  termcolor.New(termcolor.FgCyan).Sprint("ChromaShift"),
-			slog.LevelWarn:  termcolor.New(termcolor.FgYellow).Sprint("ChromaShift"),
-			slog.LevelError: termcolor.New(termcolor.FgRed).Sprint("ChromaShift"),
+			slog.LevelDebug: termcolor.New(termcolor.FgGreen).
+				Sprint("ChromaShift"),
+			slog.LevelInfo: termcolor.New(termcolor.FgCyan).
+				Sprint("ChromaShift"),
+			slog.LevelWarn: termcolor.New(termcolor.FgYellow).
+				Sprint("ChromaShift"),
+			slog.LevelError: termcolor.New(termcolor.FgRed).
+				Sprint("ChromaShift"),
 		}
 
 		slog.SetDefault(slog.New(slogcolor.NewHandler(os.Stderr, opts)))

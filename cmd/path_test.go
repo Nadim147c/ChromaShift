@@ -1,9 +1,10 @@
 package cmd_test
 
 import (
-	"cshift/cmd"
 	"os"
 	"testing"
+
+	"cshift/cmd"
 
 	"github.com/gobwas/glob"
 )

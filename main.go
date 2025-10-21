@@ -1,8 +1,9 @@
 package main
 
 import (
-	"cshift/cmd"
 	"embed"
+
+	"cshift/cmd"
 )
 
 //go:embed rules/*
