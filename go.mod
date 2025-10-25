@@ -12,6 +12,7 @@ require (
 	github.com/gobwas/glob v0.2.3
 	github.com/ivanpirog/coloredcobra v1.0.1
 	github.com/muesli/termenv v0.16.0
+	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/cobra v1.9.1
 )
 
