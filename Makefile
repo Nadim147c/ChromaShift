@@ -1,6 +1,6 @@
 GO       ?= go
 BIN_NAME ?= cshift
-VERSION  ?= $(shell git describe --tags)
+VERSION  ?= $(shell git describe --long --tags --abbrev=7 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 PREFIX   ?= /usr/local/
 TOOL_MOD ?= -modfile tool.go.mod
 TOOL     ?= $(GO) tool $(TOOL_MOD)

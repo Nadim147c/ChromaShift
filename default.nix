@@ -1,7 +1,8 @@
+# update: nix-update --flake default
 {
-  lib,
   buildGoModule,
   fetchFromGitHub,
+  lib,
 }:
 buildGoModule rec {
   pname = "chromashift";
@@ -16,7 +17,7 @@ buildGoModule rec {
 
   vendorHash = "sha256-OjW2NMFk6EmS/iL2kZwSl+AYZ1bg1ylFNWYrnuHU6tY=";
 
-  ldflags = ["-s" "-w" "-X" "main.Version=v${version}"];
+  ldflags = ["-s" "-w" "-X" "main.Version=${version}"];
 
   meta = {
     description = "A output colorizer for your favorite commands";
