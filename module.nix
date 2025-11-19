@@ -25,19 +25,19 @@ in {
   config = mkIf cfg.enable {
     home.packages = mkIf (cfg.package != null) [cfg.package];
     programs.bash.initExtra = mkIf cfg.enableBashIntegration (
-      mkOrder 2000 ''
+      mkOrder 250 ''
         eval "$(${getExe cfg.package} alias bash)"
       ''
     );
 
     programs.zsh.initContent = mkIf cfg.enableZshIntegration (
-      mkOrder 2000 ''
+      mkOrder 250 ''
         eval "$(${getExe cfg.package} alias zsh)"
       ''
     );
 
     programs.fish.interactiveShellInit = mkIf cfg.enableFishIntegration (
-      mkOrder 2000 ''
+      mkOrder 250 ''
         ${getExe cfg.package} alias fish | source
       ''
     );
